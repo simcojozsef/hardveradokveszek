@@ -1,0 +1,551 @@
+Hardver
+    Alaplap
+        Intel
+            LGA 1155 (60, 70 sorozat)
+            LGA 1150 (80, 90 sorozat)
+            LGA 1151 (100, 200 sorozat)
+            LGA 1151 (300 sorozat)
+            LGA 1200 (400, 500 sorozat)
+            LGA 1700 (600, 700 sorozat)
+            LGA 1851 (800 sorozat)
+            LGA 2011
+            LGA 2011 v3
+            LGA 2066
+        AMD
+            Socket AM3/AM3+
+            Socket AM4
+            Socket AM5
+            Socket FM2/FM2+
+            Socket TR4
+        Integrált processzoros alaplap
+    Processzor
+        Intel
+            LGA 1155 (2xxx, 3xxx)
+            LGA 1150 (4xxx, 5xxx)
+            LGA 1151 v1 (6xxx, 7xxx)
+            LGA 1151 v2 (8xxx, 9xxx)
+            LGA 1200 (10xxx, 11xxx)
+            LGA 1700 (12xxx, 13xxx, 14xxx)
+            LGA 1851
+            LGA 2011
+            LGA 2011 v3
+            LGA 2066
+        AMD
+            Socket AM3/AM3+
+            Socket AM4
+            Socket AM5
+            Socket FM2/FM2+
+            Socket TR4
+        Notebook processzor
+    Memória
+        Asztali gép RAM
+            DDR1 RAM
+            DDR2 RAM
+            DDR3 RAM
+            DDR4 RAM
+            DDR5 RAM
+        Notebook RAM
+            DDR1 RAM
+            DDR2 RAM
+            DDR3 RAM
+            DDR4 RAM
+            DDR5 RAM
+    Videokártya
+        AMD Radeon
+            RX 9000 sorozat
+            RX 7000 sorozat
+            RX 6000 sorozat
+            RX 5000 sorozat
+            RX Vega / VII sorozat
+            RX 500/600 sorozat
+            RX 400 sorozat
+            300 sorozat (R5/R7/R9)
+            200 sorozat (R5/R7/R9)
+        NVIDIA GeForce
+            GeForce 50xx sorozat
+            GeForce 40xx sorozat
+            GeForce 30xx sorozat
+            GeForce 16xx sorozat
+            GeForce 20xx sorozat
+            GeForce 10xx sorozat
+            GeForce 9xx sorozat
+            GeForce 7xx sorozat
+            GeForce 6xx, 5xx, 4xx, 3xx, 2xx sorozat
+        Intel Arc
+        Professzionális videokártyák (Quadro, FireGL)
+        Notebook videókártya
+    SSD
+        M.2 NVMe SSD
+        2,5" SATA SSD
+        mSATA, M.2 SATA, IDE stb. SSD
+    HDD
+        Asztali merevlemez (3,5")
+        Notebook merevlemez (2,5")
+    Hálózati termék
+        Router
+        Switch
+        Repeater
+        Hálózati kártya (WIFI / LAN)
+            PCIe LAN kártya
+            PCIe WIFI kártya
+            USB WIFI / LAN
+        NAS
+        Antenna
+        Kábel, egyéb eszköz
+    Ház, táp
+        Számítógépház
+            Asztali ház
+            Mini ház
+        Tápegység
+            ATX
+            TFX
+            SFX
+            Flex ATX
+            Tápegység tartozékok
+            Szünetmentes táp, túlfeszültségvédelem
+    Hűtés
+        Vízhűtés
+            Komplett vízhűtés
+            Processzor, VGA, chipset, memória, egyéb blokk
+            Radiátor, szivattyú, cső, egyéb alkatrész
+        Léghűtés
+            Processzor hűtés
+            VGA hűtés
+            HDD, SSD, memória, chipset hűtés
+            Ventilátor
+            Ventilátor vezérlők
+            Paszta, thermal pad
+    Monitor
+        LCD
+            20" és kisebb
+            21"-26"
+            27" -31"
+            31,5”-34"
+            35" és nagyobb
+        OLED
+        Tartó, állvány, talp, alkatrész
+    Adathordozó
+        Pendrive
+        Memóriakártya
+            SD
+            Micro SD
+            CF, Memorystick, egyéb memóriakártya
+        Írható CD/DVD/BD
+        Egyéb adathordozó, tok, mappa, tároló
+    3D nyomtatás
+        3D nyomtató
+        Bérnyomtatás, szolgáltatás
+        Kellékanyagok
+        Alkatrészek
+    Nyomtató, szkenner
+        Nyomtató
+            Tintasugaras nyomtató
+            Lézernyomtató
+            Fotónyomtató
+            Mátrix nyomtató
+            Blokk és egyéb professzionális nyomtató
+        Szkenner
+        Multifunkciós eszköz
+        Kellékek, adapterek, tartozékok
+    Játékvezérlő, szimulátor
+        Komplett szimulátor (állvány + vezérlők)
+        Autós vezérlők
+            Szett (kormány + pedál)
+            Kormány, base, adapter
+            Váltó
+            Pedál
+            Óracsoport, műszerfal, kézifék, egyéb
+        Repülős vezérlők
+            HOTAS (flightdeck)
+            Yoke
+            Joystick, egyéb
+        Mobilos / PC kontroller
+        Állvány, tartó, ülés, egyéb
+    VR
+    Billentyűzet, egér
+        PC
+            Billentyűzet+egér szett
+                Vezetékes
+                Vezetéknélküli
+            Billentyűzet
+                Vezetékes
+                Vezetéknélküli
+                Kapcsoló, kupak, egyéb
+            Egér
+                Vezetékes
+                Vezetéknélküli
+                Egérpad, talp, egyéb tartozék
+        Apple
+    Egyéb hardver
+        Hangkártya
+            Belső hangkártya
+            Külső hangkártya
+            DAC
+        Mikrofonok
+        PC-s, multimédiás hangfal
+            2.0
+            2.1
+            Surround (5.1, 7.1, stb.)
+        Fejhallgató, fülhallgató
+            Fejhallgató
+            Fülhallgató
+        Optikai meghajtó
+            DVD-író és -olvasó
+            Blu-ray
+            CD-író és -olvasó
+        Webkamera
+        TV-tuner
+        Rajztábla
+        Modding termékek
+        Kábel, csatlakozó, átalakító, HUB
+        Egyéb hardverek
+Notebook
+    PC
+        10,9” alatti notebook
+        Subnotebook (11" - 12,5")
+        Könnyű notebook (13" - 14")
+        Asztali notebook (15" - 16")
+        Nagyméretű notebook (17"-tól)
+        Tartozék, alkatrész
+            Bontott notebook
+            Notebook SSD
+            Notebook HDD
+            Táskák, tokok
+            Akkumulátorok
+            Töltők
+            Dokkolók, HUB-ok
+            Billentyűzet
+            Egyéb tartozékok, alkatrészek
+            Notebook merevlemez (2,5")
+    Apple
+        MacBook
+        MacBook Air
+        MacBook Neo
+        MacBook Pro
+        Tartozék, alkatrész
+PC
+    Asztali gép
+        Komplett asztali PC
+            Intel processzor
+                AMD videókártya
+                NVIDIA videókártya
+                Intel Arc videokártya
+                Integrált, egyéb videókártya
+            AMD processzor
+                AMD videókártya
+                NVIDIA videókártya
+                Integrált, egyéb videókártya
+        Brand gép
+        Mini PC, HTPC
+        Ipari PC
+        Félkonfig
+    Apple Mac, iMac
+        Mac Mini
+        iMac
+            24" és kisebb
+            27" és nagyobb
+        Mac Pro, Studio
+    Kártyaméretű PC (Raspberry, stb.)
+    Bányászgép 
+    Szoftverek
+    Játékok
+        Fizikai játékok
+        Beváltható kulcs
+Mobil
+    iPhone
+        iPhone 17
+            iPhone 17
+            iPhone 17e
+            iPhone 17 Air
+            iPhone 17 Pro
+            iPhone 17 Pro Max
+        iPhone 16
+            iPhone 16
+            iPhone 16e
+            iPhone 16 Plus
+            iPhone 16 Pro
+            iPhone 16 Pro Max
+        iPhone 15
+            iPhone 15
+            iPhone 15 Plus
+            iPhone 15 Pro
+            iPhone 15 Pro Max
+        iPhone 14
+            iPhone 14
+            iPhone 14 Plus
+            iPhone 14 Pro
+            iPhone 14 Pro Max
+        iPhone 13
+            iPhone 13 Mini
+            iPhone 13
+            iPhone 13 Pro
+            iPhone 13 Pro Max
+        iPhone 12
+            iPhone 12 Mini
+            iPhone 12
+            iPhone 12 Pro
+            iPhone 12 Pro Max
+        iPhone 11
+            iPhone 11
+            iPhone 11 Pro
+            iPhone 11 Pro Max
+        iPhone SE
+            iPhone SE 3 (2022)
+            iPhone SE 2 (2020)
+            iPhone SE 1 (2016)
+        iPhone 2G-től 8-ig
+            iPhone 2G, 3G/3GS, 4/4S, 5/5C/5S, 6/6 Plus
+            iPhone 6S
+            iPhone 6S Plus
+            iPhone 7
+            iPhone 7 Plus
+            iPhone 8
+            iPhone 8 Plus
+        iPhone X sorozat
+            iPhone X
+            iPhone XS
+            iPhone XS Max
+            iPhone XR
+        Tartozékok, alkatrészek
+            Apple Airpods
+            Töltők, kábelek
+            Tokok, fóliák
+            Alkatrészek
+            Egyéb tartozékok
+    Android
+        Samsung
+            ReGalaxy
+            Galaxy S széria
+            Galaxy A széria
+            Galaxy Z széria
+            Galaxy Note széria
+            Galaxy J széria
+            Xcover és egyéb készülék
+        Xiaomi, Redmi, Poco
+            Xiaomi
+            Redmi
+            Poco
+            Black Shark
+        Honor
+        Huawei
+        Motorola
+        Google
+            Pixel 11
+            Pixel 10
+            Pixel 9
+            Pixel 8
+            Pixel 7
+            Pixel 6 és régebbi
+        OnePlus
+        Sony
+        LG
+        ASUS
+        Realme
+        Oppo
+        Nothing Phone
+        Vivo
+        További készülékek
+    Egyéb mobiltelefonok
+Tablet
+    Android tablet
+        7,9" alatt
+        8" - 9,9"
+        10" felett
+    Apple tablet 
+        iPad
+        iPad Mini
+        iPad Air
+        iPad Pro
+    Windows tablet
+    Tablet tartozék, alkatrész
+Okosóra
+    Androidos, egyéb
+        Samsung
+        Garmin
+        Amazfit
+        Huawei / Honor
+        Xiaomi / Redmi
+        Google / Fitbit
+        OnePlus
+        Polar
+        Egyéb gyártók
+    Apple Watch
+        Original / Series 1 & 2
+        Series 3
+        Series 4
+        SE 1 (2020)
+        Series 5
+        Series 6
+        Series 7
+        SE 2 (2022)
+        Series 8
+        Series 9
+        Series 10
+        SE 3 (2025)
+        Series 11
+        Ultra
+        Ultra 2
+        Ultra 3
+    Okosgyűrű
+    E-könyv olvasó
+    Tartozék alkatrész
+        Power bank
+        SIM kártya
+        Töltő, kábel
+        Fólia
+        Tok
+        Alkatrészek, egyéb tartozékok
+        Autós, biciklis tartó
+        Micro SD
+        VR
+        Fejhallgató, fülhallgató
+        Nyomkövető
+Konzol
+    PlayStation
+        PlayStation 1
+        PlayStation 2
+        PlayStation 3
+        PlayStation 4
+        PlayStation 5
+        PSP, PS Vita
+        PlayStation Portal
+    Xbox
+        Xbox Classic
+        Xbox360
+        Xbox One
+        Xbox Series
+    Nintendo
+        Nintendo Wii
+        Nintendo Wii U
+        Nintendo Switch
+        Nintendo Switch 2
+        Gameboy, DS, 2DS, 3DS
+    Steam
+    ASUS ROG
+    Lenovo
+    MSI Claw
+    VR
+TV, rádió
+    TV, projektor
+        LED, QLED, LCD TV
+            40" és kisebb
+            42-50"
+            55-60"
+            65-70"
+            75" és nagyobb
+        OLED TV
+            50" és kisebb
+            55-60"
+            65-70"
+            75" és nagyobb
+        Projektor
+            LED
+            Lámpás
+            Lézer
+        Plazma TV
+        Hagyományos TV
+        TV-vevő, beltéri egység, antenna
+        TV-állvány, tartozék
+    Erősítő, hangfal
+        HiFi, házimozi
+            Mini HiFi (HiFi torony)
+            Házimozi rendszer
+            Erősítők
+            Hangfalak
+            Komponens szett (erősítő + hangfalak)
+        Hangprojektor, soundbar
+        PC-s, multimédiás hangfal
+            2.0
+            2.1
+            Surround (5.1, 7.1, stb.)
+        Stúdió monitor, hangosítás, PA
+        Mélyláda, subwoofer
+        Hordozható hangszóró
+        Hangszóró, egyéb alkatrész
+    Fejhallgató, fülhallgató
+        Fejhallgató
+            PC, gamer, mikrofonos fejhallgató
+            Hi-Fi fejhallgatók
+        Fülhallgató
+            vezetékes
+            vezetéknélküli
+                Apple AirPods
+                Xiaomi
+                Samsung
+                Huawei / Honor
+                JBL
+                Sony
+                Sennheiser
+                Nothing
+                Egyéb
+    Kábel, átalakító, tartozék
+    Médialejátszó
+        Médialejátszó, Apple TV
+            Apple TV
+            Médialejátszók
+            DVD- és BD-lejátszók
+        CD lejátszó, deck, rádió, magnó, videómagnó
+        Lemezjátszók
+        Hordozható lejátszó (MP3/MP4, CD)
+    DAC, külső hangkártya
+    DJ, studio cuccok
+    Autó HiFi
+    Mikrofon
+    Hangszer
+    Filmek, zenék
+        Filmek (DVD)
+        Filmek (Blu ray)
+        Zenék (CD)
+        VHS, kazetta, LP, egyéb
+    Egyéb szórakoztató elektronika
+Fotó-videó 
+    Tartozékok, alkatrészek
+        Akkumulátor, töltő
+        Vaku, távkioldó, világítás
+        Állvány
+        Táska, tok
+        Markolatok
+        Egyéb kiegészítő
+    Fotó
+        Digitális gépek
+            Cserélhető objektíves gépek
+                DSLR
+                MILC
+            Kompakt digitális gépek
+                Kompakt
+                Bridge
+        Objektívek
+            Nikon F
+            Nikon Z
+            Canon EF/EF-S/EF-M
+            Canon RF
+            Sony E
+            Sony A
+            Fujifilm X
+            Micro 4/3
+            L-Mount
+            Pentax K, Q
+            M42
+            Egyéb objektív, előtétlencse
+            Szűrők
+        Filmes gépek
+            Kompakt gépek
+            Cserélhető objektíves (SLR) gépek
+    Videó
+Szerver
+    Komplett szerver
+    Szerver RAM
+    Szerver alaplap
+    Szerver processzor
+    Szerver SSD, HDD
+    Szerver ház, rack
+    Szerver tápegység
+    Szerver szünetmentes táp
+    Szerver hálózati eszközök
+    Vezérlőkártya (RAID, SAS, stb.)
+Drónok
+Retró
+Egyéb 
+
+ 
+
