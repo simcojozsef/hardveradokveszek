@@ -7872,7 +7872,7 @@ button { cursor: pointer; }
 
 /* Extended search  */
 
-* Add these rules to the stylesheet that contains .home-hero__search. */
+/* Add these rules to the stylesheet that contains .home-hero__search. */
 .home-hero__extended-toggle {
     display: inline-grid;
     flex: 0 0 auto;
