@@ -1,463 +1,214 @@
-import React, {
-    useEffect,
-    useState,
-} from 'react';
-
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router';
 import Hero from '../components/Hero';
-
-function formatPrice(value) {
-    return `${Number(value || 0).toLocaleString(
-        'hu-HU',
-    )} Ft`;
+import useMarketplaceSearch from '../hooks/useMarketplaceSearch';
+import { getTopCategories } from '../api/categories';
+import { getCategoryIcon } from '../utils/categoryIcons';
+function isOtherCategory(category) {
+    const name = String(category?.name ?? '')
+        .trim()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase();
+    return name === 'egyeb' || name.startsWith('egyeb ');
 }
-
-function getStockLabel(stock) {
-    const quantity = Number(stock);
-
-    if (quantity <= 0) {
-        return 'Elfogyott';
-    }
-
-    if (quantity === 1) {
-        return '1 db elérhető';
-    }
-
-    return `${quantity} db elérhető`;
-}
-
-function getStockClass(stock) {
-    const quantity = Number(stock);
-
-    if (quantity <= 0) {
-        return 'home-product-card__stock home-product-card__stock--empty';
-    }
-
-    if (quantity <= 2) {
-        return 'home-product-card__stock home-product-card__stock--low';
-    }
-
-    return 'home-product-card__stock';
-}
-
 export default function Home() {
-    const [search, setSearch] =
-        useState('');
-
-    const [submittedSearch, setSubmittedSearch] =
-        useState('');
-
-    const [products, setProducts] =
-        useState([]);
-
-    const [pagination, setPagination] =
-        useState(null);
-
-    const [loading, setLoading] =
-        useState(true);
-
-    const [error, setError] =
-        useState('');
-
-    const [page, setPage] =
-        useState(1);
-
-    async function loadProducts(
-        currentPage = 1,
-        currentSearch = submittedSearch,
-    ) {
-        try {
-            setLoading(true);
-            setError('');
-
-            const params =
-                new URLSearchParams();
-
-            params.set(
-                'page',
-                currentPage,
-            );
-
-            params.set(
-                'per_page',
-                '24',
-            );
-
-            if (currentSearch.trim()) {
-                params.set(
-                    'search',
-                    currentSearch.trim(),
-                );
-            }
-
-            const response =
-                await fetch(
-                    `/api/products?${params.toString()}`,
-                    {
-                        headers: {
-                            Accept:
-                                'application/json',
-                        },
-                    },
-                );
-
-            if (!response.ok) {
-                throw new Error(
-                    'Nem sikerült betölteni a termékeket.',
-                );
-            }
-
-            const data =
-                await response.json();
-
-            setProducts(
-                Array.isArray(data.data)
-                    ? data.data
-                    : [],
-            );
-
-            setPagination(
-                data.meta ?? null,
-            );
-        } catch (err) {
-            console.error(
-                'HOME PRODUCTS ERROR:',
-                err,
-            );
-
-            setError(
-                err.message ||
-                    'Hiba történt a termékek betöltése közben.',
-            );
-
-            setProducts([]);
-            setPagination(null);
-        } finally {
-            setLoading(false);
-        }
-    }
-
+    const { search, setSearch, filters, setFilters, products, pagination, loading, error,
+        page, submittedSearch, hasFilters, handleSearch, handleClearSearch, handlePageChange,
+        retryProducts } = useMarketplaceSearch();
+    const [topCategories, setTopCategories] = useState([]);
     useEffect(() => {
-        loadProducts(1, '');
+        let cancelled = false;
+        async function loadTopCategories() {
+            try {
+                const response = await getTopCategories();
+                const categories = Array.isArray(response?.data)
+                    ? [...response.data]
+                    : [];
+                categories.sort((a, b) => {
+                    const aIsOther = isOtherCategory(a);
+                    const bIsOther = isOtherCategory(b);
+                    return aIsOther === bIsOther ? 0 : aIsOther ? 1 : -1;
+                });
+                if (!cancelled) setTopCategories(categories);
+            } catch (categoryError) {
+                console.error('HOME CATEGORIES ERROR:', categoryError);
+                if (!cancelled) setTopCategories([]);
+            }
+        }
+        loadTopCategories();
+        return () => {
+            cancelled = true;
+        };
     }, []);
-
-    function handleSearch(event) {
-        event?.preventDefault();
-
-        setSubmittedSearch(search);
-        setPage(1);
-
-        loadProducts(
-            1,
-            search,
-        );
-    }
-
-    function handleClearSearch() {
-        setSearch('');
-        setSubmittedSearch('');
-        setPage(1);
-
-        loadProducts(
-            1,
-            '',
-        );
-    }
-
-    function handlePageChange(
-        newPage,
-    ) {
-        setPage(newPage);
-
-        loadProducts(
-            newPage,
-            submittedSearch,
-        );
-
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth',
-        });
-    }
-
     return (
-        <main className="home-page">
+        <main className="page category-page">
             <Hero
                 search={search}
                 setSearch={setSearch}
                 onSearch={handleSearch}
+                filters={filters}
+                setFilters={setFilters}
             />
-
-            <section className="home-products">
-                <div id="home-products__inner" className="home-products__inner">
-
-                    <div className="home-products__header">
-                        <div>
-
-                            <h2>
-                                {submittedSearch
-                                    ? `Találatok erre: „${submittedSearch}”`
-                                    : 'Termékek'}
-                            </h2>
-
-                            {!loading &&
-                                !error &&
-                                pagination && (
-                                    <p className="home-products__subtitle">
-                                        {Number(
-                                            pagination.total ||
-                                                0,
-                                        ).toLocaleString(
-                                            'hu-HU',
-                                        )}{' '}
-                                        aktív termék
-                                    </p>
-                                )}
-                        </div>
-
-                        {!loading &&
-                            !error &&
-                            pagination && (
-                                <div className="home-products__count">
-                                    <strong>
-                                        {Number(
-                                            pagination.total ||
-                                                0,
-                                        ).toLocaleString(
-                                            'hu-HU',
-                                        )}
-                                    </strong>
-
-                                    <span>
-                                        termék
-                                    </span>
-                                </div>
-                            )}
+            {topCategories.length > 0 && (
+                <nav className="category-main-nav" aria-label="Fő kategóriák">
+                    {topCategories.map((category) => (
+                        <Link
+                            key={category.id}
+                            to={`/${category.slug}`}
+                            className="category-main-nav__item"
+                        >
+                            <img
+                                src={getCategoryIcon(category.icon, category.icon_key)}
+                                alt=""
+                            />
+                            <span>{category.name}</span>
+                        </Link>
+                    ))}
+                </nav>
+            )}
+            <section className="category-browser">
+                <div className="category-browser__header">
+                    <div>
+                        <p className="eyebrow">Kategóriák</p>
                     </div>
-
-                    {error && (
-                        <div className="home-products__state home-products__state--error">
-                            <div className="home-products__state-icon">
-                                !
-                            </div>
-
-                            <strong>
-                                Nem sikerült betölteni a
-                                termékeket.
-                            </strong>
-
-                            <p>
-                                {error}
-                            </p>
-
+                </div>
+                <div className="category-grid">
+                    {topCategories.map((category) => (
+                        <Link
+                            key={category.id}
+                            to={`/${category.slug}`}
+                            className="category-tile"
+                        >
+                            <img
+                                src={getCategoryIcon(category.icon, category.icon_key)}
+                                alt=""
+                            />
+                            <span>{category.name}</span>
+                            <span className="category-tile__arrow" aria-hidden="true">→</span>
+                        </Link>
+                    ))}
+                </div>
+            </section>
+            <section className="category-products">
+                <div className="section-heading">
+                    <div>
+                        <p className="eyebrow">Termékek</p>
+                        <h2 className="category-products__title">
+                            {submittedSearch
+                                ? `Találatok erre: „${submittedSearch}”`
+                                : 'Termékek'}
+                        </h2>
+                    </div>
+                    {!loading && !error && pagination && (
+                        <span>
+                            {Number(pagination.total || 0).toLocaleString('hu-HU')} találat
+                        </span>
+                    )}
+                </div>
+                {hasFilters && <button type="button" className="secondary-button" onClick={handleClearSearch}>Szűrők törlése</button>}
+                {error && (
+                    <div className="category-empty" role="alert">
+                        <strong>{error}</strong>
+                        <button
+                            type="button"
+                            className="button"
+                            onClick={retryProducts}
+                        >
+                            Újrapróbálás
+                        </button>
+                    </div>
+                )}
+                {loading && !error && (
+                    <div className="category-empty" role="status">
+                        <strong>Termékek betöltése...</strong>
+                    </div>
+                )}
+                {!loading && !error && products.length === 0 && (
+                    <div className="category-empty">
+                        <strong>Nincs találat.</strong>
+                        {hasFilters && (
                             <button
                                 type="button"
-                                className="button"
-                                onClick={() =>
-                                    loadProducts(
-                                        page,
-                                        submittedSearch,
-                                    )
-                                }
+                                className="secondary-button"
+                                onClick={handleClearSearch}
                             >
-                                Újrapróbálás
+                                Összes termék
                             </button>
-                        </div>
-                    )}
-
-                    {loading && !error && (
-                        <div className="home-products__state">
-                            <div className="home-products__spinner" />
-
-                            <strong>
-                                Termékek betöltése...
-                            </strong>
-
-                            <p>
-                                Egy pillanat.
-                            </p>
-                        </div>
-                    )}
-
-                    {!loading &&
-                        !error &&
-                        products.length === 0 && (
-                            <div className="home-products__state">
-                                <div className="home-products__state-icon">
-                                    🔎
-                                </div>
-
-                                <strong>
-                                    Nincs találat.
-                                </strong>
-
-                                <p>
-                                    Nem találtunk a
-                                    keresésednek megfelelő
-                                    aktív terméket.
-                                </p>
-
-                                {submittedSearch && (
-                                    <button
-                                        type="button"
-                                        className="secondary-button"
-                                        onClick={
-                                            handleClearSearch
-                                        }
-                                    >
-                                        Összes termék
-                                    </button>
-                                )}
-                            </div>
                         )}
+                    </div>
+                )}
+                {!loading && !error && products.length > 0 && (
+                    <>
+                        <div className="product-grid">
+                            {products.map((product) => (
+                                <Link
+                                    key={product.id}
+                                    to={`/product/${product.id}`}
+                                    className="category-product-card"
+                                >
+                                    <div className="category-product-card__image">
+                                        {product.image ? (
+                                            <img
+                                                src={product.image}
+                                                alt={product.name}
+                                                loading="lazy"
+                                            />
+                                        ) : (
+                                            <span>Nincs kép</span>
+                                        )}
+                                    </div>
+                                    <div className="category-product-card__body">
+                                        <h3>{product.name}</h3>
+                                        {product.store && (
+                                            <span className="category-product-card__store">
+                                                {product.store.name}
 
-                    {!loading &&
-                        !error &&
-                        products.length > 0 && (
-                            <>
-                                <div className="home-product-grid">
-                                    {products.map(
-                                        (product) => (
-                                            <a
-                                                key={
-                                                    product.id
-                                                }
-                                                href={`/product/${product.id}`}
-                                                className="home-product-card"
-                                            >
-                                                <div className="home-product-card__image">
-                                                    {product.image ? (
-                                                        <img
-                                                            src={
-                                                                product.image
-                                                            }
-                                                            alt={
-                                                                product.name
-                                                            }
-                                                            loading="lazy"
-                                                        />
-                                                    ) : (
-                                                        <div className="home-product-card__no-image">
-                                                            <span>
-                                                                📦
-                                                            </span>
-
-                                                            <small>
-                                                                Nincs kép
-                                                            </small>
-                                                        </div>
-                                                    )}
+                                                <span className="product-store-rating">
+                                                    <span
+                                                        className="product-store-rating__positive"
+                                                        aria-label="Pozitív értékelések"
+                                                    >
+                                                        +{Number(product.store.positive_ratings_count ?? 0)}
+                                                    </span>
 
                                                     <span
-                                                        className={getStockClass(
-                                                            product.stock,
-                                                        )}
+                                                        className="product-store-rating__negative"
+                                                        aria-label="Negatív értékelések"
                                                     >
-                                                        {getStockLabel(
-                                                            product.stock,
-                                                        )}
+                                                        −{Number(product.store.negative_ratings_count ?? 0)}
                                                     </span>
-                                                </div>
-
-                                                <div className="home-product-card__body">
-                                                    {product.store && (
-                                                        <div className="home-product-card__store">
-                                                            <span>
-                                                                🏪
-                                                            </span>
-
-                                                            <span>
-                                                                {
-                                                                    product
-                                                                        .store
-                                                                        .name
-                                                                }
-                                                            </span>
-                                                        </div>
-                                                    )}
-
-                                                    <h3>
-                                                        {
-                                                            product.name
-                                                        }
-                                                    </h3>
-
-                                                    {product.description && (
-                                                        <p className="home-product-card__description">
-                                                            {
-                                                                product.description
-                                                            }
-                                                        </p>
-                                                    )}
-
-                                                    <div className="home-product-card__footer">
-                                                        <strong>
-                                                            {formatPrice(
-                                                                product.price,
-                                                            )}
-                                                        </strong>
-
-                                                        <span className="home-product-card__arrow">
-                                                            →
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                        ),
-                                    )}
-                                </div>
-
-                                {pagination &&
-                                    Number(
-                                        pagination.last_page,
-                                    ) > 1 && (
-                                        <nav className="home-pagination">
-                                            <button
-                                                type="button"
-                                                disabled={
-                                                    page <=
-                                                    1
-                                                }
-                                                onClick={() =>
-                                                    handlePageChange(
-                                                        page -
-                                                            1,
-                                                    )
-                                                }
-                                            >
-                                                ← Előző
-                                            </button>
-
-                                            <span>
-                                                {page}{' '}
-                                                /{' '}
-                                                {
-                                                    pagination.last_page
-                                                }
+                                                </span>
                                             </span>
-
-                                            <button
-                                                type="button"
-                                                disabled={
-                                                    page >=
-                                                    Number(
-                                                        pagination.last_page,
-                                                    )
-                                                }
-                                                onClick={() =>
-                                                    handlePageChange(
-                                                        page +
-                                                            1,
-                                                    )
-                                                }
-                                            >
-                                                Következő →
-                                            </button>
-                                        </nav>
-                                    )}
-                            </>
+                                        )}
+                                        <strong>
+                                            {Number(product.price || 0).toLocaleString('hu-HU')} Ft
+                                        </strong>
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+                        {pagination && Number(pagination.last_page) > 1 && (
+                            <nav className="home-pagination" aria-label="Termékoldalak">
+                                <button
+                                    type="button"
+                                    disabled={page <= 1}
+                                    onClick={() => handlePageChange(page - 1)}
+                                >
+                                    ← Előző
+                                </button>
+                                <span>{page} / {pagination.last_page}</span>
+                                <button
+                                    type="button"
+                                    disabled={page >= Number(pagination.last_page)}
+                                    onClick={() => handlePageChange(page + 1)}
+                                >
+                                    Következő →
+                                </button>
+                            </nav>
                         )}
-
-                </div>
+                    </>
+                )}
             </section>
         </main>
     );

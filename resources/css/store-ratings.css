@@ -1,0 +1,23 @@
+/* Append this block to the end of app.css. */
+.store-rating { margin-top: 12px; }
+.store-rating__row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.store-rating__label { margin-right: 2px; color: #475569; font-size: .875rem; font-weight: 600; }
+.store-rating .store-rating__score {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 52px; min-height: 38px; margin: 0; padding: 6px 12px;
+    border: 1px solid; border-radius: 9px; font: inherit;
+    font-size: .9rem; font-weight: 700; line-height: 1.25; box-sizing: border-box;
+}
+.store-rating .store-rating__score--positive { color: #047857; background: #ecfdf5; border-color: #a7f3d0; }
+.store-rating .store-rating__score--negative { color: #be123c; background: #fff1f2; border-color: #fecdd3; }
+.store-rating button.store-rating__score { cursor: pointer; transition: box-shadow .15s ease; }
+.store-rating button.store-rating__score:hover:not(:disabled) { box-shadow: 0 2px 8px rgb(15 23 42 / 12%); }
+.store-rating button.store-rating__score[aria-pressed="true"] { box-shadow: inset 0 0 0 2px currentColor; }
+.store-rating button.store-rating__score:disabled { cursor: default; }
+.store-rating button.store-rating__score:focus-visible { outline: 3px solid #0f766e; outline-offset: 3px; }
+.store-rating .store-rating__hint, .store-rating .store-rating__error { margin: 8px 0 0; font-size: .8rem; line-height: 1.5; }
+.store-rating .store-rating__hint { color: #64748b; }
+.store-rating .store-rating__error { color: #be123c; }
+.store-rating--compact { margin: 0; display: inline-block; }
+.store-rating--compact .store-rating__score { min-width: 38px; min-height: 28px; padding: 3px 8px; font-size: .8rem; }
+.product-store-line { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }

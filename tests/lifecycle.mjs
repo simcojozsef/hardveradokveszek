@@ -1,0 +1,15 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+const url = new URL('../resources/js/utils/productLifecycle.js', import.meta.url);
+const code = await readFile(url, 'utf8');
+const { listingStatus, formatListingDate } = await import(`data:text/javascript;base64,${Buffer.from(code).toString('base64')}`);
+const now = Date.parse('2026-10-01T12:00:00Z');
+assert.equal(listingStatus({ listing_status: 'in_progress', expires_at: '2026-10-01T12:00:01Z' }, now), 'in_progress');
+assert.equal(listingStatus({ listing_status: 'in_progress', expires_at: '2026-10-01T12:00:00Z' }, now), 'expired');
+assert.equal(listingStatus({ listing_status: 'sold', expires_at: '2026-01-01T12:00:00Z' }, now), 'sold');
+assert.equal(listingStatus({ listing_status: 'removed' }, now), 'removed');
+assert.equal(formatListingDate(null), '');
+assert.equal(formatListingDate('invalid'), '');
+assert.match(formatListingDate('2026-10-01T12:00:00Z'), /14:00/);
+assert.match(formatListingDate('2026-01-01T12:00:00Z'), /13:00/);
+console.log('PASS: expiry boundary, terminal states, invalid dates and Budapest summer/winter time');

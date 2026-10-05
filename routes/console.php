@@ -8,5 +8,5 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-Schedule::command('orders:expire-buyer-confirmations')
-    ->hourly();
+Schedule::command('orders:expire-buyer-confirmations')->hourly();
+Schedule::command('products:expire')->everyMinute()->withoutOverlapping();

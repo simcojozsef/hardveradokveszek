@@ -1,0 +1,29 @@
+.product-filter-fields__checks,
+.product-filter-fields__shipping {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 20px;
+    margin: 16px 0;
+}
+
+.product-filter-fields__check {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.product-filter-fields__check input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+}
+
+.product-filter-fields .form-field select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    font: inherit;
+}
+
+.product-form .form-error {
+    white-space: pre-line;
+}

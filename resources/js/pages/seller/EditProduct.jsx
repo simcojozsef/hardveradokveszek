@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router';
+import { getCategoryTree } from '../../api/categories';
+import SellerProductStatus from '../../components/SellerProductStatus';
+import CategoryPicker from '../../components/CategoryPicker';
+import { categoryIdsFromProduct } from '../../utils/categoryPicker';
 import {
     getProduct,
     updateProduct,
@@ -8,99 +12,99 @@ import {
     uploadProductImage,
     deleteProductImage,
 } from '../../api/seller';
-
-
+import ProductFilterFields from '../../components/ProductFilterFields';
+import { EMPTY_PRODUCT_FILTERS, productFiltersFromApi, productFilterPayload, formatApiError } from '../../utils/productFilters';
 export default function EditProduct() {
     const { id } = useParams();
-
+    const [categories, setCategories] = useState([]);
     const [product, setProduct] = useState(null);
-
     const [form, setForm] = useState({
+        ...EMPTY_PRODUCT_FILTERS,
         name: '',
         description: '',
         price: '',
         stock: '',
+        category_ids: [],
     });
-
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
-
     const [images, setImages] = useState([]);
     const [imageLoading, setImageLoading] = useState(true);
     const [imageError, setImageError] = useState('');
-
     const [newGalleryFiles, setNewGalleryFiles] = useState([]);
     const [uploadingImages, setUploadingImages] = useState(false);
-
     useEffect(() => {
         async function loadData() {
             try {
-                const [productResponse, imageResponse] =
+                const [productResponse, imageResponse, categoryResponse] =
                     await Promise.all([
                         getProduct(id),
                         getProductImages(id),
+                        getCategoryTree(),
                     ]);
-
                 const data = productResponse.data;
-
                 setProduct(data);
-
                 setForm({
+                    ...productFiltersFromApi(data),
+                    category_ids: categoryIdsFromProduct(data),
                     name: data.name ?? '',
                     description: data.description ?? '',
                     price: data.price ?? '',
                     stock: data.stock ?? '',
                 });
-
                 setImages(imageResponse.data);
+                setCategories(categoryResponse.data ?? []);
             } catch (err) {
-                setError(err.message);
+                setError(formatApiError(err));
             } finally {
                 setLoading(false);
                 setImageLoading(false);
             }
         }
-
         loadData();
     }, [id]);
-
     function handleChange(event) {
         setForm((current) => ({
             ...current,
-            [event.target.name]: event.target.value,
+            [event.target.name]: event.target.type === 'checkbox' ? event.target.checked : event.target.value,
         }));
     }
-
     async function handleSubmit(event) {
         event.preventDefault();
-
+        if (submitting) return;
+        if (!form.category_ids.length) {
+            setError('Válassz legalább egy kategóriát.');
+            return;
+        }
+        if (form.shipping_available && form.shipping_methods.length === 0) {
+            setError('Válassz legalább egy csomagküldési módot.');
+            return;
+        }
         setSubmitting(true);
         setError('');
         setSuccess('');
-
         try {
             const response = await updateProduct(id, {
+                ...productFilterPayload(form),
+                category_ids: form.category_ids,
                 name: form.name,
                 description: form.description,
                 price: Number(form.price),
                 stock: Number(form.stock),
             });
-
             setProduct((current) => ({
                 ...current,
                 ...response.data,
             }));
-
             setSuccess('A termék sikeresen frissítve.');
         } catch (err) {
-            setError(err.message);
+            setError(formatApiError(err));
         } finally {
             setSubmitting(false);
         }
     }
-
     if (loading) {
         return (
             <div className="seller-page">
@@ -108,12 +112,10 @@ export default function EditProduct() {
             </div>
         );
     }
-
     if (!product) {
         return (
             <div className="seller-page">
                 <h1>Termék nem található</h1>
-
                 <Link
                     to="/seller/products"
                     className="button"
@@ -123,13 +125,9 @@ export default function EditProduct() {
             </div>
         );
     }
-
-
-
     async function handleSetPrimary(image) {
         try {
             setImageError('');
-
             const response = await updateProductImage(
                 image.id,
                 {
@@ -137,7 +135,6 @@ export default function EditProduct() {
                     isPrimary: true,
                 },
             );
-
             setImages((current) =>
                 current.map((item) => ({
                     ...item,
@@ -145,50 +142,39 @@ export default function EditProduct() {
                         item.id === image.id,
                 })),
             );
-
             return response;
         } catch (err) {
             setImageError(err.message);
         }
     }
-
     async function moveImage(image, direction) {
         const sorted = [...images].sort(
             (a, b) => a.sort_order - b.sort_order,
         );
-
         const index = sorted.findIndex(
             (item) => item.id === image.id,
         );
-
         const newIndex = index + direction;
-
         if (
             newIndex < 0 ||
             newIndex >= sorted.length
         ) {
             return;
         }
-
         const other = sorted[newIndex];
-
         try {
             setImageError('');
-
             await Promise.all([
                 updateProductImage(image.id, {
                     sortOrder: other.sort_order,
                     isPrimary: image.is_primary,
                 }),
-
                 updateProductImage(other.id, {
                     sortOrder: image.sort_order,
                     isPrimary: other.is_primary,
                 }),
             ]);
-
             const reordered = [...sorted];
-
             [
                 reordered[index],
                 reordered[newIndex],
@@ -196,48 +182,34 @@ export default function EditProduct() {
                 reordered[newIndex],
                 reordered[index],
             ];
-
             setImages(
-                reordered.map((item, position) => ({
+                reordered.map((item) => ({
                     ...item,
-                    sort_order: position,
+                    sort_order: item.id === image.id ? other.sort_order : item.id === other.id ? image.sort_order : item.sort_order,
                 })),
             );
         } catch (err) {
             setImageError(err.message);
         }
     }
-
-
     async function handleDeleteImage(image) {
         const confirmed = window.confirm(
             `Biztosan törölni szeretnéd ezt a képet?`,
         );
-
         if (!confirmed) {
             return;
         }
-
         try {
             setImageError('');
-
             await deleteProductImage(image.id);
-
             setImages((current) =>
                 current
-                    .filter(
-                        (item) => item.id !== image.id,
-                    )
-                    .map((item, index) => ({
-                        ...item,
-                        sort_order: index,
-                    })),
+                    .filter((item) => item.id !== image.id),
             );
         } catch (err) {
             setImageError(err.message);
         }
     }
-
     return (
         <div className="seller-page">
             <div className="seller-page__header">
@@ -245,7 +217,6 @@ export default function EditProduct() {
                     <p className="eyebrow">Termékek</p>
                     <h1>Szerkesztés</h1>
                 </div>
-
                 <Link
                     to="/seller/products"
                     className="secondary-button"
@@ -253,7 +224,13 @@ export default function EditProduct() {
                     ← Vissza
                 </Link>
             </div>
-
+            <section className="dashboard-card">
+                <h2>Hirdetés állapota</h2>
+                <SellerProductStatus key={product.id} product={product}
+                    onChange={(updated) => setProduct((current) => ({ ...current, ...updated }))}
+                    disabled={submitting} />
+                <p>A szerkesztés nem hosszabbítja meg a 60 napos érvényességet.</p>
+            </section>
             <form
                 className="product-form"
                 onSubmit={handleSubmit}
@@ -263,27 +240,16 @@ export default function EditProduct() {
                         {error}
                     </div>
                 )}
-
                 {success && (
                     <div className="form-success">
                         {success}
                     </div>
                 )}
-
-
-
-
-
-
-
-
                 <section className="dashboard-card">
                     <h2>Termékadatok</h2>
-
                     <div className="form-grid">
                         <label className="form-field form-field--full">
                             <span>Termék neve</span>
-
                             <input
                                 type="text"
                                 name="name"
@@ -292,10 +258,8 @@ export default function EditProduct() {
                                 required
                             />
                         </label>
-
                         <label className="form-field form-field--full">
                             <span>Leírás</span>
-
                             <textarea
                                 name="description"
                                 value={form.description}
@@ -303,10 +267,11 @@ export default function EditProduct() {
                                 rows={7}
                             />
                         </label>
-
+                        <CategoryPicker categories={categories} value={form.category_ids}
+                            onChange={(category_ids) => setForm((current) => ({ ...current, category_ids }))}
+                            disabled={submitting} required />
                         <label className="form-field">
                             <span>Ár (Ft)</span>
-
                             <input
                                 type="number"
                                 name="price"
@@ -317,10 +282,8 @@ export default function EditProduct() {
                                 required
                             />
                         </label>
-
                         <label className="form-field">
                             <span>Készlet</span>
-
                             <input
                                 type="number"
                                 name="stock"
@@ -333,7 +296,7 @@ export default function EditProduct() {
                         </label>
                     </div>
                 </section>
-
+                <ProductFilterFields form={form} setForm={setForm} trustedSeller={product.store?.is_trusted_seller} />
                 <section className="dashboard-card">
     <div className="dashboard-card__header">
         <div>
@@ -341,13 +304,11 @@ export default function EditProduct() {
             <h2>Termék képei</h2>
         </div>
     </div>
-
     {imageError && (
         <div className="form-error">
             {imageError}
         </div>
     )}
-
     {imageLoading ? (
         <p>Képek betöltése...</p>
     ) : images.length === 0 ? (
@@ -371,19 +332,16 @@ export default function EditProduct() {
                                 alt=""
                             />
                         </div>
-
                         <div className="image-manager__info">
                             <strong>
                                 {image.is_primary
                                     ? 'Kiemelt kép'
                                     : `Galéria ${index}`}
                             </strong>
-
                             <span>
                                 Sorrend: {image.sort_order}
                             </span>
                         </div>
-
                         <div className="image-manager__actions">
                             {!image.is_primary && (
                                 <button
@@ -397,7 +355,6 @@ export default function EditProduct() {
                                     Kiemelés
                                 </button>
                             )}
-
                             <button
                                 type="button"
                                 disabled={index === 0}
@@ -410,7 +367,6 @@ export default function EditProduct() {
                             >
                                 ↑
                             </button>
-
                             <button
                                 type="button"
                                 disabled={
@@ -426,7 +382,6 @@ export default function EditProduct() {
                             >
                                 ↓
                             </button>
-
                             <label className="secondary-button">
                                 Kép cseréje
                                 <input
@@ -436,11 +391,9 @@ export default function EditProduct() {
                                     onChange={async (event) => {
                                         const file =
                                             event.target.files?.[0];
-
                                         if (!file) {
                                             return;
                                         }
-
                                         try {
                                             await updateProductImage(
                                                 image.id,
@@ -452,12 +405,10 @@ export default function EditProduct() {
                                                     file,
                                                 },
                                             );
-
                                             const updated =
                                                 await getProductImages(
                                                     id,
                                                 );
-
                                             setImages(
                                                 updated.data,
                                             );
@@ -466,13 +417,11 @@ export default function EditProduct() {
                                                 err.message,
                                             );
                                         }
-
                                         event.target.value =
                                             '';
                                     }}
                                 />
                             </label>
-
                             <button
                                 type="button"
                                 className="danger-button"
@@ -490,14 +439,9 @@ export default function EditProduct() {
         </div>
     )}
 </section>
-
-
-
-
 <div className="image-manager__upload">
     <label className="secondary-button">
         + Galéria képek hozzáadása
-
         <input
             type="file"
             accept="image/jpeg,image/png,image/webp"
@@ -512,7 +456,6 @@ export default function EditProduct() {
             }}
         />
     </label>
-
     {newGalleryFiles.length > 0 && (
         <button
             type="button"
@@ -522,10 +465,8 @@ export default function EditProduct() {
                 try {
                     setUploadingImages(true);
                     setImageError('');
-
-                    const startingOrder =
-                        images.length;
-
+                    const startingOrder = images.length
+                        ? Math.max(...images.map((image) => Number(image.sort_order))) + 1 : 0;
                     for (
                         let index = 0;
                         index < newGalleryFiles.length;
@@ -542,10 +483,8 @@ export default function EditProduct() {
                             },
                         );
                     }
-
                     const updated =
                         await getProductImages(id);
-
                     setImages(updated.data);
                     setNewGalleryFiles([]);
                 } catch (err) {
@@ -563,10 +502,6 @@ export default function EditProduct() {
         </button>
     )}
 </div>
-
-
-
-
                 <div className="product-form__actions">
                     <Link
                         to="/seller/products"
@@ -574,7 +509,6 @@ export default function EditProduct() {
                     >
                         Mégse
                     </Link>
-
                     <button
                         type="submit"
                         className="seller-button"

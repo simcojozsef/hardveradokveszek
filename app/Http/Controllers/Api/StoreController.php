@@ -50,6 +50,8 @@ class StoreController extends Controller
             'slug' => $slug,
             'description' => $request->input('description'),
             'logo' => $request->input('logo'),
+            'contact_phone' => $request->input('contact_phone'),
+            'contact_email' => $request->input('contact_email'),
             'is_active' => $request->boolean('is_active', true),
         ]);
 

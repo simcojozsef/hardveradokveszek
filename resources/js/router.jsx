@@ -37,6 +37,9 @@ import SellerLayout from './layouts/seller/SellerLayout';
 import Marketplace from './pages/Marketplace';
 import Category from './pages/Category';
 
+import SellerChats from './pages/seller/SellerChats';
+import BuyerMessages from './pages/buyer/Messages';
+
 
 export const router = createBrowserRouter([
     {
@@ -106,6 +109,10 @@ export const router = createBrowserRouter([
                         path: 'orders',
                         element: <SellerOrders />,
                     },
+                    {
+                        path: 'chats',
+                        element: <SellerChats />,
+                    },
                 ],
             },
             {
@@ -129,6 +136,14 @@ export const router = createBrowserRouter([
                 element: (
                     <ProtectedRoute roles={['buyer']}>
                         <BuyerCheckout />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: '/buyer/messages',
+                element: (
+                    <ProtectedRoute roles={['buyer']}>
+                        <BuyerMessages />
                     </ProtectedRoute>
                 ),
             },

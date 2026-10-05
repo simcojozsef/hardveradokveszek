@@ -1,54 +1,43 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
-
 import {
     createProduct,
     getMyStore,
     uploadProductImage,
 } from '../../api/seller';
-
 import {
     getCategoryTree,
 } from '../../api/categories';
-
-import CategorySelect from '../../components/CategorySelect';
-
+import CategoryPicker from '../../components/CategoryPicker';
+import ProductFilterFields from '../../components/ProductFilterFields';
+import { EMPTY_PRODUCT_FILTERS, productFilterPayload, formatApiError } from '../../utils/productFilters';
 export default function CreateProduct() {
     const navigate = useNavigate();
-
+    const [createdProduct, setCreatedProduct] = useState(null);
     const [store, setStore] = useState(null);
-
     const [categories, setCategories] =
         useState([]);
-
     const [form, setForm] = useState({
+        ...EMPTY_PRODUCT_FILTERS,
         name: '',
         description: '',
         price: '',
         stock: '',
-        category_id: '',
+        category_ids: [],
     });
-
     const [featuredImage, setFeaturedImage] =
         useState(null);
-
     const [galleryImages, setGalleryImages] =
         useState([]);
-
     const [loadingStore, setLoadingStore] =
         useState(true);
-
     const [loadingCategories, setLoadingCategories] =
         useState(true);
-
     const [submitting, setSubmitting] =
         useState(false);
-
     const [error, setError] = useState('');
-
     const [uploadProgress, setUploadProgress] =
         useState('');
-
     useEffect(() => {
         async function loadData() {
             try {
@@ -59,11 +48,9 @@ export default function CreateProduct() {
                     getMyStore(),
                     getCategoryTree(),
                 ]);
-
                 setStore(
                     storeResponse.data
                 );
-
                 setCategories(
                     categoryResponse.data ?? []
                 );
@@ -72,7 +59,6 @@ export default function CreateProduct() {
                     'PRODUCT CREATION ERROR:',
                     err
                 );
-
                 const validationMessage =
                     err.errors
                         ? Object.entries(
@@ -89,7 +75,6 @@ export default function CreateProduct() {
                             )
                             .join('\n')
                         : null;
-
                 setError(
                     validationMessage ||
                     err.message ||
@@ -100,69 +85,59 @@ export default function CreateProduct() {
                 setLoadingCategories(false);
             }
         }
-
         loadData();
     }, []);
-
     function handleChange(event) {
         setForm((current) => ({
             ...current,
             [event.target.name]:
-                event.target.value,
+                event.target.type === 'checkbox' ? event.target.checked : event.target.value,
         }));
     }
-
     function handleFeaturedImage(event) {
         const file =
             event.target.files?.[0] ?? null;
-
         setFeaturedImage(file);
     }
-
     function handleGalleryImages(event) {
         const files = Array.from(
             event.target.files ?? []
         );
-
         setGalleryImages(files);
     }
-
     async function handleSubmit(event) {
         event.preventDefault();
-
         setError('');
-
+        if (submitting || createdProduct) return;
         if (!store) {
             setError(
                 'Nincs elérhető üzlet.'
             );
-
             return;
         }
-
-        if (!form.category_id) {
+        if (!form.category_ids.length) {
             setError(
-                'Válassz kategóriát.'
+                'Válassz legalább egy kategóriát.'
             );
-
             return;
         }
-
+        if (form.shipping_available && form.shipping_methods.length === 0) {
+            setError('Válassz legalább egy csomagküldési módot.');
+            return;
+        }
         if (!featuredImage) {
             setError(
                 'Adj meg egy kiemelt képet.'
             );
-
             return;
         }
-
         setSubmitting(true);
-
         try {
             const productResponse =
                 await createProduct(
                     store.slug,
                     {
+                        ...productFilterPayload(form),
                         name: form.name,
                         description:
                             form.description,
@@ -172,20 +147,15 @@ export default function CreateProduct() {
                         stock: Number(
                             form.stock
                         ),
-                        category_id:
-                            Number(
-                                form.category_id
-                            ),
+                        category_ids: form.category_ids,
                     }
                 );
-
             const product =
                 productResponse.product;
-
+            setCreatedProduct(product);
             setUploadProgress(
                 'Kiemelt kép feltöltése...'
             );
-
             await uploadProductImage(
                 product.id,
                 featuredImage,
@@ -194,7 +164,6 @@ export default function CreateProduct() {
                     isPrimary: true,
                 }
             );
-
             for (
                 let index = 0;
                 index <
@@ -206,7 +175,6 @@ export default function CreateProduct() {
                         index + 1
                     }/${galleryImages.length}`
                 );
-
                 await uploadProductImage(
                     product.id,
                     galleryImages[index],
@@ -218,20 +186,16 @@ export default function CreateProduct() {
                     }
                 );
             }
-
             navigate(
                 '/seller/products'
             );
         } catch (err) {
-            setError(
-                err.message
-            );
+            setError(formatApiError(err));
         } finally {
             setSubmitting(false);
             setUploadProgress('');
         }
     }
-
     if (
         loadingStore ||
         loadingCategories
@@ -244,19 +208,16 @@ export default function CreateProduct() {
             </div>
         );
     }
-
     if (!store) {
         return (
             <div className="seller-page">
                 <h1>
                     Termék létrehozása
                 </h1>
-
                 <p>
                     Először létre kell
                     hoznod egy üzletet.
                 </p>
-
                 <Link
                     to="/seller/store/create"
                     className="seller-button"
@@ -266,7 +227,6 @@ export default function CreateProduct() {
             </div>
         );
     }
-
     return (
         <div className="seller-page">
             <div className="seller-page__header">
@@ -274,12 +234,10 @@ export default function CreateProduct() {
                     <p className="eyebrow">
                         Termékek
                     </p>
-
                     <h1>
                         Új termék
                     </h1>
                 </div>
-
                 <Link
                     to="/seller/products"
                     className="secondary-button"
@@ -287,7 +245,6 @@ export default function CreateProduct() {
                     Mégse
                 </Link>
             </div>
-
             <form
                 className="product-form"
                 onSubmit={
@@ -299,16 +256,13 @@ export default function CreateProduct() {
                         {error}
                     </div>
                 )}
-
                 <section className="dashboard-card">
                     <h2>Alapadatok</h2>
-
                     <div className="form-grid">
                         <label className="form-field form-field--full">
                             <span>
                                 Termék neve
                             </span>
-
                             <input
                                 type="text"
                                 name="name"
@@ -322,12 +276,10 @@ export default function CreateProduct() {
                                 required
                             />
                         </label>
-
                         <label className="form-field form-field--full">
                             <span>
                                 Leírás
                             </span>
-
                             <textarea
                                 name="description"
                                 value={
@@ -340,35 +292,17 @@ export default function CreateProduct() {
                                 placeholder="Írd le a terméket..."
                             />
                         </label>
-
-                        <CategorySelect
-                            categories={
-                                categories
-                            }
-                            value={
-                                form.category_id
-                            }
-                            onChange={(
-                                value
-                            ) =>
-                                setForm(
-                                    (
-                                        current
-                                    ) => ({
-                                        ...current,
-                                        category_id:
-                                            value,
-                                    })
-                                )
-                            }
+                        <CategoryPicker
+                            categories={categories}
+                            value={form.category_ids}
+                            onChange={(category_ids) => setForm((current) => ({ ...current, category_ids }))}
+                            disabled={submitting || Boolean(createdProduct)}
                             required
                         />
-
                         <label className="form-field">
                             <span>
                                 Ár (Ft)
                             </span>
-
                             <input
                                 type="number"
                                 name="price"
@@ -383,12 +317,10 @@ export default function CreateProduct() {
                                 required
                             />
                         </label>
-
                         <label className="form-field">
                             <span>
                                 Készlet
                             </span>
-
                             <input
                                 type="number"
                                 name="stock"
@@ -405,21 +337,21 @@ export default function CreateProduct() {
                         </label>
                     </div>
                 </section>
-
+                <ProductFilterFields form={form} setForm={setForm} trustedSeller={store?.is_trusted_seller} />
+                {createdProduct && (
+                    <p role="status">A termék már létrejött. Ha egy kép feltöltése sikertelen volt, itt folytathatod: <Link to={`/seller/products/${createdProduct.id}/edit`}>Termék szerkesztése</Link>.</p>
+                )}
                 <section className="dashboard-card">
                     <h2>Képek</h2>
-
                     <div className="image-upload-grid">
                         <label className="upload-box">
                             <span>
                                 Kiemelt kép
                             </span>
-
                             <small>
                                 Ez jelenik meg a
                                 termék fő képének.
                             </small>
-
                             <input
                                 type="file"
                                 accept="image/jpeg,image/png,image/webp"
@@ -428,7 +360,6 @@ export default function CreateProduct() {
                                 }
                                 required
                             />
-
                             {featuredImage && (
                                 <strong>
                                     {
@@ -437,17 +368,14 @@ export default function CreateProduct() {
                                 </strong>
                             )}
                         </label>
-
                         <label className="upload-box">
                             <span>
                                 Galéria képek
                             </span>
-
                             <small>
                                 Több kép is
                                 kiválasztható.
                             </small>
-
                             <input
                                 type="file"
                                 accept="image/jpeg,image/png,image/webp"
@@ -456,7 +384,6 @@ export default function CreateProduct() {
                                     handleGalleryImages
                                 }
                             />
-
                             {galleryImages.length >
                                 0 && (
                                 <strong>
@@ -470,13 +397,11 @@ export default function CreateProduct() {
                         </label>
                     </div>
                 </section>
-
                 {uploadProgress && (
                     <div className="upload-status">
                         {uploadProgress}
                     </div>
                 )}
-
                 <div className="product-form__actions">
                     <Link
                         to="/seller/products"
@@ -484,12 +409,11 @@ export default function CreateProduct() {
                     >
                         Mégse
                     </Link>
-
                     <button
                         type="submit"
                         className="seller-button"
                         disabled={
-                            submitting
+                            submitting || Boolean(createdProduct)
                         }
                     >
                         {submitting

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, NavLink, Outlet } from 'react-router';
+import SellerMessagesNavLink from '../../components/SellerMessagesNavLink';
 
 export default function SellerLayout() {
     return (
@@ -24,6 +25,7 @@ export default function SellerLayout() {
                     <NavLink to="/seller/orders">
                         Rendelések
                     </NavLink>
+                    <SellerMessagesNavLink />
                     <NavLink to="/seller/products/create">
                         + Új termék
                     </NavLink>

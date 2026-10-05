@@ -22,6 +22,8 @@ class StoreRequest extends FormRequest
 
     public function rules(): array
     {
+        $isCreatingStore = $this->isMethod('POST');
+
         return [
             'name' => [
                 'required',
@@ -47,6 +49,14 @@ class StoreRequest extends FormRequest
                 'sometimes',
                 'boolean',
             ],
+
+            'contact_phone' => $isCreatingStore
+                ? ['required', 'string', 'max:32']
+                : ['sometimes', 'nullable', 'string', 'max:32'],
+
+            'contact_email' => $isCreatingStore
+                ? ['required', 'string', 'email', 'max:255']
+                : ['sometimes', 'nullable', 'string', 'email', 'max:255'],
         ];
     }
 }

@@ -1,0 +1,7 @@
+.product-listing-meta { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1rem; margin: .65rem 0; font-size: .82rem; color: #64748b; }
+.product-listing-badge { display: inline-flex; padding: .25rem .55rem; border: 1px solid #f3cf78; border-radius: .4rem; background: #fff8df; color: #805800; font-weight: 600; }
+.seller-listing-status { display: grid; gap: .65rem; margin: .65rem 0; }
+.seller-listing-status__dates { display: flex; flex-wrap: wrap; gap: .6rem 1.2rem; margin: 0; font-size: .85rem; }
+.seller-listing-status__dates dt { color: #64748b; }
+.seller-listing-status__dates dd { margin: .15rem 0 0; }
+.seller-listing-status__actions { display: flex; flex-wrap: wrap; gap: .5rem; }

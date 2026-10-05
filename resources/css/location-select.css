@@ -1,0 +1,14 @@
+.location-select { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; min-width: 0; }
+.location-select__field { position: relative; min-width: 0; display: grid; gap: 6px; }
+.location-select__field > label { font-weight: 700; }
+.location-select__input-wrap { position: relative; }
+.location-select__input-wrap input { width: 100%; min-width: 0; box-sizing: border-box; padding: 10px 36px 10px 12px; font: inherit; border: 1px solid rgba(127,127,127,.35); border-radius: 8px; }
+.location-select__clear { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); padding: 2px 6px; border: 0; background: transparent; color: inherit; font: inherit; font-size: 20px; cursor: pointer; }
+.location-select__dropdown { position: absolute; z-index: 50; left: 0; right: 0; top: 100%; margin-top: 4px; background: #fff; color: #192c2a; border: 1px solid #d0dcda; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.12); overflow: hidden; }
+.location-select__options { max-height: 260px; overflow-y: auto; }
+.location-select__options button { display: flex; justify-content: space-between; align-items: center; gap: 12px; width: 100%; padding: 10px 12px; text-align: left; border: 0; background: transparent; color: inherit; font: inherit; cursor: pointer; }
+.location-select__options button:hover, .location-select__options button.is-active, .location-select__options button:focus-visible { background: #e8f5f1; }
+.location-select__options small { font-size: .75rem; opacity: .75; }
+.location-select__options p, .location-select__more { margin: 0; padding: 10px 12px; font-size: .82rem; }
+.location-select__status { grid-column: 1 / -1; margin: 0; }
+@media(max-width: 560px) { .location-select { grid-template-columns: minmax(0,1fr); } }

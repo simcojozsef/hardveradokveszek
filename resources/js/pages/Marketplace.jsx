@@ -7,61 +7,48 @@ import {
     useNavigate,
     useSearchParams,
 } from 'react-router';
+import ProductListingMeta from '../components/ProductListingMeta';
 
 function formatPrice(value) {
     return `${Number(value || 0).toLocaleString(
         'hu-HU'
     )} Ft`;
 }
-
 function getStockLabel(stock) {
     const quantity = Number(stock);
-
     if (quantity <= 0) {
         return 'Elfogyott';
     }
-
     if (quantity === 1) {
         return '1 db elérhető';
     }
-
     return `${quantity} db elérhető`;
 }
-
 function getStockClass(stock) {
     const quantity = Number(stock);
-
     if (quantity <= 0) {
         return 'marketplace-product-card__stock marketplace-product-card__stock--empty';
     }
-
     if (quantity <= 2) {
         return 'marketplace-product-card__stock marketplace-product-card__stock--low';
     }
-
     return 'marketplace-product-card__stock';
 }
-
 export default function Marketplace() {
     const navigate = useNavigate();
-
     const [searchParams] =
         useSearchParams();
-
     const searchQuery =
-        searchParams.get('q')?.trim() ?? '';
-
+        (searchParams.get('q') ?? searchParams.get('search') ?? '').trim();
+    const requestQuery = searchParams.toString();
     const currentPage = Math.max(
         Number(searchParams.get('page')) || 1,
         1
     );
-
     const [searchInput, setSearchInput] =
         useState(searchQuery);
-
     const [products, setProducts] =
         useState([]);
-
     const [meta, setMeta] = useState({
         current_page: 1,
         last_page: 1,
@@ -70,43 +57,36 @@ export default function Marketplace() {
         from: 0,
         to: 0,
     });
-
     const [loading, setLoading] =
         useState(true);
-
     const [error, setError] =
         useState('');
-
     useEffect(() => {
         setSearchInput(searchQuery);
     }, [searchQuery]);
-
     useEffect(() => {
+        const controller = new AbortController();
         async function loadProducts() {
             try {
                 setLoading(true);
                 setError('');
-
                 const params =
-                    new URLSearchParams();
-
+                    new URLSearchParams(requestQuery);
+                params.delete('q');
                 if (searchQuery) {
                     params.set(
                         'search',
                         searchQuery
                     );
                 }
-
                 params.set(
                     'page',
                     String(currentPage)
                 );
-
                 params.set(
                     'per_page',
                     '24'
                 );
-
                 const response =
                     await fetch(
                         `/api/products?${params.toString()}`,
@@ -117,24 +97,21 @@ export default function Marketplace() {
                             },
                             credentials:
                                 'include',
+                            signal: controller.signal,
                         }
                     );
-
                 if (!response.ok) {
                     throw new Error(
                         'Nem sikerült betölteni a termékeket.'
                     );
                 }
-
                 const data =
                     await response.json();
-
                 setProducts(
                     Array.isArray(data.data)
                         ? data.data
                         : []
                 );
-
                 setMeta(
                     data.meta ?? {
                         current_page: 1,
@@ -146,46 +123,38 @@ export default function Marketplace() {
                     }
                 );
             } catch (err) {
+                if (controller.signal.aborted) return;
                 console.error(
                     'MARKETPLACE ERROR:',
                     err
                 );
-
                 setError(
                     err.message ||
                     'Hiba történt a termékek betöltése közben.'
                 );
-
                 setProducts([]);
             } finally {
-                setLoading(false);
+                if (!controller.signal.aborted) setLoading(false);
             }
         }
-
         loadProducts();
+        return () => controller.abort();
     }, [
         searchQuery,
         currentPage,
+        requestQuery,
     ]);
-
     function handleSearchSubmit(event) {
         event.preventDefault();
-
         const value =
             searchInput.trim();
-
-        if (!value) {
-            navigate('/search');
-            return;
-        }
-
-        navigate(
-            `/search?q=${encodeURIComponent(
-                value
-            )}`
-        );
+        const params = new URLSearchParams(searchParams);
+        params.delete('page');
+        params.delete('search');
+        params.delete('q');
+        if (value) params.set('q', value);
+        navigate(`/search${params.toString() ? `?${params}` : ''}`);
     }
-
     function handlePageChange(page) {
         if (
             page < 1 ||
@@ -193,69 +162,55 @@ export default function Marketplace() {
         ) {
             return;
         }
-
         const params =
-            new URLSearchParams();
-
+            new URLSearchParams(searchParams);
         if (searchQuery) {
             params.set(
                 'q',
                 searchQuery
             );
         }
-
         params.set(
             'page',
             String(page)
         );
-
         navigate(
             `/search?${params.toString()}`
         );
-
         window.scrollTo({
             top: 0,
             behavior: 'smooth',
         });
     }
-
     function renderPagination() {
         const lastPage =
             Number(meta.last_page || 1);
-
         const page =
             Number(meta.current_page || 1);
-
         if (lastPage <= 1) {
             return null;
         }
-
         const pages = [];
-
         let start = Math.max(
             1,
             page - 2
         );
-
         let end = Math.min(
             lastPage,
             page + 2
         );
-
         if (page <= 3) {
             end = Math.min(
                 lastPage,
                 5
             );
         }
-
         if (page >= lastPage - 2) {
             start = Math.max(
                 1,
                 lastPage - 4
             );
         }
-
         for (
             let index = start;
             index <= end;
@@ -263,7 +218,6 @@ export default function Marketplace() {
         ) {
             pages.push(index);
         }
-
         return (
             <nav
                 className="marketplace-pagination"
@@ -281,7 +235,6 @@ export default function Marketplace() {
                 >
                     ←
                 </button>
-
                 {start > 1 && (
                     <>
                         <button
@@ -295,7 +248,6 @@ export default function Marketplace() {
                         >
                             1
                         </button>
-
                         {start > 2 && (
                             <span className="marketplace-pagination__dots">
                                 …
@@ -303,7 +255,6 @@ export default function Marketplace() {
                         )}
                     </>
                 )}
-
                 {pages.map(
                     (pageNumber) => (
                         <button
@@ -325,7 +276,6 @@ export default function Marketplace() {
                         </button>
                     )
                 )}
-
                 {end < lastPage && (
                     <>
                         {end <
@@ -335,7 +285,6 @@ export default function Marketplace() {
                                 …
                             </span>
                         )}
-
                         <button
                             type="button"
                             className="marketplace-pagination__button"
@@ -349,7 +298,6 @@ export default function Marketplace() {
                         </button>
                     </>
                 )}
-
                 <button
                     type="button"
                     className="marketplace-pagination__button"
@@ -367,7 +315,6 @@ export default function Marketplace() {
             </nav>
         );
     }
-
     return (
         <main className="page marketplace-page">
             <header className="marketplace-header">
@@ -375,22 +322,18 @@ export default function Marketplace() {
                     <p className="eyebrow">
                         HardverAdokVeszek
                     </p>
-
                     <h1>
                         Piactér
                     </h1>
-
                     <p className="marketplace-header__description">
                         Böngéssz a piactér
                         aktív termékei között.
                     </p>
                 </div>
-
                 <div className="marketplace-header__icon">
                     🛒
                 </div>
             </header>
-
             <section className="marketplace-search-card">
                 <form
                     className="marketplace-search"
@@ -405,7 +348,6 @@ export default function Marketplace() {
                         >
                             🔎
                         </span>
-
                         <input
                             type="search"
                             value={searchInput}
@@ -418,7 +360,6 @@ export default function Marketplace() {
                             placeholder="Mit keresel? Pl. RTX, alaplap, iPhone..."
                             aria-label="Termék keresése"
                         />
-
                         {searchInput && (
                             <button
                                 type="button"
@@ -434,7 +375,6 @@ export default function Marketplace() {
                             </button>
                         )}
                     </div>
-
                     <button
                         type="submit"
                         className="marketplace-search__submit"
@@ -443,21 +383,18 @@ export default function Marketplace() {
                     </button>
                 </form>
             </section>
-
             <section className="marketplace-results">
                 <div className="marketplace-results__header">
                     <div>
                         <p className="eyebrow">
                             Termékek
                         </p>
-
                         <h2>
                             {searchQuery
                                 ? `Találatok erre: „${searchQuery}”`
                                 : 'Legújabb termékek'}
                         </h2>
                     </div>
-
                     {!loading &&
                         !error && (
                             <div className="marketplace-results__count">
@@ -473,7 +410,6 @@ export default function Marketplace() {
                             </div>
                         )}
                 </div>
-
                 {loading && (
                     <div className="marketplace-state">
                         <div className="marketplace-spinner" />
@@ -485,22 +421,18 @@ export default function Marketplace() {
                         </p>
                     </div>
                 )}
-
                 {!loading && error && (
                     <div className="marketplace-state marketplace-state--error">
                         <div className="marketplace-state__icon">
                             !
                         </div>
-
                         <strong>
                             Nem sikerült betölteni a
                             termékeket.
                         </strong>
-
                         <p>
                             {error}
                         </p>
-
                         <button
                             type="button"
                             className="button"
@@ -512,7 +444,6 @@ export default function Marketplace() {
                         </button>
                     </div>
                 )}
-
                 {!loading &&
                     !error &&
                     products.length === 0 && (
@@ -520,17 +451,14 @@ export default function Marketplace() {
                             <div className="marketplace-state__icon">
                                 🔎
                             </div>
-
                             <strong>
                                 Nincs találat.
                             </strong>
-
                             <p>
                                 Nem találtunk a
                                 keresésednek megfelelő
                                 aktív terméket.
                             </p>
-
                             <Link
                                 to="/search"
                                 className="secondary-button"
@@ -539,7 +467,6 @@ export default function Marketplace() {
                             </Link>
                         </div>
                     )}
-
                 {!loading &&
                     !error &&
                     products.length > 0 && (
@@ -570,13 +497,11 @@ export default function Marketplace() {
                                                         <span>
                                                             📦
                                                         </span>
-
                                                         <small>
                                                             Nincs kép
                                                         </small>
                                                     </div>
                                                 )}
-
                                                 <span
                                                     className={getStockClass(
                                                         product.stock
@@ -587,7 +512,6 @@ export default function Marketplace() {
                                                     )}
                                                 </span>
                                             </div>
-
                                             <div className="marketplace-product-card__body">
                                                 <div className="marketplace-product-card__store">
                                                     {product.store ? (
@@ -595,7 +519,6 @@ export default function Marketplace() {
                                                             <span>
                                                                 🏪
                                                             </span>
-
                                                             <span>
                                                                 {
                                                                     product
@@ -610,13 +533,12 @@ export default function Marketplace() {
                                                         </span>
                                                     )}
                                                 </div>
-
                                                 <h3>
                                                     {
                                                         product.name
                                                     }
                                                 </h3>
-
+                                                <ProductListingMeta product={product} />
                                                 {product.description && (
                                                     <p className="marketplace-product-card__description">
                                                         {
@@ -624,14 +546,12 @@ export default function Marketplace() {
                                                         }
                                                     </p>
                                                 )}
-
                                                 <div className="marketplace-product-card__footer">
                                                     <strong>
                                                         {formatPrice(
                                                             product.price
                                                         )}
                                                     </strong>
-
                                                     <span className="marketplace-product-card__arrow">
                                                         →
                                                     </span>
@@ -641,7 +561,6 @@ export default function Marketplace() {
                                     )
                                 )}
                             </div>
-
                             {renderPagination()}
                         </>
                     )}

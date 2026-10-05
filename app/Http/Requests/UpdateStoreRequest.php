@@ -26,6 +26,18 @@ class UpdateStoreRequest extends FormRequest
                 'max:5000',
             ],
 
+            'contact_phone' => [
+                'nullable',
+                'string',
+                'max:32',
+            ],
+
+            'contact_email' => [
+                'nullable',
+                'email',
+                'max:255',
+            ],
+
             'is_active' => [
                 'sometimes',
                 'boolean',

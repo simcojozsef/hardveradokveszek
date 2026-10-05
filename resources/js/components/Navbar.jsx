@@ -78,11 +78,7 @@ export default function Navbar() {
                                 Kijelentkezés
                             </button>
 
-                            {user?.role === 'buyer' && (
-                                <Link to="/buyer/cart">
-                                    Kosár
-                                </Link>
-                            )}
+
                         </>
                     ) : (
                         <>
@@ -148,6 +144,7 @@ export default function Navbar() {
                                 Vezérlőpult
                             </Link>
 
+                            
                             {user?.role === 'buyer' && (
                                 <Link
                                     to="/buyer/cart"
