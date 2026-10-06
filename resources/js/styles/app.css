@@ -9980,4 +9980,232 @@ button { cursor: pointer; }
     .seller-status-card .seller-listing-status__actions .seller-button {
         width: 100%;
     }
+}/* ==========================================================================
+   Seller store settings page
+   Brings the Üzlet page in line with Termékek and Vezérlőpult: same teal
+   accent, same header rhythm, and the same card + button treatment.
+   ========================================================================== */
+
+.seller-page:has(.seller-store-form) {
+    --seller-accent: #087f83;
+    --seller-accent-hover: #06676b;
+    --seller-text: #162b36;
+    --seller-muted: #647783;
+    --seller-border: #dce6e9;
+    color: var(--seller-text);
+}
+
+.seller-page:has(.seller-store-form) .seller-page__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.seller-page:has(.seller-store-form) .seller-page__header h1 {
+    margin: 4px 0 0;
+    font-size: clamp(26px, 3vw, 34px);
+    font-weight: 750;
+    letter-spacing: -0.035em;
+    line-height: 1.2;
+}
+
+.seller-page:has(.seller-store-form) .seller-page__header .eyebrow {
+    margin: 0;
+    color: var(--seller-accent);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.seller-page:has(.seller-store-form) .seller-page__header .secondary-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 40px;
+    padding: 9px 15px;
+    border: 1px solid var(--seller-border);
+    border-radius: 9px;
+    background: #fff;
+    color: #245c64;
+    font-size: 13px;
+    font-weight: 650;
+    text-decoration: none;
+    transition: background-color 160ms ease, border-color 160ms ease;
+}
+
+.seller-page:has(.seller-store-form) .seller-page__header .secondary-button:hover {
+    background: #f5fafb;
+    border-color: #b7d4d6;
+}
+
+/* Cards get the same header rhythm as the product list sections. */
+.seller-store-form .dashboard-card {
+    padding: 22px;
+    border: 1px solid var(--seller-border);
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 3px 12px rgb(22 43 54 / 4%);
+}
+
+.seller-store-form .dashboard-card h2 {
+    margin: 0 0 4px;
+    color: var(--seller-text);
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+.seller-store-form .form-help {
+    margin-top: 0;
+    color: var(--seller-muted);
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.seller-store-form .form-field > span {
+    color: #526672;
+    font-size: 12px;
+    font-weight: 650;
+}
+
+.seller-store-form .form-field input,
+.seller-store-form .form-field textarea {
+    border-color: var(--seller-border);
+    border-radius: 9px;
+}
+
+.seller-store-form .form-field input:focus,
+.seller-store-form .form-field textarea:focus {
+    border-color: var(--seller-accent);
+}
+
+/* Logo controls use the seller button treatment from the product list. */
+.seller-store-form .store-logo-actions .seller-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding: 9px 16px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    background: var(--seller-accent);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 650;
+    line-height: 1.4;
+    cursor: pointer;
+    transition: background-color 160ms ease;
+}
+
+.seller-store-form .store-logo-actions .seller-button:hover {
+    background: var(--seller-accent-hover);
+}
+
+.seller-store-form .store-logo-actions .danger-button {
+    min-height: 40px;
+    padding: 9px 16px;
+    border: 1px solid #f0cfcf;
+    border-radius: 9px;
+    background: #fdf2f2;
+    color: #b91c1c;
+    font-size: 13px;
+    font-weight: 650;
+    transition: background-color 160ms ease;
+}
+
+.seller-store-form .store-logo-actions .danger-button:hover {
+    background: #fbe4e4;
+}
+
+.seller-store-form .store-logo-preview {
+    border: 1px solid var(--seller-border);
+    border-radius: 12px;
+    background: #f7f9fa;
+}
+
+/* Footer actions: the destructive/primary pair sits bottom-right. */
+.seller-store-form .product-form__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 4px;
+    padding: 18px 22px;
+    border: 1px solid var(--seller-border);
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 3px 12px rgb(22 43 54 / 4%);
+}
+
+.seller-store-form .product-form__actions .secondary-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding: 9px 16px;
+    border: 1px solid var(--seller-border);
+    border-radius: 9px;
+    background: #fff;
+    color: #245c64;
+    font-size: 13px;
+    font-weight: 650;
+    text-decoration: none;
+    transition: background-color 160ms ease, border-color 160ms ease;
+}
+
+.seller-store-form .product-form__actions .secondary-button:hover {
+    background: #f5fafb;
+    border-color: #b7d4d6;
+}
+
+.seller-store-form .product-form__actions .seller-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding: 9px 18px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    background: var(--seller-accent);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 650;
+    cursor: pointer;
+    transition: background-color 160ms ease;
+}
+
+.seller-store-form .product-form__actions .seller-button:hover:not(:disabled) {
+    background: var(--seller-accent-hover);
+}
+
+.seller-store-form .product-form__actions .seller-button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+/* Slug box matches the card palette. */
+.seller-store-form .store-url-box {
+    border: 1px solid var(--seller-border);
+    border-radius: 12px;
+    background: #f7f9fa;
+}
+
+@media (max-width: 640px) {
+    .seller-page:has(.seller-store-form) .seller-page__header .secondary-button {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .seller-store-form .product-form__actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+    .seller-store-form .product-form__actions > * {
+        width: 100%;
+    }
 }

@@ -154,9 +154,15 @@ export default function Store() {
                     <p className="eyebrow">Üzlet</p>
                     <h1>Üzlet beállításai</h1>
                 </div>
+                <Link
+                    to={`/store/${store.slug}`}
+                    className="secondary-button"
+                >
+                    Publikus üzlet megtekintése →
+                </Link>
             </div>
             <form
-                className="product-form"
+                className="product-form seller-store-form"
                 onSubmit={handleSubmit}
             >
                 {error && (
