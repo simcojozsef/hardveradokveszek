@@ -5,7 +5,7 @@ function App() {
     return (
         <div>
             <h1>GigaPiac</h1>
-            <p>React is working.</p>
+            <p>GigaPiac - Marketplace</p>
         </div>
     );
 }

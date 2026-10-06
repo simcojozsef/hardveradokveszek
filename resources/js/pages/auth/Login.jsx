@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
+import { FiEye, FiEyeOff } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
 
 export default function Login() {
@@ -56,7 +57,12 @@ export default function Login() {
                 <div className="auth-card auth-card--login">
                     <div className="auth-card__header">
                         <div className="auth-card__logo">
-                            H
+                            <img
+                                src="/images/website-images/logo-clean-white.svg"
+                                alt="GigaPiac"
+                                width="52"
+                                height="52"
+                            />
                         </div>
 
                         <p className="auth-card__eyebrow">
@@ -128,10 +134,18 @@ export default function Login() {
                                             ? 'Jelszó elrejtése'
                                             : 'Jelszó megjelenítése'
                                     }
+                                    aria-pressed={showPassword}
+                                    title={
+                                        showPassword
+                                            ? 'Jelszó elrejtése'
+                                            : 'Jelszó megjelenítése'
+                                    }
                                 >
-                                    {showPassword
-                                        ? 'Elrejt'
-                                        : 'Mutat'}
+                                    {showPassword ? (
+                                        <FiEyeOff aria-hidden="true" />
+                                    ) : (
+                                        <FiEye aria-hidden="true" />
+                                    )}
                                 </button>
                             </div>
                         </label>

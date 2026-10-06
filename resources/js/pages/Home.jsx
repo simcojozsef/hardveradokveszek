@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import Hero from '../components/Hero';
 import PostListingButton from '../components/PostListingButton';
+import ProductCardMeta from '../components/ProductCardMeta';
 import useMarketplaceSearch, { PRODUCTS_ANCHOR_ID } from '../hooks/useMarketplaceSearch';
 import { getTopCategories } from '../api/categories';
 import { getCategoryIcon } from '../utils/categoryIcons';
@@ -96,31 +97,8 @@ export default function Home() {
                 </nav>
             )}
             {/* ========================================================== */}
-            {/* Trust strip: how this marketplace actually works           */}
+            {/* Category browser                                            */}
             {/* ========================================================== */}
-            <section className="home-trust-strip" aria-label="Hogyan működik">
-                <div className="home-trust-strip__item">
-                    <span className="home-trust-strip__icon" aria-hidden="true">◎</span>
-                    <div>
-                        <strong>Helyi eladók</strong>
-                        <span>Megye és település szerint szűrhetsz.</span>
-                    </div>
-                </div>
-                <div className="home-trust-strip__item">
-                    <span className="home-trust-strip__icon" aria-hidden="true">↺</span>
-                    <div>
-                        <strong>Közvetlen kapcsolat</strong>
-                        <span>Beszélj az eladóval üzenetben vagy telefonon.</span>
-                    </div>
-                </div>
-                <div className="home-trust-strip__item">
-                    <span className="home-trust-strip__icon" aria-hidden="true">✓</span>
-                    <div>
-                        <strong>Átlátható eladók</strong>
-                        <span>Értékelések és megbízható eladó jelölés.</span>
-                    </div>
-                </div>
-            </section>
             <section className="category-browser">
                 <div className="category-browser__header">
                     <div>
@@ -239,6 +217,8 @@ export default function Home() {
                                         <strong>
                                             {formatCount(product.price)} Ft
                                         </strong>
+
+                                        <ProductCardMeta product={product} />
                                     </div>
                                 </Link>
                             ))}

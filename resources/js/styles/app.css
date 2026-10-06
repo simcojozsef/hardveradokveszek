@@ -1091,6 +1091,21 @@ button {
     color: white;
     font-size: 1.25rem;
     font-weight: 800;
+    overflow: hidden;
+}
+
+/*
+ * Brand mark above the auth heading. The white logo needs the dark tile
+ * behind it, and it is wider than it is tall (600x540), so `contain` with a
+ * little padding keeps the whole shape inside the rounded badge instead of
+ * cropping its sides the way `cover` would.
+ */
+.auth-card__logo img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 9px;
+    object-fit: contain;
 }
 
 .auth-card__eyebrow {
@@ -1150,21 +1165,42 @@ button {
     position: relative;
 }
 
+/*
+ * An icon-only button needs less room than the old text label, so the input's
+ * right padding shrinks with it.
+ */
 .auth-password input {
-    padding-right: 76px;
+    padding-right: 46px;
 }
 
 .auth-password__toggle {
     position: absolute;
     top: 50%;
-    right: 10px;
+    right: 8px;
     transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
     border: 0;
+    border-radius: 8px;
     background: transparent;
-    color: #666;
+    color: #1683a4;
     font: inherit;
-    font-size: 0.85rem;
     cursor: pointer;
+    transition: background 0.18s ease, color 0.18s ease;
+}
+
+.auth-password__toggle svg {
+    width: 19px;
+    height: 19px;
+}
+
+.auth-password__toggle:hover {
+    background: #e9f5f8;
+    color: #106681;
 }
 
 .auth-options {
@@ -6621,7 +6657,7 @@ button { cursor: pointer; }
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    padding: 12px;
+    padding: clamp(14px, 1.6vw, 20px) clamp(16px, 2vw, 24px);
     border: 1px solid var(--ui-line);
     border-radius: var(--ui-radius);
     background: var(--ui-surface);
@@ -6657,7 +6693,7 @@ button { cursor: pointer; }
 
 /* Category tiles and shared product listings. */
 .category-browser {
-    padding: 12px;
+    padding: clamp(20px, 2.4vw, 30px);
     border: 1px solid var(--ui-line);
     border-radius: 22px;
     background: var(--ui-surface);
@@ -9126,49 +9162,6 @@ button { cursor: pointer; }
     margin-block: 4px;
 }
 
-/* ------------------------------------------------------------ Trust strip */
-
-.home-trust-strip {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 12px;
-}
-
-.home-trust-strip__item {
-    display: grid;
-    grid-template-columns: 40px minmax(0, 1fr);
-    align-items: center;
-    gap: 12px;
-    padding: 16px 18px;
-    border: 1px solid var(--ui-line);
-    border-radius: var(--ui-radius);
-    background: rgba(255, 255, 255, 0.86);
-    backdrop-filter: blur(6px);
-}
-
-.home-trust-strip__icon {
-    width: 40px;
-    height: 40px;
-    display: grid;
-    place-items: center;
-    border-radius: 12px;
-    background: var(--ui-brand-soft);
-    color: var(--ui-brand-dark);
-    font-size: 1.2rem;
-}
-
-.home-trust-strip__item strong {
-    display: block;
-    color: var(--ui-ink);
-    font-size: 0.98rem;
-}
-
-.home-trust-strip__item span {
-    color: var(--ui-muted);
-    font-size: 0.88rem;
-    line-height: 1.45;
-}
-
 /* --------------------------------------------------------- Category header */
 
 .category-hero-header {
@@ -9394,26 +9387,85 @@ button { cursor: pointer; }
 
 .product-grid .category-product-card {
     display: grid;
-    grid-template-columns: clamp(112px, 16vw, 168px) minmax(0, 1fr);
+    /* Fixed gutter so the picture is a predictable size. */
+    grid-template-columns: 112px minmax(0, 1fr);
     grid-template-areas: 'image body';
-    align-items: stretch;
+    align-items: center;
+    width: 100%;
     padding: 0;
 }
 
 .product-grid .category-product-card__image {
     grid-area: image;
+    /*
+     * The later `.category-product-card__image` rule pins this to 60x60, so the
+     * size has to be stated here too: 112px box minus its 10px padding leaves
+     * roughly a 92px picture.
+     */
+    width: 112px;
+    height: 112px;
     aspect-ratio: auto;
-    min-height: 100%;
-    padding: 12px;
+    align-self: center;
+    padding: 10px;
     border-right: 1px solid var(--ui-line);
     border-radius: 0;
 }
 
+.product-grid .category-product-card__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/*
+ * The body begins on the image's own line and its text is left-aligned to it,
+ * so title, store line and attribute chips share one clean starting edge.
+ * The price keeps its own right-hand column, vertically centred against the
+ * whole card so it sits on the row's midline.
+ */
 .product-grid .category-product-card__body {
     grid-area: body;
-    align-content: center;
-    gap: 6px;
-    padding: 16px 20px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    /*
+     * Three rows: title, store line, then the attribute chips. Every child is
+     * given an explicit row below — auto-placement lets the wide meta block
+     * wrap onto extra implicit rows, which silently shifts the centered price.
+     */
+    grid-template-rows: auto auto auto;
+    align-content: stretch;
+    align-items: center;
+    gap: 4px 20px;
+    padding: 10px 20px;
+}
+
+.product-grid .category-product-card__body h3 {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: start;
+}
+
+.product-grid .category-product-card__store {
+    grid-column: 1;
+    grid-row: 2;
+    justify-self: start;
+}
+
+.product-grid .product-card-meta {
+    grid-column: 1;
+    grid-row: 3;
+    justify-self: start;
+}
+
+/*
+ * Price: right-hand column, spanning all three rows of the details beside it,
+ * so `align-self: center` puts it on the card's vertical midline.
+ */
+.product-grid .category-product-card__body > strong {
+    grid-column: 2;
+    grid-row: 1 / -1;
+    align-self: center;
+    justify-self: end;
+    white-space: nowrap;
 }
 
 .product-grid .category-product-card__body h3 {
@@ -9442,14 +9494,75 @@ button { cursor: pointer; }
 
 @media (max-width: 520px) {
     .product-grid .category-product-card {
-        grid-template-columns: 96px minmax(0, 1fr);
+        grid-template-columns: 92px minmax(0, 1fr);
     }
 
     .product-grid .category-product-card__image {
+        width: 92px;
+        height: 92px;
         padding: 8px;
     }
 
     .product-grid .category-product-card__body {
-        padding: 12px 14px;
+        padding: 10px 14px;
+    }
+}
+
+/* ==========================================================================
+   Listing card attributes
+   Values only, small type, wrapping onto further lines when a row is full so
+   a card with many attributes stays compact instead of growing sideways.
+   ========================================================================== */
+
+.product-card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 6px;
+    margin: 2px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.product-card-meta__item {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border: 1px solid var(--ui-line);
+    border-radius: 999px;
+    background: #f7fafb;
+    color: var(--ui-muted);
+    font-size: 0.72rem;
+    font-weight: 600;
+    line-height: 1.6;
+    white-space: nowrap;
+}
+
+/* The first attribute leads the row with the brand tint. */
+.product-card-meta__item:first-child {
+    border-color: #cfe9f0;
+    background: var(--ui-brand-soft);
+    color: var(--ui-brand-dark);
+}
+
+/*
+ * In the single-column list the attributes sit on one compact line under the
+ * details. The row/column placement is declared with the other card rules
+ * above; repeating it here would re-introduce auto-placement.
+ */
+.product-grid .product-card-meta {
+    gap: 4px 6px;
+    margin-top: 4px;
+}
+
+.product-grid .product-card-meta__item {
+    font-size: 0.7rem;
+    padding: 1px 7px;
+}
+
+@media (max-width: 520px) {
+    .product-card-meta__item {
+        font-size: 0.68rem;
+        padding: 1px 6px;
     }
 }

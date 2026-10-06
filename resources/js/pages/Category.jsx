@@ -14,6 +14,7 @@ import {
 import { getCategoryIcon } from '../utils/categoryIcons';
 import Hero from '../components/Hero';
 import PostListingButton from '../components/PostListingButton';
+import ProductCardMeta from '../components/ProductCardMeta';
 import { useAuth } from '../context/AuthContext';
 import useMarketplaceSearch, { PRODUCTS_ANCHOR_ID } from '../hooks/useMarketplaceSearch';
 import { getCategoryScopeIds } from '../utils/marketplaceFilters';
@@ -340,6 +341,8 @@ export default function Category() {
                                             )}{' '}
                                             Ft
                                         </strong>
+
+                                        <ProductCardMeta product={product} />
                                     </div>
                                 </Link>
                             )
