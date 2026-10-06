@@ -75,10 +75,8 @@ class SearchSuggestionController extends Controller
         $products = Product::query()
             ->visibleForSale()
             ->select(['id', 'name', 'description', 'price'])
-            ->where(function ($query) use ($contains) {
-                $query->where('name', 'like', $contains)
-                    ->orWhere('description', 'like', $contains);
-            })
+            // Title only, matching the marketplace listing search.
+            ->where('name', 'like', $contains)
             ->with(['images' => fn ($imageQuery) => $imageQuery->orderBy('sort_order')])
             ->orderByRaw('CASE WHEN name LIKE ? THEN 0 ELSE 1 END', [$startsWith])
             ->orderByDesc('id')

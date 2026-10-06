@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { useAuth } from '../context/AuthContext';
 import { FiLogIn, FiUserPlus, FiLogOut } from 'react-icons/fi';
+import PostListingButton from './PostListingButton';
 
 export default function Navbar() {
     const navigate = useNavigate();
@@ -91,6 +92,8 @@ export default function Navbar() {
                                 <span>Regisztráció</span>
                                 <FiUserPlus aria-hidden="true" />
                             </Link>
+
+                            <PostListingButton />
                         </>
                     )}
                 </nav>
@@ -146,7 +149,11 @@ export default function Navbar() {
                                 Vezérlőpult
                             </Link>
 
-                            
+                            <PostListingButton
+                                variant="mobile"
+                                onNavigate={closeMenu}
+                            />
+
                             {user?.role === 'buyer' && (
                                 <Link
                                     to="/buyer/cart"
@@ -176,6 +183,11 @@ export default function Navbar() {
                         </>
                     ) : (
                         <>
+                            <PostListingButton
+                                variant="mobile"
+                                onNavigate={closeMenu}
+                            />
+
                             <Link
                                 to="/login"
                                 onClick={closeMenu}

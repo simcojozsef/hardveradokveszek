@@ -1,9 +1,14 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { createStore } from '../../api/seller';
+import { useAuth } from '../../context/AuthContext';
 
 export default function CreateStore() {
     const navigate = useNavigate();
+    const { user } = useAuth();
+
+    // An already existing store makes this screen a dead end; offer it instead.
+    const storeExists = Boolean(user?.store);
 
     const [form, setForm] = useState({
         name: '',
@@ -51,7 +56,9 @@ export default function CreateStore() {
             <div className="seller-page__header">
                 <div>
                     <p className="eyebrow">Eladói fiók</p>
-                    <h1>Üzlet létrehozása</h1>
+                    <h1>
+                        {storeExists ? 'Üzleted már létezik' : 'Üzlet létrehozása'}
+                    </h1>
                 </div>
 
                 <Link to="/seller" className="secondary-button">
@@ -59,6 +66,26 @@ export default function CreateStore() {
                 </Link>
             </div>
 
+            {storeExists ? (
+                <section className="dashboard-card">
+                    <h2>Nem kell új üzletet létrehoznod</h2>
+                    <p className="form-help">
+                        Ehhez a fiókhoz már tartozik egy üzlet, ezért innen
+                        folytathatod a hirdetésfeladást vagy az üzlet
+                        kezelését.
+                    </p>
+
+                    <div className="product-form__actions">
+                        <Link to="/seller/products/create" className="button">
+                            Új hirdetés feladása
+                        </Link>
+
+                        <Link to="/seller/store" className="secondary-button">
+                            Üzlet beállításai
+                        </Link>
+                    </div>
+                </section>
+            ) : (
             <form className="product-form" onSubmit={handleSubmit}>
                 {error && (
                     <div className="form-error" role="alert">
@@ -181,6 +208,7 @@ export default function CreateStore() {
                     </button>
                 </div>
             </form>
+            )}
         </div>
     );
 }

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import Hero from '../components/Hero';
-import useMarketplaceSearch from '../hooks/useMarketplaceSearch';
+import PostListingButton from '../components/PostListingButton';
+import useMarketplaceSearch, { PRODUCTS_ANCHOR_ID } from '../hooks/useMarketplaceSearch';
 import { getTopCategories } from '../api/categories';
 import { getCategoryIcon } from '../utils/categoryIcons';
 function isOtherCategory(category) {
@@ -11,6 +12,9 @@ function isOtherCategory(category) {
         .replace(/[\u0300-\u036f]/g, '')
         .toLowerCase();
     return name === 'egyeb' || name.startsWith('egyeb ');
+}
+function formatCount(value) {
+    return Number(value || 0).toLocaleString('hu-HU');
 }
 export default function Home() {
     const { search, setSearch, filters, setFilters, products, pagination, loading, error,
@@ -42,14 +46,38 @@ export default function Home() {
         };
     }, []);
     return (
-        <main className="page category-page">
-            <Hero
-                search={search}
-                setSearch={setSearch}
-                onSearch={handleSearch}
-                filters={filters}
-                setFilters={setFilters}
-            />
+        <main className="page category-page home-page">
+            {/* ========================================================== */}
+            {/* Hero band: search first, with a short promise and the CTA  */}
+            {/* ========================================================== */}
+            <section className="home-hero-band">
+                <div className="home-hero-band__intro">
+                    <p className="eyebrow">Hardver adásvétel</p>
+                    <h1 className="home-hero-band__title">
+                        Találd meg a következő alkatrészed
+                    </h1>
+                    <p className="home-hero-band__lead">
+                        Processzorok, kártyák, alaplapok és komplett gépek —
+                        egyenesen a hazai eladóktól. Böngéssz kategóriákra,
+                        vagy írj rá az eladóra pár kattintással.
+                    </p>
+                </div>
+
+                <Hero
+                    search={search}
+                    setSearch={setSearch}
+                    onSearch={handleSearch}
+                    filters={filters}
+                    setFilters={setFilters}
+                />
+
+                <div className="home-hero-band__actions">
+                    <PostListingButton />
+                    <span className="home-hero-band__hint">
+                        Pár perc alatt feladhatod az első hirdetésed.
+                    </span>
+                </div>
+            </section>
             {topCategories.length > 0 && (
                 <nav className="category-main-nav" aria-label="Fő kategóriák">
                     {topCategories.map((category) => (
@@ -67,10 +95,37 @@ export default function Home() {
                     ))}
                 </nav>
             )}
+            {/* ========================================================== */}
+            {/* Trust strip: how this marketplace actually works           */}
+            {/* ========================================================== */}
+            <section className="home-trust-strip" aria-label="Hogyan működik">
+                <div className="home-trust-strip__item">
+                    <span className="home-trust-strip__icon" aria-hidden="true">◎</span>
+                    <div>
+                        <strong>Helyi eladók</strong>
+                        <span>Megye és település szerint szűrhetsz.</span>
+                    </div>
+                </div>
+                <div className="home-trust-strip__item">
+                    <span className="home-trust-strip__icon" aria-hidden="true">↺</span>
+                    <div>
+                        <strong>Közvetlen kapcsolat</strong>
+                        <span>Beszélj az eladóval üzenetben vagy telefonon.</span>
+                    </div>
+                </div>
+                <div className="home-trust-strip__item">
+                    <span className="home-trust-strip__icon" aria-hidden="true">✓</span>
+                    <div>
+                        <strong>Átlátható eladók</strong>
+                        <span>Értékelések és megbízható eladó jelölés.</span>
+                    </div>
+                </div>
+            </section>
             <section className="category-browser">
                 <div className="category-browser__header">
                     <div>
                         <p className="eyebrow">Kategóriák</p>
+                        <h2>Böngéssz témák szerint</h2>
                     </div>
                 </div>
                 <div className="category-grid">
@@ -90,19 +145,19 @@ export default function Home() {
                     ))}
                 </div>
             </section>
-            <section className="category-products">
+            <section className="category-products home-products" id={PRODUCTS_ANCHOR_ID}>
                 <div className="section-heading">
                     <div>
                         <p className="eyebrow">Termékek</p>
                         <h2 className="category-products__title">
                             {submittedSearch
                                 ? `Találatok erre: „${submittedSearch}”`
-                                : 'Termékek'}
+                                : 'Friss hirdetések'}
                         </h2>
                     </div>
                     {!loading && !error && pagination && (
-                        <span>
-                            {Number(pagination.total || 0).toLocaleString('hu-HU')} találat
+                        <span className="home-products__count">
+                            {formatCount(pagination.total)} találat
                         </span>
                     )}
                 </div>
@@ -182,7 +237,7 @@ export default function Home() {
                                             </span>
                                         )}
                                         <strong>
-                                            {Number(product.price || 0).toLocaleString('hu-HU')} Ft
+                                            {formatCount(product.price)} Ft
                                         </strong>
                                     </div>
                                 </Link>

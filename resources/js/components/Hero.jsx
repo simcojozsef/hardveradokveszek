@@ -284,50 +284,52 @@ export default function Hero({ search = '', setSearch, onSearch, filters: contro
                                 {!loading && !error && options.length === 0 && (
                                     <p className="search-suggestions__status">Nincs javaslat. Próbálj másik kifejezést.</p>
                                 )}
-                                {!loading && !error && categories.length > 0 && (
-                                    <div className="search-suggestions__group" role="group" aria-label="Kategóriák">
-                                        <p className="search-suggestions__heading">Kategóriák</p>
-                                        {categories.map((category, index) => (
+                                {!loading && !error && products.length > 0 && (
+                                    <div className="search-suggestions__group" role="group" aria-label="Termékek">
+                                        <p className="search-suggestions__heading">Termékek</p>
+                                        {products.map((product, index) => (
                                             <Link
-                                                key={`category-${category.id}`}
+                                                key={`product-${product.id}`}
                                                 id={`${listId}-option-${index}`}
                                                 role="option"
                                                 aria-selected={activeIndex === index}
-                                                to={category.url}
+                                                to={product.url}
                                                 className={`search-suggestions__item${activeIndex === index ? ' is-active' : ''}`}
                                                 onClick={closeSuggestions}
                                             >
-                                                <CategorySuggestionIcon category={category} />
-                                                <span className="search-suggestions__name">{category.name}</span>
-                                                <span className="search-suggestions__arrow" aria-hidden="true">→</span>
+                                                {product.image ? (
+                                                    <img src={product.image} alt="" className="search-suggestions__image" loading="lazy" />
+                                                ) : (
+                                                    <span className="search-suggestions__image search-suggestions__image--empty" aria-hidden="true">□</span>
+                                                )}
+                                                <span className="search-suggestions__name">{product.name}</span>
+                                                <strong className="search-suggestions__price">
+                                                    {Number(product.price || 0).toLocaleString('hu-HU')} Ft
+                                                </strong>
                                             </Link>
                                         ))}
                                     </div>
                                 )}
-                                {!loading && !error && products.length > 0 && (
-                                    <div className="search-suggestions__group" role="group" aria-label="Termékek">
-                                        <p className="search-suggestions__heading">Termékek</p>
-                                        {products.map((product, index) => {
-                                            const optionIndex = categories.length + index;
+                                {!loading && !error && categories.length > 0 && (
+                                    <div className="search-suggestions__group" role="group" aria-label="Kategóriák">
+                                        <p className="search-suggestions__heading">Kategóriák</p>
+                                        {categories.map((category, index) => {
+                                            /* Products are listed first, so category keyboard
+                                               positions continue after the product block. */
+                                            const optionIndex = products.length + index;
                                             return (
                                                 <Link
-                                                    key={`product-${product.id}`}
+                                                    key={`category-${category.id}`}
                                                     id={`${listId}-option-${optionIndex}`}
                                                     role="option"
                                                     aria-selected={activeIndex === optionIndex}
-                                                    to={product.url}
+                                                    to={category.url}
                                                     className={`search-suggestions__item${activeIndex === optionIndex ? ' is-active' : ''}`}
                                                     onClick={closeSuggestions}
                                                 >
-                                                    {product.image ? (
-                                                        <img src={product.image} alt="" className="search-suggestions__image" loading="lazy" />
-                                                    ) : (
-                                                        <span className="search-suggestions__image search-suggestions__image--empty" aria-hidden="true">□</span>
-                                                    )}
-                                                    <span className="search-suggestions__name">{product.name}</span>
-                                                    <strong className="search-suggestions__price">
-                                                        {Number(product.price || 0).toLocaleString('hu-HU')} Ft
-                                                    </strong>
+                                                    <CategorySuggestionIcon category={category} />
+                                                    <span className="search-suggestions__name">{category.name}</span>
+                                                    <span className="search-suggestions__arrow" aria-hidden="true">→</span>
                                                 </Link>
                                             );
                                         })}

@@ -6693,10 +6693,14 @@ button { cursor: pointer; }
 .category-tile img { width: 36px; height: 36px; object-fit: contain; }
 .category-tile__arrow { color: var(--ui-brand); font-size: 1.2rem; }
 .category-products { min-width: 0; gap: 0; }
+/*
+ * Listings are a single-column list: one product per row, stacked. The card
+ * markup lays the thumbnail out beside the details at this width.
+ */
 .product-grid {
     display: grid;
-    grid-template-columns: repeat(1, minmax(0, 1fr));
-    gap: 4px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
 }
 .category-product-card,
 .product-card,
@@ -8956,4 +8960,496 @@ button { cursor: pointer; }
     width: 18px;
     height: 18px;
     flex-shrink: 0;
+}
+/* ==========================================================================
+   Marketplace design layer
+   Ambient backdrop, hero band, trust strip and category header for Home and
+   Category. Uses the shared --ui-* tokens so it stays consistent with the
+   rest of the interface.
+   ========================================================================== */
+
+.app-layout {
+    position: relative;
+    isolation: isolate;
+}
+
+/*
+ * Light background overlay: a soft brand-tinted wash that fades out below the
+ * header plus a subtle dot grid, so surfaces read as slightly lifted without
+ * adding visual noise.
+ */
+.app-layout__backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+        radial-gradient(1100px 520px at 12% -8%, rgba(22, 131, 164, 0.14), transparent 62%),
+        radial-gradient(880px 460px at 92% 2%, rgba(58, 173, 196, 0.1), transparent 60%),
+        linear-gradient(180deg, #f7fbfc 0%, var(--ui-canvas) 46%, var(--ui-canvas) 100%);
+}
+
+.app-layout__backdrop::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.5;
+    background-image: radial-gradient(rgba(23, 42, 53, 0.05) 1px, transparent 1px);
+    background-size: 26px 26px;
+    mask-image: linear-gradient(180deg, #000 0%, transparent 78%);
+    -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 78%);
+}
+
+/* ---------------------------------------------------------------- Hero band */
+
+.home-page {
+    gap: clamp(20px, 2.6vw, 30px);
+}
+
+.home-hero-band {
+    position: relative;
+    /*
+     * No overflow clipping here: the search suggestions panel is absolutely
+     * positioned inside this band and must be able to extend past its edge.
+     * The corner glow is kept inside the padding box instead.
+     */
+    overflow: visible;
+    display: grid;
+    gap: clamp(16px, 2vw, 24px);
+    padding: clamp(24px, 3.4vw, 44px);
+    border: 1px solid var(--ui-line);
+    border-radius: 26px;
+    background: linear-gradient(180deg, #ffffff 0%, #fbfdfe 100%);
+    box-shadow: var(--ui-shadow);
+}
+
+/* Keeps the band and its glow above the sections that follow it. */
+.home-hero-band:has(.home-hero__search-wrap:focus-within) {
+    z-index: 20;
+}
+
+.home-hero-band::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    /* Rounded to the band so the glow is contained without clipping children. */
+    border-radius: inherit;
+    pointer-events: none;
+    background: radial-gradient(680px 260px at 88% -30%, rgba(22, 131, 164, 0.1), transparent 70%);
+}
+
+.home-hero-band > * {
+    position: relative;
+}
+
+.home-hero-band__intro {
+    max-width: 720px;
+    display: grid;
+    gap: 8px;
+}
+
+.home-hero-band__title {
+    margin: 0;
+    color: var(--ui-ink);
+    font-size: clamp(1.7rem, 3.4vw, 2.6rem);
+    line-height: 1.12;
+    letter-spacing: -0.04em;
+}
+
+.home-hero-band__lead {
+    margin: 0;
+    max-width: 62ch;
+    color: var(--ui-muted);
+    font-size: clamp(0.96rem, 1.1vw, 1.05rem);
+    line-height: 1.6;
+}
+
+/* The shared search bar sits directly in the band, without its own card. */
+.home-hero-band .home-hero-refactored {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.home-hero-band__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+}
+
+.home-hero-band__hint {
+    color: var(--ui-muted);
+    font-size: 0.9rem;
+}
+
+/* --------------------------------------------------- Listing call to action */
+
+.post-listing-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    min-height: 46px;
+    padding: 0 20px;
+    border: 1px solid var(--ui-line);
+    border-radius: 12px;
+    background: #fff;
+    color: var(--ui-ink);
+    font-size: 0.95rem;
+    font-weight: 650;
+    text-decoration: none;
+    white-space: nowrap;
+    box-shadow: 0 10px 24px rgba(18, 47, 62, 0.1);
+    transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease,
+        transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.post-listing-button svg {
+    width: 18px;
+    height: 18px;
+    color: var(--ui-brand);
+}
+
+.post-listing-button:hover {
+    background: var(--ui-brand-soft);
+    border-color: #aad6e1;
+    color: var(--ui-brand-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 14px 30px rgba(18, 47, 62, 0.14);
+}
+
+.post-listing-button--mobile {
+    width: 100%;
+    margin-block: 4px;
+}
+
+/* ------------------------------------------------------------ Trust strip */
+
+.home-trust-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px;
+}
+
+.home-trust-strip__item {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr);
+    align-items: center;
+    gap: 12px;
+    padding: 16px 18px;
+    border: 1px solid var(--ui-line);
+    border-radius: var(--ui-radius);
+    background: rgba(255, 255, 255, 0.86);
+    backdrop-filter: blur(6px);
+}
+
+.home-trust-strip__icon {
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+    background: var(--ui-brand-soft);
+    color: var(--ui-brand-dark);
+    font-size: 1.2rem;
+}
+
+.home-trust-strip__item strong {
+    display: block;
+    color: var(--ui-ink);
+    font-size: 0.98rem;
+}
+
+.home-trust-strip__item span {
+    color: var(--ui-muted);
+    font-size: 0.88rem;
+    line-height: 1.45;
+}
+
+/* --------------------------------------------------------- Category header */
+
+.category-hero-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: clamp(18px, 2.4vw, 26px);
+    border: 1px solid var(--ui-line);
+    border-radius: 24px;
+    background:
+        linear-gradient(180deg, #ffffff 0%, #fbfdfe 100%);
+    box-shadow: var(--ui-shadow);
+}
+
+.category-hero-header__meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-width: 0;
+}
+
+.category-hero-header__icon {
+    width: 62px;
+    height: 62px;
+    flex: 0 0 62px;
+    display: grid;
+    place-items: center;
+    border-radius: 18px;
+    background: var(--ui-brand-soft);
+    border: 1px solid #cfe9f0;
+}
+
+.category-hero-header__icon img {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+}
+
+.category-hero-header__title {
+    margin: 2px 0 0;
+    color: var(--ui-ink);
+    font-size: clamp(1.4rem, 2.6vw, 2rem);
+    line-height: 1.15;
+    letter-spacing: -0.035em;
+}
+
+.category-hero-header__stats {
+    margin: 6px 0 0;
+    color: var(--ui-muted);
+    font-size: 0.92rem;
+}
+
+.category-hero-header__stats strong {
+    color: var(--ui-ink);
+}
+
+/* ------------------------------------------------------------- Small polish */
+
+.home-products__count {
+    padding: 6px 12px;
+    border: 1px solid var(--ui-line);
+    border-radius: 999px;
+    background: #fff;
+    color: var(--ui-muted);
+    font-size: 0.86rem;
+    font-weight: 600;
+}
+
+.home-page .category-browser,
+.home-page .category-products,
+.category-page .category-browser,
+.category-page .category-products {
+    min-width: 0;
+}
+
+@media (max-width: 900px) {
+    .category-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 640px) {
+    .home-hero-band {
+        padding: 20px 16px;
+        border-radius: 20px;
+    }
+
+    .post-listing-button {
+        width: 100%;
+    }
+
+    .home-hero-band__actions {
+        gap: 10px;
+    }
+
+    .category-hero-header {
+        padding: 18px 16px;
+        border-radius: 20px;
+    }
+
+    .category-hero-header__icon {
+        width: 52px;
+        height: 52px;
+        flex-basis: 52px;
+    }
+
+    .category-hero-header__icon img {
+        width: 30px;
+        height: 30px;
+    }
+
+    .category-grid {
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
+}
+/*
+ * The homepage is a curated entry point, not the full catalogue, so the list
+ * is capped rather than unbounded. No overflow clipping: it would break the
+ * sticky/scroll behaviour of the listing area.
+ */
+.home-products .product-grid {
+    max-height: 2400px;
+    overflow: hidden;
+}
+
+.home-page .category-products .category-empty {
+    min-height: 220px;
+}
+
+/* ==========================================================================
+   Header colour intent
+   "Hirdetésfeladás" is the only white element in the bar; every other nav item,
+   auth link and the search submit button reads as near-black. Black on white
+   also gives these controls a comfortable contrast ratio.
+   ========================================================================== */
+
+.navbar__nav a,
+.navbar__nav a:visited,
+.navbar__mobile-nav a,
+.navbar__mobile-nav a:visited {
+    color: #111827;
+}
+
+.navbar__nav a:hover,
+.navbar__mobile-nav a:hover {
+    color: #111827;
+    background: #f3f5f7;
+}
+
+.auth-link,
+.auth-link:visited {
+    color: #111827;
+    font-weight: 600;
+}
+
+.auth-link:hover {
+    color: #111827;
+}
+
+.navbar__logout,
+.navbar__mobile-logout {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    background: transparent;
+    color: #111827;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.navbar__logout:hover,
+.navbar__mobile-logout:hover {
+    color: #111827;
+    background: #f3f5f7;
+}
+
+.navbar__user {
+    color: #111827;
+    font-weight: 600;
+}
+
+/* The white CTA keeps its own colours and must win over the rules above. */
+.navbar__nav .post-listing-button,
+.navbar__nav .post-listing-button:visited,
+.navbar__mobile-nav .post-listing-button,
+.navbar__mobile-nav .post-listing-button:visited {
+    color: var(--ui-ink);
+    background: #fff;
+}
+
+.navbar__nav .post-listing-button:hover,
+.navbar__mobile-nav .post-listing-button:hover {
+    color: var(--ui-brand-dark);
+    background: var(--ui-brand-soft);
+}
+
+.navbar__mobile-nav .post-listing-button--mobile {
+    justify-content: flex-start;
+    margin-block: 4px;
+}
+
+/* Primary search action: black instead of the brand fill. */
+.home-hero__search button {
+    background: #111827;
+    color: #fff;
+}
+
+.home-hero__search button:hover {
+    background: #000;
+}
+
+/* ==========================================================================
+   Single-column listing rows
+   One product per line. The card becomes a horizontal row: thumbnail on the
+   left, details beside it, so a full-width row still reads as a tidy card
+   rather than a stretched column.
+   ========================================================================== */
+
+.product-grid .category-product-card {
+    display: grid;
+    grid-template-columns: clamp(112px, 16vw, 168px) minmax(0, 1fr);
+    grid-template-areas: 'image body';
+    align-items: stretch;
+    padding: 0;
+}
+
+.product-grid .category-product-card__image {
+    grid-area: image;
+    aspect-ratio: auto;
+    min-height: 100%;
+    padding: 12px;
+    border-right: 1px solid var(--ui-line);
+    border-radius: 0;
+}
+
+.product-grid .category-product-card__body {
+    grid-area: body;
+    align-content: center;
+    gap: 6px;
+    padding: 16px 20px;
+}
+
+.product-grid .category-product-card__body h3 {
+    min-height: 0;
+    -webkit-line-clamp: 2;
+}
+
+/* The store line stays on one line so every row keeps the same height. */
+.product-grid .category-product-card__store {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.product-grid .category-product-card__store > :first-child,
+.product-grid .category-product-card__store {
+    text-overflow: ellipsis;
+}
+
+.product-grid .product-store-rating {
+    flex: 0 0 auto;
+}
+
+@media (max-width: 520px) {
+    .product-grid .category-product-card {
+        grid-template-columns: 96px minmax(0, 1fr);
+    }
+
+    .product-grid .category-product-card__image {
+        padding: 8px;
+    }
+
+    .product-grid .category-product-card__body {
+        padding: 12px 14px;
+    }
 }

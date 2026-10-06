@@ -13,10 +13,13 @@ import {
 } from '../api/categories';
 import { getCategoryIcon } from '../utils/categoryIcons';
 import Hero from '../components/Hero';
-import useMarketplaceSearch from '../hooks/useMarketplaceSearch';
+import PostListingButton from '../components/PostListingButton';
+import { useAuth } from '../context/AuthContext';
+import useMarketplaceSearch, { PRODUCTS_ANCHOR_ID } from '../hooks/useMarketplaceSearch';
 import { getCategoryScopeIds } from '../utils/marketplaceFilters';
 export default function Category() {
     const params = useParams();
+    const { user, isAuthenticated } = useAuth();
     /*
     |--------------------------------------------------------------------------
     | React Router
@@ -213,6 +216,19 @@ export default function Category() {
     };
     const hasChildren =
         children.length > 0;
+    /*
+    |--------------------------------------------------------------------------
+    | Contextual listing CTA
+    |--------------------------------------------------------------------------
+    | The call to action carries the category the visitor is browsing so a new
+    | listing is naturally filed under the same branch of the tree.
+    */
+    const listingPath = isAuthenticated
+        ? `${user?.store ? '/seller/products/create' : '/seller/store/create'}?category=${encodeURIComponent(data.category.slug)}`
+        : `/register?category=${encodeURIComponent(data.category.slug)}`;
+    const listingLabel = isAuthenticated && user?.store
+        ? 'Hirdetés feladása ide'
+        : 'Hirdetésfeladás';
     /*
     |--------------------------------------------------------------------------
     | Breadcrumb URL helper
@@ -439,6 +455,44 @@ export default function Category() {
                     )
                 )}
             </nav>
+            <header className="category-hero-header">
+                <div className="category-hero-header__meta">
+                    <div className="category-hero-header__icon" aria-hidden="true">
+                        <img
+                            src={getCategoryIcon(data.category.icon, data.category.icon_key)}
+                            alt=""
+                        />
+                    </div>
+                    <div>
+                        <p className="eyebrow">{
+                            breadcrumb.length > 1
+                                ? breadcrumb[breadcrumb.length - 2].name
+                                : 'Kategória'
+                        }</p>
+                        <h1 className="category-hero-header__title">
+                            {data.category.name}
+                        </h1>
+                        <p className="category-hero-header__stats">
+                            {marketplace.loading
+                                ? 'Találatok betöltése...'
+                                : <>
+                                    <strong>
+                                        {Number(products.total).toLocaleString('hu-HU')}
+                                    </strong>
+                                    {' '}aktív hirdetés
+                                    {hasChildren && (
+                                        <>{' · '}{children.length} alkategória</>
+                                    )}
+                                </>
+                            }
+                        </p>
+                    </div>
+                </div>
+
+                <Link to={listingPath} className="post-listing-button">
+                    {listingLabel}
+                </Link>
+            </header>
             {/* ========================================================== */}
             {/* Category browser                                             */}
             {/* ========================================================== */}
@@ -446,7 +500,7 @@ export default function Category() {
                 <div className="category-browser__header">
                     <div>
                         <p className="eyebrow">
-                            Kategória
+                            Alkategóriák
                         </p>
                         <h2>
                             {
@@ -493,7 +547,7 @@ export default function Category() {
                     | Products are displayed directly inside the white category container.
                     |--------------------------------------------------------------------------
                     */
-                    <div className="category-browser__products">
+                    <div className="category-browser__products" id={PRODUCTS_ANCHOR_ID}>
                         {renderProducts()}
                     </div>
                 )}
@@ -502,7 +556,7 @@ export default function Category() {
             {/* Products for categories that have children                  */}
             {/* ========================================================== */}
             {hasChildren && (
-                <section className="category-products">
+                <section className="category-products" id={PRODUCTS_ANCHOR_ID}>
                     {renderProducts()}
                 </section>
             )}

@@ -161,8 +161,9 @@ class ProductController extends Controller
         $search = trim($validated['search'] ?? '');
         if ($search !== '') {
             $pattern = $this->likePattern($search);
-            $query->where(fn ($q) => $q->whereRaw("name LIKE ? ESCAPE '!'", [$pattern])
-                ->orWhereRaw("description LIKE ? ESCAPE '!'", [$pattern]));
+            // Match the product title only: a hit in a long description reads as
+            // an unrelated result when the card shows just the name.
+            $query->whereRaw("name LIKE ? ESCAPE '!'", [$pattern]);
         }
         if (isset($validated['category_ids'])) $this->filterCategories($query, $validated['category_ids']);
         if (isset($validated['category_id'])) $this->filterCategories($query, [$validated['category_id']]);
