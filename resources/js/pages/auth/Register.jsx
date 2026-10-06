@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 
 export default function Register() {
     const navigate = useNavigate();
     const { register } = useAuth();
+    const toast = useToast();
 
     const [form, setForm] = useState({
         name: '',
@@ -40,6 +42,8 @@ export default function Register() {
             const response = await register(form);
             const role = response.user?.role;
 
+            toast.success('Sikeres regisztráció.');
+
             if (role === 'seller') {
                 navigate('/seller');
             } else if (role === 'admin') {
@@ -48,10 +52,11 @@ export default function Register() {
                 navigate('/buyer');
             }
         } catch (err) {
-            setError(
+            const message =
                 err.message ||
-                'Sikertelen regisztráció.'
-            );
+                'Sikertelen regisztráció.';
+            setError(message);
+            toast.error(message);
         } finally {
             setSubmitting(false);
         }

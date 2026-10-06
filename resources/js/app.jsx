@@ -4,6 +4,8 @@ import { RouterProvider } from 'react-router/dom';
 
 import { router } from './router';
 import { AuthProvider } from './context/AuthContext';
+import { ToastProvider } from './context/ToastContext';
+import { ConfirmProvider } from './context/ConfirmContext';
 
 import './styles/app.css';
 
@@ -16,7 +18,11 @@ if (!rootElement) {
 createRoot(rootElement).render(
     <React.StrictMode>
         <AuthProvider>
-            <RouterProvider router={router} />
+            <ToastProvider>
+                <ConfirmProvider>
+                    <RouterProvider router={router} />
+                </ConfirmProvider>
+            </ToastProvider>
         </AuthProvider>
     </React.StrictMode>,
 );

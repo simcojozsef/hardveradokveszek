@@ -14,7 +14,11 @@ import {
 } from '../../api/seller';
 import ProductFilterFields from '../../components/ProductFilterFields';
 import { EMPTY_PRODUCT_FILTERS, productFiltersFromApi, productFilterPayload, formatApiError } from '../../utils/productFilters';
+import { useConfirm } from '../../context/ConfirmContext';
+import { useToast } from '../../context/ToastContext';
 export default function EditProduct() {
+    const confirm = useConfirm();
+    const toast = useToast();
     const { id } = useParams();
     const [categories, setCategories] = useState([]);
     const [product, setProduct] = useState(null);
@@ -193,9 +197,12 @@ export default function EditProduct() {
         }
     }
     async function handleDeleteImage(image) {
-        const confirmed = window.confirm(
-            `Biztosan törölni szeretnéd ezt a képet?`,
-        );
+        const confirmed = await confirm({
+            message: 'Biztosan törlöd ezt a képet?',
+            confirmLabel: 'Igen',
+            cancelLabel: 'Nem',
+            tone: 'danger',
+        });
         if (!confirmed) {
             return;
         }

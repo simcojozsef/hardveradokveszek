@@ -5,6 +5,8 @@ import { getMyOrders, confirmOrderReceipt,getRefundProof } from '../../api/buyer
 import RefundForm from './RefundForm';
 
 import BuyerMessageNotice from '../../components/BuyerMessageNotice';
+import { useConfirm } from '../../context/ConfirmContext';
+import { useToast } from '../../context/ToastContext';
 
 const orderStatusLabels = {
 
@@ -101,6 +103,10 @@ function formatCountdown(time) {
 }
 
 export default function Dashboard() {
+
+    const confirm = useConfirm();
+
+    const toast = useToast();
 
     const [orders, setOrders] = useState([]);
 
@@ -212,7 +218,7 @@ export default function Dashboard() {
 
                 : 'Biztosan nem kaptad meg ezt a rendelést?';
 
-        if (!window.confirm(message)) {
+        if (!(await confirm({ message }))) {
 
             return;
 

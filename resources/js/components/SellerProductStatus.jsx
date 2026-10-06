@@ -2,9 +2,13 @@ import React, { useState } from 'react';
 import { updateProductListingStatus } from '../api/productLifecycle';
 import { formatApiError } from '../utils/productFilters';
 import { LISTING_LABELS, formatListingDate, listingStatus } from '../utils/productLifecycle';
+import { useConfirm } from '../context/ConfirmContext';
+import { useToast } from '../context/ToastContext';
 import '../../css/product-lifecycle.css';
 
 export default function SellerProductStatus({ product, onChange, disabled = false }) {
+    const confirm = useConfirm();
+    const toast = useToast();
     const [pending, setPending] = useState('');
     const [error, setError] = useState('');
     const status = listingStatus(product);
@@ -15,14 +19,25 @@ export default function SellerProductStatus({ product, onChange, disabled = fals
     ].filter(([, date]) => formatListingDate(date));
     async function change(next) {
         if (pending || disabled) return;
-        if (next === 'sold' && !window.confirm(`Megjelölöd eladottként ezt a terméket?
-
-${product.name}`)) return;
+        if (next === 'sold') {
+            const confirmed = await confirm({
+                message: 'Megjelölöd eladottként ezt a terméket?',
+                detail: product.name,
+                confirmLabel: 'Igen',
+                cancelLabel: 'Nem',
+            });
+            if (!confirmed) return;
+        }
         setPending(next); setError('');
         try {
             const response = await updateProductListingStatus(product.id, next);
             onChange(response.data);
-        } catch (err) { setError(formatApiError(err)); }
+            toast.success(`A hirdetés állapota: ${LISTING_LABELS[listingStatus(response.data)] ?? next}.`);
+        } catch (err) {
+            const message = formatApiError(err);
+            setError(message);
+            toast.error(message);
+        }
         finally { setPending(''); }
     }
     return (

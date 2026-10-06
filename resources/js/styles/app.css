@@ -9566,3 +9566,263 @@ button { cursor: pointer; }
         padding: 1px 6px;
     }
 }
+
+/* ==========================================================================
+   Toast notifications
+   Top-right stack. Fixed so it survives page changes, and capped in height so
+   a burst of messages can never cover the interface.
+   ========================================================================== */
+
+.toast-stack {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: min(380px, calc(100vw - 32px));
+    max-height: calc(100vh - 40px);
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.toast {
+    display: grid;
+    grid-template-columns: 22px minmax(0, 1fr) 26px;
+    align-items: start;
+    gap: 12px;
+    padding: 13px 14px;
+    border: 1px solid var(--ui-line);
+    border-left: 3px solid var(--ui-brand);
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 16px 40px rgba(18, 47, 62, 0.16);
+    pointer-events: auto;
+    animation: toast-in 0.22s ease-out;
+}
+
+@keyframes toast-in {
+    from {
+        opacity: 0;
+        transform: translateX(16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .toast {
+        animation: none;
+    }
+}
+
+.toast__icon {
+    display: grid;
+    place-items: center;
+    height: 22px;
+    color: var(--ui-muted);
+}
+
+.toast__icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+.toast__content {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+}
+
+.toast__title {
+    color: var(--ui-ink);
+    font-size: 0.9rem;
+}
+
+.toast__message {
+    color: var(--ui-ink);
+    font-size: 0.9rem;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+
+.toast__close {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--ui-muted);
+    cursor: pointer;
+    transition: background 0.18s ease, color 0.18s ease;
+}
+
+.toast__close:hover {
+    background: #f3f5f7;
+    color: var(--ui-ink);
+}
+
+.toast__close svg {
+    width: 16px;
+    height: 16px;
+}
+
+.toast--success {
+    border-left-color: #16a34a;
+}
+
+.toast--success .toast__icon {
+    color: #16a34a;
+}
+
+.toast--error {
+    border-left-color: #dc2626;
+}
+
+.toast--error .toast__icon {
+    color: #dc2626;
+}
+
+.toast--warning {
+    border-left-color: #d97706;
+}
+
+.toast--warning .toast__icon {
+    color: #d97706;
+}
+
+.toast--info {
+    border-left-color: var(--ui-brand);
+}
+
+.toast--info .toast__icon {
+    color: var(--ui-brand);
+}
+
+@media (max-width: 520px) {
+    .toast-stack {
+        top: 12px;
+        right: 12px;
+        left: 12px;
+        width: auto;
+    }
+}
+
+/* ==========================================================================
+   Confirm dialog
+   Replaces window.confirm() with a styled modal: "Biztosan szeretnéd?" with
+   Igen / Nem.
+   ========================================================================== */
+
+.confirm-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2100;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    background: rgba(15, 32, 40, 0.42);
+    backdrop-filter: blur(2px);
+    animation: confirm-fade 0.16s ease-out;
+}
+
+@keyframes confirm-fade {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .confirm-overlay {
+        animation: none;
+    }
+}
+
+.confirm-dialog {
+    width: min(440px, 100%);
+    padding: 24px;
+    border: 1px solid var(--ui-line);
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: 0 26px 60px rgba(15, 32, 40, 0.26);
+}
+
+.confirm-dialog__title {
+    margin: 0;
+    color: var(--ui-ink);
+    font-size: 1.15rem;
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+}
+
+.confirm-dialog__message {
+    margin: 10px 0 0;
+    color: var(--ui-ink);
+    font-size: 0.94rem;
+    line-height: 1.5;
+}
+
+.confirm-dialog__detail {
+    margin: 8px 0 0;
+    color: var(--ui-muted);
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.confirm-dialog__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 22px;
+}
+
+.confirm-dialog__cancel,
+.confirm-dialog__confirm {
+    min-height: 42px;
+    padding: 0 20px;
+    border-radius: 11px;
+    font-size: 0.92rem;
+    font-weight: 650;
+    cursor: pointer;
+    transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+.confirm-dialog__cancel {
+    border: 1px solid var(--ui-line);
+    background: #fff;
+    color: #111827;
+}
+
+.confirm-dialog__cancel:hover {
+    background: #f3f5f7;
+}
+
+.confirm-dialog__confirm {
+    border: 1px solid var(--ui-brand);
+    background: var(--ui-brand);
+    color: #fff;
+}
+
+.confirm-dialog__confirm:hover {
+    background: var(--ui-brand-dark);
+    border-color: var(--ui-brand-dark);
+}
+
+.confirm-dialog__confirm--danger {
+    border-color: #dc2626;
+    background: #dc2626;
+}
+
+.confirm-dialog__confirm--danger:hover {
+    border-color: #b91c1c;
+    background: #b91c1c;
+}

@@ -3,7 +3,12 @@ import { Link } from 'react-router';
 import { getMyProducts, deleteProduct } from '../../api/seller';
 import SellerProductStatus from '../../components/SellerProductStatus';
 import { formatApiError } from '../../utils/productFilters';
+import { useToast } from '../../context/ToastContext';
+import { useConfirm } from '../../context/ConfirmContext';
+
 export default function Products() {
+    const toast = useToast();
+    const confirm = useConfirm();
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -19,7 +24,11 @@ export default function Products() {
                 const response = await getMyProducts(page);
                 if (!cancelled) { setProducts(response.data ?? []); setPagination(response.meta ?? null); }
             } catch (err) {
-                if (!cancelled) setError(formatApiError(err));
+                if (!cancelled) {
+                    const message = formatApiError(err);
+                    setError(message);
+                    toast.error(message);
+                }
             } finally {
                 if (!cancelled) setLoading(false);
             }
@@ -28,18 +37,33 @@ export default function Products() {
         return () => { cancelled = true; };
     }, [page]);
     async function handleDelete(product) {
-        if (deletingId !== null || !window.confirm(`Biztosan törölni szeretnéd ezt a terméket?\n\n${product.name}`)) return;
+        if (deletingId !== null) return;
+
+        const confirmed = await confirm({
+            message: 'Biztosan törlöd ezt a terméket?',
+            detail: product.name,
+            confirmLabel: 'Igen',
+            cancelLabel: 'Nem',
+            tone: 'danger',
+        });
+        if (!confirmed) return;
+
         try {
             setDeletingId(product.id);
             setError('');
             await deleteProduct(product.id);
+            toast.success('A termék törölve.');
             if (products.length === 1 && page > 1) setPage((current) => current - 1);
             else {
                 setProducts((current) => current.filter((item) => item.id !== product.id));
                 setPagination((current) => current ? ({ ...current, total: Math.max(0, current.total - 1),
                     last_page: Math.max(1, Math.ceil((current.total - 1) / current.per_page)) }) : null);
             }
-        } catch (err) { setError(formatApiError(err)); }
+        } catch (err) {
+            const message = formatApiError(err);
+            setError(message);
+            toast.error(message);
+        }
         finally { setDeletingId(null); }
     }
     if (loading) return <div className="seller-page"><p>Termékek betöltése...</p></div>;

@@ -6,7 +6,11 @@ import {
     uploadStoreLogo,
     deleteStoreLogo,
 } from '../../api/seller';
+import { useToast } from '../../context/ToastContext';
+import { useConfirm } from '../../context/ConfirmContext';
 export default function Store() {
+    const toast = useToast();
+    const confirm = useConfirm();
     const [store, setStore] = useState(null);
     const [form, setForm] = useState({
         name: '',
@@ -64,11 +68,12 @@ export default function Store() {
                 is_active: form.is_active,
             });
             setStore(response.data);
-            setSuccess(
-                'Az üzlet adatai sikeresen frissítve.'
+            toast.success(
+                'Az üzlet adatai mentve.'
             );
         } catch (err) {
             setError(err.message);
+            toast.error(err.message);
         } finally {
             setSaving(false);
         }
@@ -109,18 +114,22 @@ export default function Store() {
         try {
             const response = await uploadStoreLogo(file);
             setStore(response.data);
-            setSuccess('Az üzlet logója sikeresen frissítve.');
+            toast.success('Az üzlet logója frissítve.');
         } catch (err) {
             setError(err.message);
+            toast.error(err.message);
         } finally {
             setUploadingLogo(false);
             event.target.value = '';
         }
     }
     async function handleLogoDelete() {
-        const confirmed = window.confirm(
-            'Biztosan törölni szeretnéd az üzlet logóját?'
-        );
+        const confirmed = await confirm({
+            message: 'Biztosan törlöd az üzlet logóját?',
+            confirmLabel: 'Igen',
+            cancelLabel: 'Nem',
+            tone: 'danger',
+        });
         if (!confirmed) {
             return;
         }
@@ -130,9 +139,10 @@ export default function Store() {
         try {
             const response = await deleteStoreLogo();
             setStore(response.data);
-            setSuccess('Az üzlet logója törölve.');
+            toast.success('Az üzlet logója törölve.');
         } catch (err) {
             setError(err.message);
+            toast.error(err.message);
         } finally {
             setUploadingLogo(false);
         }

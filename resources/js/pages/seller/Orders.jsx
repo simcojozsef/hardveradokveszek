@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { getMyOrders, updateMyOrderStatus } from '../../api/seller';
 import RefundDetails from './RefundDetails';
+import { useConfirm } from '../../context/ConfirmContext';
+import { useToast } from '../../context/ToastContext';
 
 const statusLabels = {
     pending: 'Feldolgozás alatt',
@@ -47,6 +49,8 @@ function formatRemainingTime(deadline) {
 }
 
 export default function Orders() {
+    const confirm = useConfirm();
+    const toast = useToast();
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -90,9 +94,11 @@ export default function Orders() {
         }
 
         if (
-            !window.confirm(
-                `Biztosan "${label}" állapotba állítod ezt a rendelést?`
-            )
+            !(await confirm({
+                message: `Biztosan "${label}" állapotba állítod ezt a rendelést?`,
+                confirmLabel: 'Igen',
+                cancelLabel: 'Nem',
+            }))
         ) {
             return;
         }

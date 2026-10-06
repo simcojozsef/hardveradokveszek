@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 
 export default function Login() {
     const navigate = useNavigate();
     const { login } = useAuth();
+    const toast = useToast();
 
     const [form, setForm] = useState({
         email: '',
@@ -34,6 +36,8 @@ export default function Login() {
 
             const role = response.user?.role;
 
+            toast.success('Sikeres bejelentkezés.');
+
             if (role === 'seller') {
                 navigate('/seller');
             } else if (role === 'admin') {
@@ -42,10 +46,11 @@ export default function Login() {
                 navigate('/buyer');
             }
         } catch (err) {
-            setError(
+            const message =
                 err.message ||
-                'Sikertelen bejelentkezés.'
-            );
+                'Sikertelen bejelentkezés.';
+            setError(message);
+            toast.error(message);
         } finally {
             setSubmitting(false);
         }

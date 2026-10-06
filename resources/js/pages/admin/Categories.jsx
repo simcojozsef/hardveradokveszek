@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import CategoryParentSelect from '../../components/CategoryParentSelect';
 import { getCategoryIcon } from '../../utils/categoryIcons';
+import { useConfirm } from '../../context/ConfirmContext';
+import { useToast } from '../../context/ToastContext';
 
 async function getCategories() {
     const response = await fetch(
@@ -381,6 +383,8 @@ function CategoryNode({
 */
 
 export default function Categories() {
+    const confirm = useConfirm();
+    const toast = useToast();
     const [categories, setCategories] =
         useState([]);
 
@@ -530,9 +534,12 @@ export default function Categories() {
 
     async function handleDelete(category) {
         const confirmed =
-            window.confirm(
-                `Biztosan törölni szeretnéd a(z) "${category.name}" kategóriát?`
-            );
+            await confirm({
+                message: `Biztosan törlöd a(z) "${category.name}" kategóriát?`,
+                confirmLabel: 'Igen',
+                cancelLabel: 'Nem',
+                tone: 'danger',
+            });
 
         if (!confirmed) {
             return;
