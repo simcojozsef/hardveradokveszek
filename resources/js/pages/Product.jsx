@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { getProduct } from '../api/products';
 import ProductGallery from '../components/ProductGallery';
+import { listingStatus } from '../utils/productLifecycle';
 import { trackEvent } from '../api/analytics';
 import StoreChatButton from '../components/StoreChatButton';
 import '../../css/product-details.css';
@@ -117,6 +118,13 @@ export default function Product() {
 
                 <section className="product-page__info">
                     <h1>{product.name}</h1>
+
+                    {listingStatus(product) === 'in_progress' && (
+                        <span className="product-listing-badge product-listing-badge--reserved">
+                            Foglalt
+                        </span>
+                    )}
+
                     <p className="product-page__description">{product.description}</p>
                     <div className="product-page__price">
                         {Number(product.price).toLocaleString('hu-HU')} Ft

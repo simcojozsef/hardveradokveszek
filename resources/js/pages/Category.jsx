@@ -15,6 +15,7 @@ import { getCategoryIcon } from '../utils/categoryIcons';
 import Hero from '../components/Hero';
 import PostListingButton from '../components/PostListingButton';
 import ProductCardMeta from '../components/ProductCardMeta';
+import { listingStatus } from '../utils/productLifecycle';
 import { useAuth } from '../context/AuthContext';
 import useMarketplaceSearch, { PRODUCTS_ANCHOR_ID } from '../hooks/useMarketplaceSearch';
 import { getCategoryScopeIds } from '../utils/marketplaceFilters';
@@ -315,6 +316,12 @@ export default function Category() {
                                             <span>
                                                 Nincs
                                                 kép
+                                            </span>
+                                        )}
+
+                                        {listingStatus(product) === 'in_progress' && (
+                                            <span className="product-listing-badge product-listing-badge--reserved product-listing-badge--overlay">
+                                                Foglalt
                                             </span>
                                         )}
                                     </div>

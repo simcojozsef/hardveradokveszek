@@ -49,7 +49,11 @@ export default function SellerProductStatus({ product, onChange, disabled = fals
             {editable && <div className="seller-listing-status__actions">
                 <button type="button" className="seller-button" disabled={disabled || Boolean(pending)}
                     onClick={() => change(status === 'in_progress' ? 'available' : 'in_progress')}>
-                    {pending && pending !== 'sold' ? 'Mentés...' : status === 'in_progress' ? 'Visszaállítás elérhetőre' : 'Értékesítés alatt'}
+                    {pending && pending !== 'sold'
+                        ? 'Mentés...'
+                        : status === 'in_progress'
+                            ? 'Visszaállítom értékesítésre'
+                            : 'Megjelölés foglaltként'}
                 </button>
                 <button type="button" className="seller-button" disabled={disabled || Boolean(pending)} onClick={() => change('sold')}>
                     {pending === 'sold' ? 'Mentés...' : 'Megjelölés eladottként'}

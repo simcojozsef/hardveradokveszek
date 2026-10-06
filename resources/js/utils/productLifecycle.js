@@ -1,5 +1,5 @@
 export const LISTING_LABELS = {
-    available: 'Elérhető', in_progress: 'Értékesítés alatt',
+    available: 'Elérhető', in_progress: 'Foglalt',
     sold: 'Eladott', expired: 'Lejárt termék', removed: 'Eltávolított',
 };
 

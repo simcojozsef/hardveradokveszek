@@ -9,7 +9,7 @@ export default function ProductListingMeta({ product }) {
         <div className="product-listing-meta">
             {date && <span>Feladva: <time dateTime={posted}>{date}</time></span>}
             {listingStatus(product) === 'in_progress' && (
-                <span className="product-listing-badge">Értékesítés alatt</span>
+                <span className="product-listing-badge product-listing-badge--reserved">Foglalt</span>
             )}
         </div>
     );

@@ -72,7 +72,7 @@ export default function Dashboard() {
         );
     }
     return (
-        <main className="page seller-dashboard">
+        <main className="page seller-page seller-dashboard">
             <header className="seller-dashboard__header">
                 <div>
                     <p className="eyebrow">Eladó</p>
@@ -111,7 +111,12 @@ export default function Dashboard() {
                         </Link>
                     </div>
                 ) : (
-                    <div className="seller-dashboard-products">
+                    /*
+                     * Mirrors the Termékek page: one compact row per product,
+                     * thumbnail on the left and the details beside it, with a
+                     * link through to the full list.
+                     */
+                    <div className="seller-product-table">
                         {products.map((product) => {
                             const primaryImage =
                                 product.images?.find(
@@ -121,80 +126,77 @@ export default function Dashboard() {
                             return (
                                 <article
                                     key={product.id}
-                                    className="seller-dashboard-product"
+                                    className="seller-product-item"
                                 >
-                                    <Link
-                                        to={`/seller/products/${product.id}/edit`}
-                                        className="seller-dashboard-product__image"
-                                    >
+                                    <div className="seller-product-item__image">
                                         {primaryImage ? (
                                             <img
                                                 src={primaryImage.url}
                                                 alt={product.name}
                                             />
                                         ) : (
-                                            <div className="seller-dashboard-product__placeholder">
-                                                Nincs kép
-                                            </div>
+                                            <span>Nincs kép</span>
                                         )}
-                                    </Link>
-                                    <div className="seller-dashboard-product__content">
-                                        <div className="seller-dashboard-product__top">
-                                            <div>
-                                                <p className="seller-dashboard-product__store-label">
-                                                    Termék
-                                                </p>
-                                                <h3>
-                                                    {product.name}
-                                                </h3>
-                                            </div>
-                                            <span
-                                                className={
-                                                    product.is_active
-                                                        ? 'product-status product-status--active'
-                                                        : 'product-status product-status--inactive'
-                                                }
-                                            >
-                                                {product.is_active
-                                                    ? 'Aktív'
-                                                    : 'Inaktív'}
-                                            </span>
-                                        </div>
-                                        <p className="seller-dashboard-product__description">
-                                            {product.description ||
-                                                'Nincs termékleírás.'}
+                                    </div>
+
+                                    <div className="seller-product-item__main">
+                                        <h3>{product.name}</h3>
+                                        <p>
+                                            {[
+                                                product.brand,
+                                                product.model,
+                                            ]
+                                                .filter(Boolean)
+                                                .join(' · ')}
                                         </p>
-                                        <div className="seller-dashboard-product__meta">
-                                            <strong>
-                                                {Number(
-                                                    product.price
-                                                ).toLocaleString(
-                                                    'hu-HU'
-                                                )}{' '}
-                                                Ft
-                                            </strong>
-                                            <span>
-                                                {product.stock} db készleten
-                                            </span>
-                                        </div>
-                                        <div className="seller-dashboard-product__actions">
-                                            <Link
-                                                to={`/seller/products/${product.id}/edit`}
-                                                className="seller-button"
-                                            >
-                                                Szerkesztés
-                                            </Link>
-                                            <Link
-                                                to={`/product/${product.id}`}
-                                                className="seller-button"
-                                            >
-                                                Megtekintés →
-                                            </Link>
-                                        </div>
+                                        <p>
+                                            {[
+                                                product.county,
+                                                product.settlement,
+                                            ]
+                                                .filter(Boolean)
+                                                .join(' · ')}
+                                        </p>
+                                    </div>
+
+                                    <div className="seller-product-item__price">
+                                        {Number(
+                                            product.price
+                                        ).toLocaleString('hu-HU')}{' '}
+                                        Ft
+                                    </div>
+
+                                    <div className="seller-product-item__stock">
+                                        {product.stock} db
+                                    </div>
+
+                                    <div className="seller-product-item__status">
+                                        <span>
+                                            {product.is_active
+                                                ? 'Aktív'
+                                                : 'Inaktív'}
+                                        </span>
+                                    </div>
+
+                                    <div className="seller-product-item__actions">
+                                        <Link
+                                            to={`/seller/products/${product.id}/edit`}
+                                            className="seller-button"
+                                        >
+                                            Szerkesztés
+                                        </Link>
                                     </div>
                                 </article>
                             );
                         })}
+                    </div>
+                )}
+
+                {products.length > 0 && (
+                    <div className="seller-products-card__footer">
+                        <Link to="/seller/products" className="secondary-button">
+                            Összes termék kezelése →
+                        </Link>
                     </div>
                 )}
             </section>

@@ -231,12 +231,23 @@ export default function EditProduct() {
                     ← Vissza
                 </Link>
             </div>
-            <section className="dashboard-card">
-                <h2>Hirdetés állapota</h2>
+            {/*
+             * Uses the same status block as the Termékek list, so the badge,
+             * dates and buttons read identically in both places.
+             */}
+            <section className="dashboard-card seller-status-card">
+                <div className="dashboard-card__header">
+                    <div>
+                        <p>Hirdetés</p>
+                        <h2>Hirdetés állapota</h2>
+                    </div>
+                </div>
                 <SellerProductStatus key={product.id} product={product}
                     onChange={(updated) => setProduct((current) => ({ ...current, ...updated }))}
                     disabled={submitting} />
-                <p>A szerkesztés nem hosszabbítja meg a 60 napos érvényességet.</p>
+                <p className="form-help">
+                    A szerkesztés nem hosszabbítja meg a 60 napos érvényességet.
+                </p>
             </section>
             <form
                 className="product-form"

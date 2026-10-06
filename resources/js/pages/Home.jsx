@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 import Hero from '../components/Hero';
 import PostListingButton from '../components/PostListingButton';
 import ProductCardMeta from '../components/ProductCardMeta';
+import { listingStatus } from '../utils/productLifecycle';
 import useMarketplaceSearch, { PRODUCTS_ANCHOR_ID } from '../hooks/useMarketplaceSearch';
 import { getTopCategories } from '../api/categories';
 import { getCategoryIcon } from '../utils/categoryIcons';
@@ -189,6 +190,12 @@ export default function Home() {
                                             />
                                         ) : (
                                             <span>Nincs kép</span>
+                                        )}
+
+                                        {listingStatus(product) === 'in_progress' && (
+                                            <span className="product-listing-badge product-listing-badge--reserved product-listing-badge--overlay">
+                                                Foglalt
+                                            </span>
                                         )}
                                     </div>
                                     <div className="category-product-card__body">
