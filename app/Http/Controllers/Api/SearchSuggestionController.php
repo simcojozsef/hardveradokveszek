@@ -73,9 +73,8 @@ class SearchSuggestionController extends Controller
         })->values();
 
         $products = Product::query()
+            ->visibleForSale()
             ->select(['id', 'name', 'description', 'price'])
-            ->where('is_active', true)
-            ->whereHas('store', fn ($storeQuery) => $storeQuery->where('is_active', true))
             ->where(function ($query) use ($contains) {
                 $query->where('name', 'like', $contains)
                     ->orWhere('description', 'like', $contains);
@@ -87,8 +86,7 @@ class SearchSuggestionController extends Controller
             ->get();
 
         $productSuggestions = $products->map(function ($product) {
-            $image = $product->images->firstWhere('is_primary', true)
-                ?? $product->images->first();
+            $image = $product->primaryImage();
 
             return [
                 'id' => $product->id,

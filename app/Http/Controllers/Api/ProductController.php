@@ -10,6 +10,7 @@ use App\Models\Store;
 use App\Models\County;
 use App\Models\Settlement;
 use App\Support\ProductLocation;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -88,7 +89,10 @@ class ProductController extends Controller
         $data = $request->validate([
             'listing_status' => ['required', 'in:available,in_progress,sold'],
         ]);
-        $updated = app(ProductListingLifecycle::class)->changeStatus($product, $data['listing_status']);
+        $lifecycle = app(ProductListingLifecycle::class);
+        // Same expiry/transition guard the service applies before persisting.
+        $lifecycle->resolveTransition($product, $data['listing_status']);
+        $updated = $lifecycle->changeStatus($product, $data['listing_status']);
         return new ProductResource($updated->load(['store', 'images', 'categories']));
     }
 
@@ -134,6 +138,26 @@ class ProductController extends Controller
         }
         $query = Product::query()->visibleForSale()
             ->with(['store', 'images', 'categories']);
+        $products = $this->applyMarketplaceFilters($query, $validated, $request)
+            ->latest()->orderByDesc('id')->paginate($validated['per_page'] ?? 24);
+
+        $data = $products->getCollection()
+            ->map(fn (Product $product) => $this->marketplaceProductData($product))
+            ->all();
+
+        return response()->json(['data' => $data, 'meta' => [
+            'current_page' => $products->currentPage(), 'last_page' => $products->lastPage(),
+            'per_page' => $products->perPage(), 'total' => $products->total(),
+            'from' => $products->firstItem(), 'to' => $products->lastItem(),
+        ]]);
+    }
+
+    /**
+     * Apply every marketplace filter to the base visible-for-sale query.
+     * OR within each group, AND between different filters.
+     */
+    private function applyMarketplaceFilters(Builder $query, array $validated, Request $request): Builder
+    {
         $search = trim($validated['search'] ?? '');
         if ($search !== '') {
             $pattern = $this->likePattern($search);
@@ -164,7 +188,6 @@ class ProductController extends Controller
         if ($store !== '') {
             $query->whereHas('store', fn ($q) => $q->whereRaw("name LIKE ? ESCAPE '!'", [$this->likePattern($store)]));
         }
-        // OR within each group, AND between different filters.
         $conditions = [];
         if ($request->boolean('new')) $conditions[] = 'new';
         if ($request->boolean('used')) $conditions[] = 'used';
@@ -191,48 +214,49 @@ class ProductController extends Controller
             $query->whereRaw("name NOT LIKE ? ESCAPE '!'", [$pattern])
                 ->where(fn ($q) => $q->whereNull('description')->orWhereRaw("description NOT LIKE ? ESCAPE '!'", [$pattern]));
         }
-        $products = $query->latest()->orderByDesc('id')->paginate($validated['per_page'] ?? 24);
-        $data = $products->getCollection()->map(function (Product $product) {
-            $primary = $product->images->firstWhere('is_primary', true) ?? $product->images->first();
-            return [
-                'id' => $product->id, 'category_id' => $product->category_id,
-                'category_ids' => array_values(array_unique(array_merge(
-                    $product->category_id !== null ? [(int) $product->category_id] : [],
-                    $product->categories->pluck('id')->map(fn ($id) => (int) $id)->all()
-                ))),
-                'name' => $product->name, 'slug' => $product->slug,
-                'description' => $product->description, 'price' => $product->price,
-                'stock' => $product->stock,
-                'listing_status' => $product->effectiveListingStatus(),
-                'posted_at' => $product->posted_at?->toISOString(),
-                'created_at' => $product->created_at?->toISOString(),
-                'expires_at' => $product->expires_at?->toISOString(),
-                'condition' => $product->condition, 'listing_type' => $product->listing_type,
-                'county_id' => $product->county_id, 'settlement_id' => $product->settlement_id,
-                'county' => $product->county, 'settlement' => $product->settlement,
-                'brand' => $product->brand, 'model' => $product->model,
-                'shipping_available' => $product->shipping_available,
-                'shipping_methods' => $product->shipping_methods ?? [],
-                'contains_ai' => $product->contains_ai,
-                'has_warranty' => $product->has_warranty,
-                'warranty_expires_at' => $product->warranty_expires_at?->format('Y-m-d'),
-                'personal_pickup' => $product->personal_pickup,
-                'image' => $primary ? asset('storage/' . $primary->path) : null,
-                'store' => $product->store ? [
-                    'id' => $product->store->id,
-                    'name' => $product->store->name,
-                    'slug' => $product->store->slug,
-                    'is_trusted_seller' => $product->store->is_trusted_seller,
-                    'positive_ratings_count' => (int) $product->store->positive_ratings_count,
-                    'negative_ratings_count' => (int) $product->store->negative_ratings_count,
-                ] : null,
-            ];
-        })->all();
-        return response()->json(['data' => $data, 'meta' => [
-            'current_page' => $products->currentPage(), 'last_page' => $products->lastPage(),
-            'per_page' => $products->perPage(), 'total' => $products->total(),
-            'from' => $products->firstItem(), 'to' => $products->lastItem(),
-        ]]);
+        return $query;
+    }
+
+    /**
+     * Marketplace card payload; includes the store summary block that the
+     * ProductResource does not carry.
+     */
+    private function marketplaceProductData(Product $product): array
+    {
+        $primary = $product->primaryImage();
+        return [
+            'id' => $product->id, 'category_id' => $product->category_id,
+            'category_ids' => array_values(array_unique(array_merge(
+                $product->category_id !== null ? [(int) $product->category_id] : [],
+                $product->categories->pluck('id')->map(fn ($id) => (int) $id)->all()
+            ))),
+            'name' => $product->name, 'slug' => $product->slug,
+            'description' => $product->description, 'price' => $product->price,
+            'stock' => $product->stock,
+            'listing_status' => $product->effectiveListingStatus(),
+            'posted_at' => $product->posted_at?->toISOString(),
+            'created_at' => $product->created_at?->toISOString(),
+            'expires_at' => $product->expires_at?->toISOString(),
+            'condition' => $product->condition, 'listing_type' => $product->listing_type,
+            'county_id' => $product->county_id, 'settlement_id' => $product->settlement_id,
+            'county' => $product->county, 'settlement' => $product->settlement,
+            'brand' => $product->brand, 'model' => $product->model,
+            'shipping_available' => $product->shipping_available,
+            'shipping_methods' => $product->shipping_methods ?? [],
+            'contains_ai' => $product->contains_ai,
+            'has_warranty' => $product->has_warranty,
+            'warranty_expires_at' => $product->warranty_expires_at?->format('Y-m-d'),
+            'personal_pickup' => $product->personal_pickup,
+            'image' => $primary ? asset('storage/' . $primary->path) : null,
+            'store' => $product->store ? [
+                'id' => $product->store->id,
+                'name' => $product->store->name,
+                'slug' => $product->store->slug,
+                'is_trusted_seller' => $product->store->is_trusted_seller,
+                'positive_ratings_count' => (int) $product->store->positive_ratings_count,
+                'negative_ratings_count' => (int) $product->store->negative_ratings_count,
+            ] : null,
+        ];
     }
     private function extractCategoryIds(array &$data): ?array
     {
@@ -247,7 +271,7 @@ class ProductController extends Controller
         // An unrelated PATCH must not alter the category selection.
         return null;
     }
-    private function filterCategories($query, array $ids): void
+    private function filterCategories(Builder $query, array $ids): void
     {
         // EXISTS avoids duplicate products and inflated totals for multi-category matches.
         $query->where(function ($q) use ($ids) {

@@ -34,7 +34,7 @@ class StoreChatController extends Controller
             ->with('images')
             ->whereKey($validated['product_id'])
             ->where('store_id', $store->id)
-            ->where('is_active', true)
+            ->visibleForSale()
             ->firstOrFail();
 
         // The migration's unique(store_id, buyer_id) prevents duplicate threads.
@@ -271,8 +271,7 @@ class StoreChatController extends Controller
 
     private function productData(Product $product): array
     {
-        $image = $product->images->firstWhere('is_primary', true)
-            ?? $product->images->first();
+        $image = $product->primaryImage();
 
         return [
             'id' => $product->id,

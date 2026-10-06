@@ -82,6 +82,16 @@ class Product extends Model
 
     public function store(): BelongsTo { return $this->belongsTo(Store::class); }
     public function images(): HasMany { return $this->hasMany(ProductImage::class)->orderBy('sort_order'); }
+
+    /**
+     * The image used in listings: the flagged primary one, falling back to the
+     * first image by sort order. Single source of truth for every endpoint.
+     */
+    public function primaryImage(): ?ProductImage
+    {
+        return $this->images->firstWhere('is_primary', true)
+            ?? $this->images->first();
+    }
     public function categories(): BelongsToMany
     {
         return $this->belongsToMany(Category::class, 'category_product')->withTimestamps();

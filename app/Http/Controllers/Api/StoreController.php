@@ -22,7 +22,7 @@ class StoreController extends Controller
 
         $store->load([
             'products' => fn ($query) => $query
-                ->where('is_active', true)
+                ->visibleForSale()
                 ->with('images')
                 ->latest(),
         ]);
