@@ -66,7 +66,7 @@ export default function Register() {
                         </div>
 
                         <p className="auth-card__eyebrow">
-                            HardverAdokVeszek
+                            GigaPiac
                         </p>
 
                         <h1>
@@ -74,7 +74,7 @@ export default function Register() {
                         </h1>
 
                         <p>
-                            Csatlakozz a HardverAdokVeszek piacteréhez.
+                            Csatlakozz a GigaPiac piacteréhez.
                         </p>
                     </div>
 

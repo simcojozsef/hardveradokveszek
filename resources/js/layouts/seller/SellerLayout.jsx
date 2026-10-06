@@ -7,7 +7,7 @@ export default function SellerLayout() {
         <div className="seller-layout">
             <aside className="seller-sidebar">
                 <Link to="/seller" className="seller-sidebar__brand">
-                    HardverAdokVeszek
+                    GigaPiac
                 </Link>
 
                 <nav className="seller-sidebar__nav">

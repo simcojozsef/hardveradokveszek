@@ -320,7 +320,7 @@ export default function Marketplace() {
             <header className="marketplace-header">
                 <div>
                     <p className="eyebrow">
-                        HardverAdokVeszek
+                        GigaPiac
                     </p>
                     <h1>
                         Piactér

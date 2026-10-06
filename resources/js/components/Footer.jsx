@@ -169,7 +169,7 @@ export default function Footer() {
             <div className="footer__bottom">
                 <div className="footer__bottom-inner">
                     <span>
-                        © {new Date().getFullYear()} HardverAdokVeszek
+                        © {new Date().getFullYear()} GigaPiac
                     </span>
 
                     <span>

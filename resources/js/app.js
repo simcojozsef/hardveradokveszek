@@ -4,7 +4,7 @@ import { createRoot } from 'react-dom/client';
 function App() {
     return (
         <div>
-            <h1>HardverAdokVeszek</h1>
+            <h1>GigaPiac</h1>
             <p>React is working.</p>
         </div>
     );

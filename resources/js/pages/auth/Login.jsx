@@ -60,7 +60,7 @@ export default function Login() {
                         </div>
 
                         <p className="auth-card__eyebrow">
-                            HardverAdokVeszek
+                            GigaPiac
                         </p>
 
                         <h1>

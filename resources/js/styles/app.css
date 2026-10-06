@@ -8933,3 +8933,27 @@ button { cursor: pointer; }
 .product-store-rating__negative {
     color: #be123c;
 }
+
+
+.auth-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.auth-link svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+.navbar__logout {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.navbar__logout svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}

@@ -10,7 +10,7 @@ export default function AdminLayout() {
                         Adminisztráció
                     </p>
 
-                    <h2>HardverAdokVeszek</h2>
+                    <h2>GigaPiac</h2>
                 </div>
 
                 <nav className="admin-nav">

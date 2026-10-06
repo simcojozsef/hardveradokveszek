@@ -1,10 +1,16 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
+        <link rel="icon" href="{{ asset('images/website-images/favicon.ico') }}" type="image/x-icon">
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>{{ $seoTitle ?? 'GigaPiac – Online piactér' }}</title>
+
+        <meta
+            name="description"
+            content="{{ $seoDescription ?? 'Vásárolj és adj el új vagy használt termékeket a GigaPiacon.' }}"
+        >
 
         @fonts
 

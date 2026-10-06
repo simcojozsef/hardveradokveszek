@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { useAuth } from '../context/AuthContext';
+import { FiLogIn, FiUserPlus, FiLogOut } from 'react-icons/fi';
 
 export default function Navbar() {
     const navigate = useNavigate();
@@ -49,7 +50,7 @@ export default function Navbar() {
                 >
                     <img
                         src="/images/website-images/logo.png"
-                        alt="HardverAdokVeszek"
+                        alt="GigaPiac"
                         className="navbar__logo"
                     />
                 </Link>
@@ -75,19 +76,20 @@ export default function Navbar() {
                                 className="navbar__logout"
                                 onClick={handleLogout}
                             >
-                                Kijelentkezés
+                                <span>Kijelentkezés</span>
+                                <FiLogOut aria-hidden="true" />
                             </button>
-
-
                         </>
                     ) : (
                         <>
-                            <Link to="/login">
-                                Bejelentkezés
+                            <Link to="/login" className="auth-link">
+                                <span>Bejelentkezés</span>
+                                <FiLogIn aria-hidden="true" />
                             </Link>
 
-                            <Link to="/register">
-                                Regisztráció
+                            <Link to="/register" className="auth-link">
+                                <span>Regisztráció</span>
+                                <FiUserPlus aria-hidden="true" />
                             </Link>
                         </>
                     )}

@@ -104,7 +104,7 @@ export default function CreateStore() {
                                 <div className="store-subdomain-preview">
                                     <span>Az üzleted címe:</span>
                                     <strong>
-                                        {form.slug.toLowerCase()}.hardveradokveszek.hu
+                                        {form.slug.toLowerCase()}.gigapiac.hu
                                     </strong>
                                 </div>
                             )}
