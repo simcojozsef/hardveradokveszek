@@ -234,6 +234,14 @@ export default function Hero({ search = '', setSearch, onSearch, filters: contro
                                 onChange={(event) => {
                                     setSearch(event.target.value);
                                     setOpen(true);
+                                    /*
+                                     * Typing means the user wants the live results,
+                                     * and those render directly under the search bar.
+                                     * Leaving the advanced panel open would push them
+                                     * below it, so collapse it on the first keystroke.
+                                     * The toggle still reopens it on demand.
+                                     */
+                                    setExtendedOpen(false);
                                 }}
                                 onFocus={() => query && setOpen(true)}
                                 onKeyDown={handleKeyDown}
