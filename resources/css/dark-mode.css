@@ -617,14 +617,21 @@
 
 /*
  * Card shells in the seller area.
- * Only the border is themed here: the dashboard/product cards keep their own
- * (transparent) surface in dark mode and must not gain a fill or a shadow.
+ * Only the border is themed for the list cards: the dashboard/product cards
+ * must stay transparent in dark mode. The store settings form is the
+ * exception, because its base rule paints a literal #fff that would other-
+ * wise stay white, so it gets a proper dark surface.
  */
 :root[data-theme="dark"] .dashboard-card,
 :root[data-theme="dark"] .seller-products-card,
-:root[data-theme="dark"] .seller-store-form .dashboard-card,
 :root[data-theme="dark"] .seller-page .dashboard-card {
     border-color: var(--ui-line);
+}
+
+:root[data-theme="dark"] .seller-store-form .dashboard-card {
+    background: #17222a;
+    border-color: var(--ui-line);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.35);
 }
 
 :root[data-theme="dark"] .dashboard-card h2,
