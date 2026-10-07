@@ -127,10 +127,14 @@ class AuthController extends Controller
         }
 
         if (!$user->hasVerifiedEmail()) {
-            // Let them recover a half-finished registration.
-            if (!$user->two_factor_code || $user->two_factor_expires_at?->isPast()) {
-                $this->otp->sendVerificationCode($user);
-            }
+            /*
+             * Always send a fresh code. Trying to be clever here ("only send
+             * when there is no live code") created a dead end: if an earlier
+             * code never reached the inbox but was still unexpired in the
+             * database, no new mail was sent and the user was locked out.
+             * Now the act of asking for a code always produces one.
+             */
+            $this->otp->sendVerificationCode($user);
 
             return response()->json([
                 'message' => 'Your email address is not verified yet.',
