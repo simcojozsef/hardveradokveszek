@@ -8621,7 +8621,9 @@ button { cursor: pointer; }
 
     width: min(100%, 1180px);
     margin-inline: auto;
+    margin-top: 60px;
     padding: 28px 20px 48px;
+    border-radius: 25px;
     box-sizing: border-box;
 }
 
@@ -8835,6 +8837,9 @@ button { cursor: pointer; }
 @media (max-width: 600px) {
     .store-page {
         padding: 18px 12px 32px;
+        /* Trim the top gap on phones so the header stays above the fold. */
+        margin-top: 32px;
+        border-radius: 18px;
     }
 
     .store-page .store-page__header {

@@ -599,6 +599,105 @@
 }
 
 /* ------------------------------------------------------------------
+   Seller area
+   The seller pages carry their own token set (--seller-text / muted /
+   border) plus several literal white surfaces, so both are re-declared
+   here: the tokens for text, and the surfaces for the cards and rows.
+   ------------------------------------------------------------------ */
+
+:root[data-theme="dark"] .seller-page,
+:root[data-theme="dark"] .seller-store-form,
+:root[data-theme="dark"] .seller-layout {
+    --seller-text: #e8eef1;
+    --seller-muted: #9db0b9;
+    --seller-border: #2b3a44;
+
+    color: var(--seller-text);
+}
+
+/* Card shells in the seller area. */
+:root[data-theme="dark"] .dashboard-card,
+:root[data-theme="dark"] .seller-products-card,
+:root[data-theme="dark"] .seller-store-form .dashboard-card,
+:root[data-theme="dark"] .seller-page .dashboard-card {
+    background: #17222a;
+    border-color: var(--ui-line);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.35);
+}
+
+:root[data-theme="dark"] .dashboard-card h2,
+:root[data-theme="dark"] .dashboard-card h3,
+:root[data-theme="dark"] .seller-store-form .dashboard-card h2 {
+    color: var(--ui-ink);
+}
+
+/* Product rows in the seller list (/seller and /seller/products). */
+:root[data-theme="dark"] .seller-product-item,
+:root[data-theme="dark"] .seller-page .seller-product-item {
+    background: transparent;
+    border-bottom-color: var(--ui-line);
+    color: var(--ui-ink);
+}
+
+:root[data-theme="dark"] .seller-product-item h3,
+:root[data-theme="dark"] .seller-product-item__price {
+    color: var(--ui-ink);
+}
+
+:root[data-theme="dark"] .seller-product-item__main p,
+:root[data-theme="dark"] .seller-product-item__stock,
+:root[data-theme="dark"] .seller-product-item__status {
+    color: var(--ui-muted);
+}
+
+:root[data-theme="dark"] .seller-product-item__image {
+    background: #101a20;
+    color: var(--ui-muted);
+}
+
+/* Seller store form: labels and helper text. */
+:root[data-theme="dark"] .seller-store-form .form-field > span,
+:root[data-theme="dark"] .seller-store-form .form-help,
+:root[data-theme="dark"] .seller-store-form .form-field small {
+    color: var(--ui-muted);
+}
+
+:root[data-theme="dark"] .seller-store-form .form-field input,
+:root[data-theme="dark"] .seller-store-form .form-field textarea {
+    background: #101a20;
+    border-color: #2b3a44;
+    color: var(--ui-ink);
+}
+
+:root[data-theme="dark"] .seller-store-form .store-url-box,
+:root[data-theme="dark"] .seller-store-form .store-subdomain-preview {
+    background: #101a20;
+    border-color: var(--ui-line);
+}
+
+/* Cards in the seller dashboard (product tiles with a big cover image). */
+:root[data-theme="dark"] .seller-dashboard-product {
+    background: #17222a;
+    border-color: var(--ui-line);
+}
+
+:root[data-theme="dark"] .seller-dashboard-product__description,
+:root[data-theme="dark"] .seller-dashboard-product__store-label,
+:root[data-theme="dark"] .seller-dashboard-product__meta span {
+    color: var(--ui-muted);
+}
+
+:root[data-theme="dark"] .seller-dashboard-product__top h3,
+:root[data-theme="dark"] .seller-dashboard-product__meta strong {
+    color: var(--ui-ink);
+}
+
+:root[data-theme="dark"] .seller-empty-products {
+    background: #17222a;
+    border-color: var(--ui-line);
+}
+
+/* ------------------------------------------------------------------
    Remaining refresh-layer surfaces that used a plain #fff
    ------------------------------------------------------------------ */
 
