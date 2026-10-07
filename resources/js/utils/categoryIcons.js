@@ -51,18 +51,13 @@ const categoryIcons = {
     nintendo: '/images/category-icons/nintendo.png',
 };
 
-function getApiOrigin() {
-    const configuredUrl = import.meta.env.VITE_API_URL;
-
-    if (configuredUrl) {
-        return configuredUrl
-            .replace(/\/api\/?$/, '')
-            .replace(/\/$/, '');
-    }
-
-    return 'http://localhost:8000';
-}
-
+/*
+ * Uploaded category icons live in Laravel's public storage. They must be
+ * requested from the same origin the app is served from, otherwise the
+ * browser treats them as a cross-origin (localhost) request and prompts
+ * for local network access. Product images already rely on server-built
+ * absolute URLs, so here we deliberately keep everything origin-relative.
+ */
 export function getCategoryIcon(icon, iconKey) {
     // 1. No uploaded icon -> use built-in icon
     if (!icon && iconKey && categoryIcons[iconKey]) {
@@ -79,21 +74,19 @@ export function getCategoryIcon(icon, iconKey) {
         return icon;
     }
 
-    const apiOrigin = getApiOrigin();
-
     // 4. Laravel storage path already has /storage/
     if (icon.startsWith('/storage/')) {
-        return `${apiOrigin}${icon}`;
+        return icon;
     }
 
     if (icon.startsWith('storage/')) {
-        return `${apiOrigin}/${icon}`;
+        return `/${icon}`;
     }
 
     // 5. Database stores paths like:
     //    categories/546/example.webp
     if (icon.startsWith('categories/')) {
-        return `${apiOrigin}/storage/${icon}`;
+        return `/storage/${icon}`;
     }
 
     // 6. Other absolute frontend paths
