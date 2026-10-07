@@ -615,14 +615,16 @@
     color: var(--seller-text);
 }
 
-/* Card shells in the seller area. */
+/*
+ * Card shells in the seller area.
+ * Only the border is themed here: the dashboard/product cards keep their own
+ * (transparent) surface in dark mode and must not gain a fill or a shadow.
+ */
 :root[data-theme="dark"] .dashboard-card,
 :root[data-theme="dark"] .seller-products-card,
 :root[data-theme="dark"] .seller-store-form .dashboard-card,
 :root[data-theme="dark"] .seller-page .dashboard-card {
-    background: #17222a;
     border-color: var(--ui-line);
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.35);
 }
 
 :root[data-theme="dark"] .dashboard-card h2,
@@ -698,6 +700,84 @@
 }
 
 /* ------------------------------------------------------------------
+   Seller listing status card (product edit page)
+   The status chip is a light teal pill with dark teal text, which vanishes
+   on the dark surface.
+   ------------------------------------------------------------------ */
+
+:root[data-theme="dark"] .seller-status-card .seller-listing-status > strong {
+    background: #14302c;
+    border-color: #1f4f49;
+    color: #7fd8cf;
+}
+
+:root[data-theme="dark"] .seller-status-card .seller-listing-status__dates dt {
+    color: var(--ui-muted);
+}
+
+:root[data-theme="dark"] .seller-status-card .seller-listing-status__dates dd {
+    color: var(--ui-ink);
+}
+
+/* ------------------------------------------------------------------
+   Category picker (product create/edit form)
+   The category names must read as plain white on the dark panel.
+   ------------------------------------------------------------------ */
+
+:root[data-theme="dark"] .category-picker {
+    border-color: var(--ui-line);
+}
+
+:root[data-theme="dark"] .category-picker legend,
+:root[data-theme="dark"] .category-picker__search,
+:root[data-theme="dark"] .category-picker__help,
+:root[data-theme="dark"] .category-picker__summary {
+    color: var(--ui-ink);
+}
+
+:root[data-theme="dark"] .category-picker__search input {
+    background: #101a20;
+    border-color: #2b3a44;
+    color: var(--ui-ink);
+}
+
+:root[data-theme="dark"] .category-picker__list {
+    background: #101a20;
+    border-color: var(--ui-line);
+}
+
+:root[data-theme="dark"] .category-picker__option {
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+}
+
+/* The option's own name and its parent path. */
+:root[data-theme="dark"] .category-picker__option-text,
+:root[data-theme="dark"] .category-picker__option-text strong {
+    color: #ffffff;
+}
+
+:root[data-theme="dark"] .category-picker__option-text small {
+    color: var(--ui-muted);
+    opacity: 1;
+}
+
+:root[data-theme="dark"] .category-picker__option:hover,
+:root[data-theme="dark"] .category-picker__option.is-selected {
+    background: rgba(56, 182, 214, 0.12);
+}
+
+:root[data-theme="dark"] .category-picker__selected li {
+    border-color: var(--ui-line);
+    background: #1b262e;
+    color: var(--ui-ink);
+}
+
+:root[data-theme="dark"] .category-picker__empty {
+    color: var(--ui-muted);
+}
+
+/* ------------------------------------------------------------------
    Remaining refresh-layer surfaces that used a plain #fff
    ------------------------------------------------------------------ */
 
@@ -705,8 +785,6 @@
 :root[data-theme="dark"] .home-hero__search,
 :root[data-theme="dark"] .home-products__count,
 :root[data-theme="dark"] .product-page__contact,
-:root[data-theme="dark"] .seller-page,
-:root[data-theme="dark"] .seller-store-form,
 :root[data-theme="dark"] .store-page,
 :root[data-theme="dark"] .navbar__nav,
 :root[data-theme="dark"] .store-chat-window__composer,
@@ -742,13 +820,17 @@
    ------------------------------------------------------------------ */
 
 /* White / near-white surfaces become raised panels. */
-:root[data-theme="dark"] [class*="card"],
+/*
+ * Broad surface fill for the legacy light cards.
+ * The seller dashboard/product cards are deliberately excluded: they stay
+ * transparent in dark mode, so the class selector is narrowed with :not().
+ */
+:root[data-theme="dark"] [class*="card"]:not(.dashboard-card):not(.seller-products-card),
 :root[data-theme="dark"] [class*="panel"],
 :root[data-theme="dark"] [class*="surface"],
 :root[data-theme="dark"] [class*="box"],
 :root[data-theme="dark"] .navbar,
 :root[data-theme="dark"] .footer,
-:root[data-theme="dark"] .dashboard-card,
 :root[data-theme="dark"] .auth-card,
 :root[data-theme="dark"] .upload-box,
 :root[data-theme="dark"] .image-manager__item {
