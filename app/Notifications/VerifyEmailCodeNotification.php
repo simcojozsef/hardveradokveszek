@@ -3,7 +3,6 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
@@ -11,9 +10,9 @@ use Illuminate\Notifications\Notification;
  * Sent right after registration to prove the address is real.
  *
  * This is the main anti-spam gate: an automated signup cannot read the inbox,
- * so it cannot finish verification. Queued so registration stays fast.
+ * so it cannot finish verification. Sent synchronously (no queue worker).
  */
-class VerifyEmailCodeNotification extends Notification implements ShouldQueue
+class VerifyEmailCodeNotification extends Notification
 {
     use Queueable;
 

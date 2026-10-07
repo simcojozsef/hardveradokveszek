@@ -3,17 +3,16 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 /*
  * The 6-digit code emailed as the second factor on password login.
  *
- * Queued: the mail API must never delay the login response, since the user
- * is waiting on the code screen.
+ * Sent synchronously: there is no queue worker to run, so the mail must go
+ * out during the request. The Postmark round-trip is short (~0.5s).
  */
-class TwoFactorCodeNotification extends Notification implements ShouldQueue
+class TwoFactorCodeNotification extends Notification
 {
     use Queueable;
 
