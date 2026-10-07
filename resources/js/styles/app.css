@@ -153,6 +153,24 @@ button {
     cursor: pointer;
 }
 
+/*
+ * The chat button sits inside .product-page__info, whose button rule wins
+ * on specificity. It uses the brand teal rather than the neutral dark fill,
+ * so it is re-declared with enough weight to take effect.
+ */
+.product-page__info .product-page__chat-button,
+.product-page__chat-button {
+    background: #1683a4;
+    color: #ffffff;
+}
+
+.product-page__info .product-page__chat-button:hover,
+.product-page__chat-button:hover {
+    background: #1683a4;
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
 .product-page__info button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
@@ -7373,14 +7391,14 @@ button { cursor: pointer; }
     padding: .9rem 1.2rem;
     border: 0;
     border-radius: .75rem;
-    background: #2563eb;
+    background: #16a3c9;
     color: #fff;
     font: inherit;
     font-weight: 700;
     cursor: pointer;
     transition: background-color .15s ease, transform .15s ease;
 }
-.product-page__chat-button:hover { background: #1d4ed8; transform: translateY(-1px); }
+.product-page__chat-button:hover { background: #1683a4; transform: translateY(-1px); }
 .product-page__chat-button:focus-visible { outline: 3px solid #93c5fd; outline-offset: 3px; }
 
 .store-chat-window {
@@ -7554,14 +7572,14 @@ button { cursor: pointer; }
     padding: .9rem 1.2rem;
     border: 0;
     border-radius: .75rem;
-    background: #2563eb;
+    background: #16a3c9;
     color: #fff;
     font: inherit;
     font-weight: 700;
     cursor: pointer;
     transition: background-color .15s ease, transform .15s ease;
 }
-.product-page__chat-button:hover { background: #1d4ed8; transform: translateY(-1px); }
+.product-page__chat-button:hover { background: #1683a4; transform: translateY(-1px); }
 .product-page__chat-button:focus-visible { outline: 3px solid #93c5fd; outline-offset: 3px; }
 
 .store-chat-window {
