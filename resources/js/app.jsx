@@ -6,8 +6,10 @@ import { router } from './router';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
 import { ConfirmProvider } from './context/ConfirmContext';
+import { ThemeProvider } from './context/ThemeContext';
 
 import './styles/app.css';
+import '../css/dark-mode.css';
 
 const rootElement = document.getElementById('app');
 
@@ -17,12 +19,14 @@ if (!rootElement) {
 
 createRoot(rootElement).render(
     <React.StrictMode>
-        <AuthProvider>
-            <ToastProvider>
-                <ConfirmProvider>
-                    <RouterProvider router={router} />
-                </ConfirmProvider>
-            </ToastProvider>
-        </AuthProvider>
+        <ThemeProvider>
+            <AuthProvider>
+                <ToastProvider>
+                    <ConfirmProvider>
+                        <RouterProvider router={router} />
+                    </ConfirmProvider>
+                </ToastProvider>
+            </AuthProvider>
+        </ThemeProvider>
     </React.StrictMode>,
 );

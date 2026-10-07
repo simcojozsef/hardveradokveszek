@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { FiLogIn, FiUserPlus } from 'react-icons/fi';
 import PostListingButton from './PostListingButton';
 import ProfileDropdown from './ProfileDropdown';
+import ThemeToggle from './ThemeToggle';
 
 export default function Navbar() {
     const { isAuthenticated } = useAuth();
@@ -29,58 +30,67 @@ export default function Navbar() {
                     />
                 </Link>
 
-                {/* Desktop navigation */}
-                <nav className="navbar__nav">
-                    <Link to="/">
-                        Kezdőlap
-                    </Link>
+                {/*
+                 * Right-hand cluster: the theme switch, then the desktop nav,
+                 * then the hamburger. Grouping them lets the bar collapse as
+                 * one unit instead of overflowing.
+                 */}
+                <div className="navbar__actions">
+                    <ThemeToggle />
 
-                    <Link to="/stores">
-                        Boltok
-                    </Link>
+                    {/* Desktop navigation */}
+                    <nav className="navbar__nav">
+                        <Link to="/">
+                            Kezdőlap
+                        </Link>
 
-                    {isAuthenticated ? (
-                        <ProfileDropdown />
-                    ) : (
-                        <>
-                            <Link to="/login" className="auth-link">
-                                <span>Bejelentkezés</span>
-                                <FiLogIn aria-hidden="true" />
-                            </Link>
+                        <Link to="/stores">
+                            Boltok
+                        </Link>
 
-                            <Link to="/register" className="auth-link">
-                                <span>Regisztráció</span>
-                                <FiUserPlus aria-hidden="true" />
-                            </Link>
+                        {isAuthenticated ? (
+                            <ProfileDropdown />
+                        ) : (
+                            <>
+                                <Link to="/login" className="auth-link">
+                                    <span>Bejelentkezés</span>
+                                    <FiLogIn aria-hidden="true" />
+                                </Link>
 
-                            <PostListingButton />
-                        </>
-                    )}
-                </nav>
+                                <Link to="/register" className="auth-link">
+                                    <span>Regisztráció</span>
+                                    <FiUserPlus aria-hidden="true" />
+                                </Link>
 
-                {/* Mobile menu button */}
-                <button
-                    type="button"
-                    className={`navbar__toggle ${
-                        menuOpen
-                            ? 'navbar__toggle--open'
-                            : ''
-                    }`}
-                    onClick={() =>
-                        setMenuOpen((previous) => !previous)
-                    }
-                    aria-label={
-                        menuOpen
-                            ? 'Menü bezárása'
-                            : 'Menü megnyitása'
-                    }
-                    aria-expanded={menuOpen}
-                    aria-controls="mobile-navigation"
-                >
-                    <span />
-                    <span />
-                    <span />
-                </button>
+                                <PostListingButton />
+                            </>
+                        )}
+                    </nav>
+
+                    {/* Mobile menu button */}
+                    <button
+                        type="button"
+                        className={`navbar__toggle ${
+                            menuOpen
+                                ? 'navbar__toggle--open'
+                                : ''
+                        }`}
+                        onClick={() =>
+                            setMenuOpen((previous) => !previous)
+                        }
+                        aria-label={
+                            menuOpen
+                                ? 'Menü bezárása'
+                                : 'Menü megnyitása'
+                        }
+                        aria-expanded={menuOpen}
+                        aria-controls="mobile-navigation"
+                    >
+                        <span />
+                        <span />
+                        <span />
+                    </button>
+                </div>
             </div>
 
             {/* Mobile navigation */}
@@ -109,6 +119,8 @@ export default function Navbar() {
 
                     {isAuthenticated ? (
                         <>
+                            <ThemeToggle />
+
                             <ProfileDropdown variant="mobile" onNavigate={closeMenu} />
 
                             <PostListingButton

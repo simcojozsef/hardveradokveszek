@@ -1,0 +1,43 @@
+/*
+ * Light/dark switch in the navbar.
+ */
+.theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    width: 38px;
+    height: 38px;
+    padding: 0;
+
+    border: 1px solid #dce6e9;
+    border-radius: 999px;
+    background: #ffffff;
+
+    color: #4a5a63;
+    font-size: 1.05rem;
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.theme-toggle:hover {
+    border-color: #1683a4;
+    color: #1683a4;
+}
+
+.theme-toggle:active {
+    transform: scale(0.94);
+}
+
+.theme-toggle svg {
+    width: 18px;
+    height: 18px;
+}

@@ -1,0 +1,883 @@
+/*
+ * Dark mode.
+ *
+ * Light stays exactly as it is; everything here is scoped to
+ * :root[data-theme="dark"], so nothing changes until the toggle is used.
+ *
+ * The design token block (--ui-*) is redefined, and then a compatibility layer
+ * catches the legacy stylesheet's hard-coded light values (white surfaces,
+ * grey borders, dark text) so the old pages theme correctly too.
+ */
+
+:root[data-theme="dark"] {
+    color-scheme: dark;
+
+    /* Design tokens */
+    --ui-ink: #e8eef1;
+    --ui-muted: #9db0b9;
+    --ui-brand: #38b6d6;
+    --ui-brand-dark: #7ad3ea;
+    --ui-brand-soft: #17333d;
+    --ui-canvas: #0f171c;
+    --ui-surface: #17222a;
+    --ui-line: #2b3a44;
+    --ui-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+}
+
+/* ------------------------------------------------------------------
+   Base surfaces and text
+   ------------------------------------------------------------------ */
+
+:root[data-theme="dark"] body {
+    background: #0f171c;
+    color: #e8eef1;
+}
+
+:root[data-theme="dark"] ::selection {
+    background: #1d4a58;
+    color: #e8eef1;
+}
+
+/* ------------------------------------------------------------------
+   Hero band and category chrome
+   These still used literal white gradients in the refresh layer, so they
+   need an explicit dark replacement.
+   ------------------------------------------------------------------ */
+
+:root[data-theme="dark"] .home-hero-band {
+    background: linear-gradient(180deg, #17222a 0%, #131d24 100%);
+    border-color: var(--ui-line);
+}
+
+/* The soft brand glow behind the search box. */
+:root[data-theme="dark"] .home-hero-band::before {
+    background: radial-gradient(
+        680px 260px at 88% -30%,
+        rgba(56, 182, 214, 0.14),
+        transparent 70%
+    );
+}
+
+:root[data-theme="dark"] .category-main-nav,
+:root[data-theme="dark"] .category-browser,
+:root[data-theme="dark"] .category-grid {
+    background: var(--ui-surface);
+    border-color: var(--ui-line);
+}
+
+:root[data-theme="dark"] .category-tile,
+:root[data-theme="dark"] .category-main-nav__item {
+    background: #1b262e;
+    border-color: var(--ui-line);
+    color: var(--ui-ink);
+}
+
+:root[data-theme="dark"] .category-tile:hover,
+:root[data-theme="dark"] .category-main-nav__item:hover {
+    background: #223039;
+    border-color: var(--ui-brand);
+}
+
+/* Category icons are dark line art on transparent, so they need a light
+   plate to stay visible against the dark tile. A slightly translucent
+   plate reads as part of the chip instead of a bright glare. */
+:root[data-theme="dark"] .category-tile img,
+:root[data-theme="dark"] .category-main-nav__item img {
+    background: rgba(232, 238, 241, 0.9);
+    border-radius: 10px;
+}
+
+/* ------------------------------------------------------------------
+   Theme toggle
+   On dark it needs a light icon on a dark pill, otherwise it vanishes.
+   ------------------------------------------------------------------ */
+
+:root[data-theme="dark"] .theme-toggle {
+    background: #1b262e;
+    border-color: #2b3a44;
+    color: #e8eef1;
+}
+
+:root[data-theme="dark"] .theme-toggle:hover {
+    background: #223039;
+    border-color: var(--ui-brand);
+    color: var(--ui-brand);
+}
+
+/* ------------------------------------------------------------------
+   Primary "Hirdetésfeladás" button
+   Keeps the brand fill and a white label in every state. On hover only the
+   background lifts; the text stays white, as requested.
+   The .navbar__nav / .navbar__mobile-nav scopes are needed to beat the
+   generic "navbar link" colour rule that also targets this anchor.
+   ------------------------------------------------------------------ */
+
+:root[data-theme="dark"] .post-listing-button,
+:root[data-theme="dark"] .post-listing-button:hover,
+:root[data-theme="dark"] .post-listing-button:focus,
+:root[data-theme="dark"] .post-listing-button:active,
+:root[data-theme="dark"] .post-listing-button:visited,
+:root[data-theme="dark"] .navbar__nav .post-listing-button,
+:root[data-theme="dark"] .navbar__nav .post-listing-button:hover,
+:root[data-theme="dark"] .navbar__nav .post-listing-button:focus,
+:root[data-theme="dark"] .navbar__nav .post-listing-button:active,
+:root[data-theme="dark"] .navbar__nav .post-listing-button:visited,
+:root[data-theme="dark"] .navbar__mobile-nav .post-listing-button,
+:root[data-theme="dark"] .navbar__mobile-nav .post-listing-button:hover,
+:root[data-theme="dark"] .navbar__mobile-nav .post-listing-button:visited {
+    background: #1683a4;
+    border-color: #1683a4;
+    color: #ffffff;
+}
+
+/*
+ * Hover: the label must not inherit the light theme's dark-blue text colour,
+ * so the white is restated here with the same (high) specificity.
+ */
+:root[data-theme="dark"] .post-listing-button:hover,
+:root[data-theme="dark"] .post-listing-button:hover span,
+:root[data-theme="dark"] .navbar__nav .post-listing-button:hover,
+:root[data-theme="dark"] .navbar__nav .post-listing-button:hover span,
+:root[data-theme="dark"] .navbar__mobile-nav .post-listing-button:hover,
+:root[data-theme="dark"] .navbar__mobile-nav .post-listing-button:hover span {
+    color: #ffffff;
+}
+
+/* The plus icon inherits the label colour on the filled button. */
+:root[data-theme="dark"] .post-listing-button svg,
+:root[data-theme="dark"] .post-listing-button:hover svg,
+:root[data-theme="dark"] .navbar__nav .post-listing-button svg,
+:root[data-theme="dark"] .navbar__nav .post-listing-button:hover svg,
+:root[data-theme="dark"] .navbar__mobile-nav .post-listing-button svg,
+:root[data-theme="dark"] .navbar__mobile-nav .post-listing-button:hover svg {
+    color: #ffffff;
+}
+
+/* ------------------------------------------------------------------
+   Store page header
+   Was a hard-coded white band with light text on it.
+   ------------------------------------------------------------------ */
+
+:root[data-theme="dark"] .store-page__header {
+    background: var(--ui-surface);
+    border-color: var(--ui-line);
+    color: var(--ui-ink);
+}
+
+:root[data-theme="dark"] .store-page__header h1 {
+    color: var(--ui-ink);
+}
+
+:root[data-theme="dark"] .store-page__header p {
+    color: var(--ui-muted);
+}
+
+/* ------------------------------------------------------------------
+   Auth page links and secondary text
+   These kept their light-theme greys and were hard to read on the dark
+   card: the register/login swap links, the forgot-password link, and the
+   "back to marketplace" link.
+   ------------------------------------------------------------------ */
+
+:root[data-theme="dark"] .auth-register span,
+:root[data-theme="dark"] .auth-card__footer,
+:root[data-theme="dark"] .auth-options a,
+:root[data-theme="dark"] .auth-back,
+:root[data-theme="dark"] .auth-divider,
+:root[data-theme="dark"] .auth-code-hint {
+    color: var(--ui-muted);
+}
+
+:root[data-theme="dark"] .auth-register a,
+:root[data-theme="dark"] .auth-options a:hover,
+:root[data-theme="dark"] .auth-back:hover {
+    color: var(--ui-brand);
+}
+
+:root[data-theme="dark"] .auth-checkbox span {
+    color: var(--ui-muted);
+}
+
+/* ------------------------------------------------------------------
+   Hero search + primary call to action
+   ------------------------------------------------------------------ */
+
+:root[data-theme="dark"] .home-hero__search {
+    background: #101a20;
+    border-color: #2b3a44;
+}
+
+:root[data-theme="dark"] .home-hero__search input {
+    background: transparent;
+    color: #e8eef1;
+}
+
+:root[data-theme="dark"] .home-hero__search input::placeholder {
+    color: #6f838d;
+}
+
+:root[data-theme="dark"] .home-hero-band__hint {
+    color: #9db0b9;
+}
+
+/* ------------------------------------------------------------------
+   Store page rating and product count
+   The rating pills and the products count kept pale backgrounds with dark
+   text, which inverted badly on dark: light text vanished into the pill.
+   ------------------------------------------------------------------ */
+
+:root[data-theme="dark"] .store-rating .store-rating__label {
+    color: var(--ui-muted);
+}
+
+:root[data-theme="dark"] .store-rating .store-rating__score--positive {
+    color: #6ee7b7;
+    background: #10281f;
+    border-color: #1e5b43;
+}
+
+:root[data-theme="dark"] .store-rating .store-rating__score--negative {
+    color: #fda4af;
+    background: #2b1219;
+    border-color: #61273a;
+}
+
+:root[data-theme="dark"] .store-rating button.store-rating__score--positive:hover:not(:disabled) {
+    background: #16382a;
+    border-color: #34d399;
+}
+
+:root[data-theme="dark"] .store-rating button.store-rating__score--negative:hover:not(:disabled) {
+    background: #38161f;
+    border-color: #fb7185;
+}
+
+/* The little +N / -N badges on product cards and store cards. */
+:root[data-theme="dark"] .product-store-rating__positive {
+    color: #6ee7b7;
+}
+
+:root[data-theme="dark"] .product-store-rating__negative {
+    color: #fda4af;
+}
+
+/* "N termék" pill next to the store's Termékek heading. */
+:root[data-theme="dark"] .store-page .section-heading span,
+:root[data-theme="dark"] .store-page .section-heading > span,
+:root[data-theme="dark"] .section-heading > span:not(.home-products__count) {
+    background: #223039;
+    border-color: var(--ui-line);
+    color: var(--ui-muted);
+}
+
+/* The "N találat" pill on the home page. */
+:root[data-theme="dark"] .home-products__count {
+    background: #223039;
+    border-color: var(--ui-line);
+    color: #b6c6cd;
+}
+
+/* ------------------------------------------------------------------
+   Main layout backdrop
+
+   The light version fades from a near-white tint into the canvas colour,
+   which is exactly what made the top of every dark page glow white. Dark
+   gets its own composition instead: two brand-toned blooms over a deep
+   vertical fall, so the page has depth without a single white stop.
+   ------------------------------------------------------------------ */
+
+:root[data-theme="dark"] .app-layout__backdrop {
+    background:
+        radial-gradient(
+            1100px 520px at 12% -8%,
+            rgba(22, 131, 164, 0.22),
+            transparent 62%
+        ),
+        radial-gradient(
+            880px 460px at 92% 2%,
+            rgba(58, 173, 196, 0.14),
+            transparent 60%
+        ),
+        linear-gradient(180deg, #16232b 0%, #121b21 46%, #0f171c 100%);
+}
+
+/* The dot grid: light specks read as texture on a dark field, and the mask
+   keeps them fading out before the fold just like the light theme. */
+:root[data-theme="dark"] .app-layout__backdrop::after {
+    opacity: 0.35;
+    background-image: radial-gradient(
+        rgba(190, 214, 224, 0.10) 1px,
+        transparent 1px
+    );
+}
+
+/* ------------------------------------------------------------------
+   Search suggestions dropdown
+   Hard-coded white panel; also its empty-icon and image plates.
+   ------------------------------------------------------------------ */
+
+:root[data-theme="dark"] .search-suggestions {
+    background: #17222a;
+    border-color: var(--ui-line);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+}
+
+:root[data-theme="dark"] .search-suggestions__group + .search-suggestions__group {
+    border-top-color: var(--ui-line);
+}
+
+:root[data-theme="dark"] .search-suggestions__heading {
+    color: var(--ui-muted);
+}
+
+:root[data-theme="dark"] .search-suggestions__item {
+    color: var(--ui-ink);
+}
+
+:root[data-theme="dark"] .search-suggestions__item:hover,
+:root[data-theme="dark"] .search-suggestions__item.is-active,
+:root[data-theme="dark"] .search-suggestions__item:focus-visible {
+    background: #223039;
+    color: var(--ui-brand);
+}
+
+:root[data-theme="dark"] .search-suggestions__category-icon,
+:root[data-theme="dark"] .search-suggestions__image--empty {
+    background: #223039;
+    color: var(--ui-brand);
+}
+
+:root[data-theme="dark"] .search-suggestions__image {
+    background: #101a20;
+}
+
+/* ------------------------------------------------------------------
+   Navbar link hover
+   In dark mode the label turns brand blue on hover, matching the light
+   theme's accent instead of a filled pill.
+   ------------------------------------------------------------------ */
+
+:root[data-theme="dark"] .navbar__nav a:hover,
+:root[data-theme="dark"] .navbar__nav a:hover span,
+:root[data-theme="dark"] .navbar__mobile-nav a:hover,
+:root[data-theme="dark"] .navbar__mobile-nav a:hover span {
+    color: #1683a4;
+    background: transparent;
+}
+
+:root[data-theme="dark"] .navbar__nav .auth-link:hover,
+:root[data-theme="dark"] .navbar__nav .auth-link:hover span {
+    color: #1683a4;
+}
+
+/* ------------------------------------------------------------------
+   Footer bottom bar
+   Was a light grey strip with a light border.
+   ------------------------------------------------------------------ */
+
+:root[data-theme="dark"] .footer__bottom {
+    background: transparent;
+    border-top-color: var(--ui-line);
+}
+
+/* ------------------------------------------------------------------
+   Extended (advanced) search panel
+   Hard-coded white panel with white fields and a dark inner border.
+   ------------------------------------------------------------------ */
+
+:root[data-theme="dark"] .extended-search {
+    background: #17222a;
+    border-color: var(--ui-line);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5);
+}
+
+:root[data-theme="dark"] .extended-search__field {
+    color: var(--ui-ink);
+}
+
+:root[data-theme="dark"] .extended-search__field input {
+    background: #101a20;
+    border-color: #2b3a44;
+    color: var(--ui-ink);
+}
+
+:root[data-theme="dark"] .extended-search__field input::placeholder {
+    color: #6f838d;
+}
+
+:root[data-theme="dark"] .extended-search__options {
+    border-color: var(--ui-line);
+}
+
+:root[data-theme="dark"] .extended-search__options legend,
+:root[data-theme="dark"] .extended-search__check {
+    color: var(--ui-muted);
+}
+
+:root[data-theme="dark"] .extended-search__tips,
+:root[data-theme="dark"] .extended-search__tip {
+    color: var(--ui-muted);
+}
+
+/* The brand button reads correctly as-is in dark, so only its lift on hover
+   needs to be a touch softer than the light theme's brightness shift. */
+:root[data-theme="dark"] .extended-search__submit {
+    background: #1683a4;
+    color: #ffffff;
+}
+
+:root[data-theme="dark"] .extended-search__submit:hover {
+    background: #1b93b6;
+    filter: none;
+}
+
+/* ------------------------------------------------------------------
+   Mobile hamburger
+   It is a white pill with dark bars in the light theme, which clashes on
+   the dark bar. Here it becomes a dark pill with light bars.
+   ------------------------------------------------------------------ */
+
+:root[data-theme="dark"] .navbar__toggle {
+    background: #1b262e;
+    border-color: #2b3a44;
+}
+
+:root[data-theme="dark"] .navbar__toggle span {
+    background: #e8eef1;
+}
+
+:root[data-theme="dark"] .navbar__toggle:hover {
+    background: #223039;
+}
+
+/* ------------------------------------------------------------------
+   Category hero header
+   Kept a literal white gradient regardless of theme, so a dark-mode user
+   saw a bright band above the category listing.
+   ------------------------------------------------------------------ */
+
+:root[data-theme="dark"] .category-hero-header {
+    background: linear-gradient(180deg, #1d2a33 0%, #17222a 100%);
+    border-color: var(--ui-line);
+}
+
+/* The icon plate had a light brand border that glowed on dark. */
+:root[data-theme="dark"] .category-hero-header__icon {
+    background: #1b333d;
+    border-color: #2a4d59;
+}
+
+:root[data-theme="dark"] .category-hero-header__eyebrow,
+:root[data-theme="dark"] .category-hero-header__stats {
+    color: var(--ui-muted);
+}
+
+:root[data-theme="dark"] .category-hero-header__title {
+    color: var(--ui-ink);
+}
+
+/* ------------------------------------------------------------------
+   Remaining refresh-layer surfaces that used a plain #fff
+   ------------------------------------------------------------------ */
+
+:root[data-theme="dark"] .button,
+:root[data-theme="dark"] .home-hero__search,
+:root[data-theme="dark"] .home-products__count,
+:root[data-theme="dark"] .product-page__contact,
+:root[data-theme="dark"] .seller-page,
+:root[data-theme="dark"] .seller-store-form,
+:root[data-theme="dark"] .store-page,
+:root[data-theme="dark"] .navbar__nav,
+:root[data-theme="dark"] .store-chat-window__composer,
+:root[data-theme="dark"] .store-chat-window__empty,
+:root[data-theme="dark"] .confirm-dialog {
+    background: var(--ui-surface);
+    border-color: var(--ui-line);
+    color: var(--ui-ink);
+}
+
+/* Chat bubbles are asymmetric: mine vs theirs. Keep that contrast in dark. */
+:root[data-theme="dark"] .store-chat-window__message {
+    background: #223039;
+    color: var(--ui-ink);
+}
+
+:root[data-theme="dark"] .confirm-dialog__cancel {
+    background: #1b262e;
+    border-color: var(--ui-line);
+    color: var(--ui-ink);
+}
+
+:root[data-theme="dark"] .auth-submit,
+:root[data-theme="dark"] .post-listing-button {
+    color: #ffffff;
+}
+
+/* ------------------------------------------------------------------
+   Legacy compatibility layer
+   The older sections of app.css use literal colours, so map the common
+   light values onto dark equivalents. Attribute selectors keep this
+   surgical: only the exact light values are rewritten.
+   ------------------------------------------------------------------ */
+
+/* White / near-white surfaces become raised panels. */
+:root[data-theme="dark"] [class*="card"],
+:root[data-theme="dark"] [class*="panel"],
+:root[data-theme="dark"] [class*="surface"],
+:root[data-theme="dark"] [class*="box"],
+:root[data-theme="dark"] .navbar,
+:root[data-theme="dark"] .footer,
+:root[data-theme="dark"] .dashboard-card,
+:root[data-theme="dark"] .auth-card,
+:root[data-theme="dark"] .upload-box,
+:root[data-theme="dark"] .image-manager__item {
+    background-color: #17222a;
+}
+
+/* Text that was near-black on light backgrounds. */
+:root[data-theme="dark"] h1,
+:root[data-theme="dark"] h2,
+:root[data-theme="dark"] h3,
+:root[data-theme="dark"] h4,
+:root[data-theme="dark"] strong {
+    color: #e8eef1;
+}
+
+:root[data-theme="dark"] p,
+:root[data-theme="dark"] span,
+:root[data-theme="dark"] li,
+:root[data-theme="dark"] label,
+:root[data-theme="dark"] dt,
+:root[data-theme="dark"] small {
+    color: inherit;
+}
+
+/* Inputs and selects. */
+:root[data-theme="dark"] input,
+:root[data-theme="dark"] textarea,
+:root[data-theme="dark"] select {
+    background-color: #101a20;
+    border-color: #2b3a44;
+    color: #e8eef1;
+}
+
+:root[data-theme="dark"] input::placeholder,
+:root[data-theme="dark"] textarea::placeholder {
+    color: #6f838d;
+}
+
+/* Buttons that were white with a light border. */
+:root[data-theme="dark"] .secondary-button,
+:root[data-theme="dark"] .navbar__logout,
+:root[data-theme="dark"] .image-manager__actions button,
+:root[data-theme="dark"] .theme-toggle,
+:root[data-theme="dark"] .google-auth-button {
+    background-color: #1b262e;
+    border-color: #2b3a44;
+    color: #e8eef1;
+}
+
+:root[data-theme="dark"] .secondary-button:hover,
+:root[data-theme="dark"] .navbar__logout:hover,
+:root[data-theme="dark"] .google-auth-button:hover {
+    background-color: #223039;
+}
+
+/* Tinted status blocks keep their hue but drop to a dark base. */
+:root[data-theme="dark"] .form-error,
+:root[data-theme="dark"] .danger-button,
+:root[data-theme="dark"] .stores-state--error {
+    background-color: #3a1d1d;
+    border-color: #5c2b2b;
+    color: #ffb4b4;
+}
+
+:root[data-theme="dark"] .form-success {
+    background-color: #14301e;
+    color: #9fdcaf;
+}
+
+:root[data-theme="dark"] .upload-status,
+:root[data-theme="dark"] .store-url-box,
+:root[data-theme="dark"] .store-subdomain-preview {
+    background-color: #101a20;
+    color: #c6d3d9;
+}
+
+/* ------------------------------------------------------------------
+   Navbar and menus
+   ------------------------------------------------------------------ */
+
+:root[data-theme="dark"] .navbar {
+    background-color: #131d24;
+    border-bottom-color: #2b3a44;
+}
+
+:root[data-theme="dark"] .navbar__nav a,
+:root[data-theme="dark"] .navbar__user {
+    color: #b6c6cd;
+}
+
+:root[data-theme="dark"] .navbar__nav a:hover {
+    color: #ffffff;
+}
+
+:root[data-theme="dark"] .navbar__mobile {
+    background-color: #131d24;
+    border-top-color: #2b3a44;
+}
+
+/*
+ * Mobile menu links. app.css colours them near-black (#111827), which is
+ * invisible on the dark panel until hovered, so the resting colour is
+ * restated here.
+ */
+:root[data-theme="dark"] .navbar__mobile-nav a,
+:root[data-theme="dark"] .navbar__mobile-nav a:visited,
+:root[data-theme="dark"] .navbar__mobile-nav a span {
+    color: #e8eef1;
+}
+
+/* The signed-in identity block inside the mobile menu. */
+:root[data-theme="dark"] .navbar__mobile-user,
+:root[data-theme="dark"] .navbar__mobile-user-label,
+:root[data-theme="dark"] .navbar__mobile-user strong {
+    color: #b6c6cd;
+}
+
+:root[data-theme="dark"] .navbar__mobile-user strong {
+    color: #e8eef1;
+}
+
+:root[data-theme="dark"] .navbar__toggle span {
+    background: #e8eef1;
+}
+
+/* Profile dropdown. */
+:root[data-theme="dark"] .profile-dropdown__trigger {
+    background: #1b262e;
+    border-color: #2b3a44;
+    color: #e8eef1;
+}
+
+:root[data-theme="dark"] .profile-dropdown__trigger:hover,
+:root[data-theme="dark"] .profile-dropdown__trigger--open {
+    background: #223039;
+    border-color: var(--ui-brand);
+}
+
+:root[data-theme="dark"] .profile-dropdown__menu {
+    background: #17222a;
+    border-color: #2b3a44;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+}
+
+:root[data-theme="dark"] .profile-dropdown__identity {
+    border-bottom-color: #2b3a44;
+}
+
+:root[data-theme="dark"] .profile-dropdown__identity-label {
+    color: #8fa3ac;
+}
+
+:root[data-theme="dark"] .profile-dropdown__identity strong {
+    color: #e8eef1;
+}
+
+:root[data-theme="dark"] .profile-dropdown__item,
+:root[data-theme="dark"] .profile-dropdown__logout {
+    color: #e8eef1;
+}
+
+:root[data-theme="dark"] .profile-dropdown__item:hover,
+:root[data-theme="dark"] .profile-dropdown__logout:hover {
+    background: #223039;
+}
+
+:root[data-theme="dark"] .profile-dropdown__logout {
+    border-top-color: #2b3a44;
+}
+
+/* ------------------------------------------------------------------
+   Product, store and category surfaces
+   ------------------------------------------------------------------ */
+
+:root[data-theme="dark"] .category-product-card,
+:root[data-theme="dark"] .marketplace-product-card,
+:root[data-theme="dark"] .product-card,
+:root[data-theme="dark"] .store-card,
+:root[data-theme="dark"] .stores-state,
+:root[data-theme="dark"] .seller-dashboard-product,
+:root[data-theme="dark"] .buyer-order-card,
+:root[data-theme="dark"] .buyer-order-group {
+    background-color: #17222a;
+    border-color: #2b3a44;
+}
+
+:root[data-theme="dark"] .category-product-card h3,
+:root[data-theme="dark"] .marketplace-product-card h3,
+:root[data-theme="dark"] .store-card h2 {
+    color: #e8eef1;
+}
+
+:root[data-theme="dark"] .category-product-card__image,
+:root[data-theme="dark"] .marketplace-product-card__image,
+:root[data-theme="dark"] .product-card__image,
+:root[data-theme="dark"] .store-card__logo,
+:root[data-theme="dark"] .category-tile img,
+:root[data-theme="dark"] .seller-dashboard-product__image {
+    background-color: #101a20;
+}
+
+/* Placeholders and empty states that relied on a light grey. */
+:root[data-theme="dark"] .product-card__placeholder,
+:root[data-theme="dark"] .seller-dashboard-product__placeholder,
+:root[data-theme="dark"] .seller-product-item__image,
+:root[data-theme="dark"] .store-card__logo,
+:root[data-theme="dark"] .image-manager__preview,
+:root[data-theme="dark"] .product-gallery__empty {
+    background-color: #101a20;
+    color: #8fa3ac;
+}
+
+:root[data-theme="dark"] .category-empty,
+:root[data-theme="dark"] .seller-empty-products {
+    background-color: #17222a;
+    border-color: #2b3a44;
+    color: #9db0b9;
+}
+
+/* ------------------------------------------------------------------
+   Seller sidebar and admin chrome
+   ------------------------------------------------------------------ */
+
+:root[data-theme="dark"] .seller-sidebar {
+    background: #131d24;
+    border-right-color: #2b3a44;
+}
+
+:root[data-theme="dark"] .seller-sidebar__nav a {
+    color: #b6c6cd;
+}
+
+:root[data-theme="dark"] .seller-sidebar__nav a:hover,
+:root[data-theme="dark"] .seller-sidebar__nav a.active {
+    background: #223039;
+    color: #ffffff;
+}
+
+:root[data-theme="dark"] .seller-sidebar__brand,
+:root[data-theme="dark"] .seller-sidebar__footer a {
+    color: #e8eef1;
+}
+
+/* ------------------------------------------------------------------
+   Auth pages (already dark-tinted cards)
+   ------------------------------------------------------------------ */
+
+:root[data-theme="dark"] .auth-page__background {
+    background:
+        radial-gradient(
+            circle at top left,
+            rgba(255, 255, 255, 0.04),
+            transparent 35%
+        ),
+        #0f171c;
+}
+
+:root[data-theme="dark"] .auth-card {
+    background: #17222a;
+    border-color: #2b3a44;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+}
+
+:root[data-theme="dark"] .auth-card__header p,
+:root[data-theme="dark"] .auth-card__eyebrow,
+:root[data-theme="dark"] .auth-card__footer,
+:root[data-theme="dark"] .auth-code-hint {
+    color: #9db0b9;
+}
+
+:root[data-theme="dark"] .auth-field input,
+:root[data-theme="dark"] .auth-code-input {
+    background: #101a20;
+    border-color: #2b3a44;
+    color: #e8eef1;
+}
+
+:root[data-theme="dark"] .auth-divider {
+    color: #8fa3ac;
+}
+
+:root[data-theme="dark"] .account-type__option {
+    border-color: #2b3a44;
+}
+
+:root[data-theme="dark"] .account-type__option:has(input:checked) {
+    border-color: var(--ui-brand);
+    background: #1b262e;
+}
+
+/* ------------------------------------------------------------------
+   Menus, tables and misc chrome
+   ------------------------------------------------------------------ */
+
+:root[data-theme="dark"] table,
+:root[data-theme="dark"] thead,
+:root[data-theme="dark"] tbody,
+:root[data-theme="dark"] tr {
+    background-color: transparent;
+}
+
+:root[data-theme="dark"] th {
+    color: #9db0b9;
+}
+
+:root[data-theme="dark"] td {
+    color: #dbe5e9;
+    border-color: #2b3a44;
+}
+
+:root[data-theme="dark"] hr {
+    border-color: #2b3a44;
+}
+
+:root[data-theme="dark"] .product-status--inactive {
+    background: #223039;
+    color: #b6c6cd;
+}
+
+:root[data-theme="dark"] .product-status--active {
+    background: #14301e;
+    color: #9fdcaf;
+}
+
+:root[data-theme="dark"] .text-button {
+    color: #b6c6cd;
+}
+
+:root[data-theme="dark"] .text-button:hover {
+    color: #ffffff;
+}
+
+/* ------------------------------------------------------------------
+   Scrollbar (webkit) so long pages do not glow white
+   ------------------------------------------------------------------ */
+
+:root[data-theme="dark"] ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+:root[data-theme="dark"] ::-webkit-scrollbar-track {
+    background: #0f171c;
+}
+
+:root[data-theme="dark"] ::-webkit-scrollbar-thumb {
+    background: #2b3a44;
+    border-radius: 999px;
+}
+
+:root[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+    background: #3a4c58;
+}
