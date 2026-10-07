@@ -35,6 +35,7 @@ import SellerLayout from './layouts/seller/SellerLayout';
 
 import Marketplace from './pages/Marketplace';
 import Category from './pages/Category';
+import Stores from './pages/Stores';
 
 import SellerChats from './pages/seller/SellerChats';
 import BuyerMessages from './pages/buyer/Messages';
@@ -71,6 +72,10 @@ export const router = createBrowserRouter([
             {
                 path: '/marketplace',
                 element: <Marketplace />,
+            },
+            {
+                path: '/stores',
+                element: <Stores />,
             },
             {
                 path: '/seller',

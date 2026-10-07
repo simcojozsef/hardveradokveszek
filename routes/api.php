@@ -247,6 +247,10 @@ Route::middleware('auth:sanctum')->group(function () {
 \|--------------------------------------------------------------------------
 */
 Route::get(
+    '/stores',
+    [StoreController::class, 'index']
+);
+Route::get(
     '/stores/{store}',
     [StoreController::class, 'show']
 );

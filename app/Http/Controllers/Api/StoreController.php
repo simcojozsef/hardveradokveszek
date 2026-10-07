@@ -7,6 +7,7 @@ use App\Http\Requests\StoreRequest;
 use App\Http\Resources\StoreResource;
 use App\Models\Store;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\Request;
@@ -16,6 +17,19 @@ use App\Http\Requests\UpdateStoreRequest;
 
 class StoreController extends Controller
 {
+    public function index(): AnonymousResourceCollection
+    {
+        $stores = Store::query()
+            ->where('is_active', true)
+            ->withCount('products')
+            ->orderByDesc('positive_ratings_count')
+            ->orderBy('negative_ratings_count')
+            ->orderBy('name')
+            ->paginate(24);
+
+        return StoreResource::collection($stores);
+    }
+
     public function show(Store $store): StoreResource
     {
         abort_unless($store->is_active, 404);

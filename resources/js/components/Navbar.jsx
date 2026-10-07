@@ -62,6 +62,10 @@ export default function Navbar() {
                         Kezdőlap
                     </Link>
 
+                    <Link to="/stores">
+                        Boltok
+                    </Link>
+
                     {isAuthenticated ? (
                         <>
                             <Link to={getDashboardPath()}>
@@ -138,6 +142,13 @@ export default function Navbar() {
                         onClick={closeMenu}
                     >
                         Kezdőlap
+                    </Link>
+
+                    <Link
+                        to="/stores"
+                        onClick={closeMenu}
+                    >
+                        Boltok
                     </Link>
 
                     {isAuthenticated ? (
