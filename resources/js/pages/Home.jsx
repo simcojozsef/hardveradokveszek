@@ -56,7 +56,7 @@ export default function Home() {
                 <div className="home-hero-band__intro">
                     <p className="eyebrow">Hardver adásvétel</p>
                     <h1 className="home-hero-band__title">
-                        Találd meg a következő alkatrészed
+                        Találd meg a következő hardvered!
                     </h1>
                     <p className="home-hero-band__lead">
                         Processzorok, kártyák, alaplapok és komplett gépek —
