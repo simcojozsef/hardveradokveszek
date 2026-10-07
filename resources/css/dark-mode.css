@@ -576,19 +576,7 @@
     border-color: #2b3a44;
 }
 
-/* Phone / e-mail rows. */
-:root[data-theme="dark"] .product-page__contact-links a {
-    border-color: var(--ui-line);
-}
-
-:root[data-theme="dark"] .product-page__contact-links a:hover,
-:root[data-theme="dark"] .product-page__contact-links a:focus-visible {
-    border-color: #1683a4;
-}
-
-:root[data-theme="dark"] .product-page__contact-links a span {
-    color: var(--ui-muted);
-}
+/* The masked contact chips carry their own theming (reveal-contact.css). */
 
 /*
  * "Chat az eladóval". The light theme lifts it to a bright blue on hover,

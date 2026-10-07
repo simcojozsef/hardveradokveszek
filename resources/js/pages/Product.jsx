@@ -5,6 +5,7 @@ import ProductGallery from '../components/ProductGallery';
 import { listingStatus } from '../utils/productLifecycle';
 import { trackEvent } from '../api/analytics';
 import StoreChatButton from '../components/StoreChatButton';
+import RevealContact from '../components/RevealContact';
 import '../../css/product-details.css';
 
 const CONDITION_LABELS = { new: 'Új', used: 'Használt' };
@@ -167,14 +168,20 @@ export default function Product() {
                             {(contactPhone || contactEmail) && (
                                 <div className="product-page__contact-links">
                                     {contactPhone && (
-                                        <a href={`tel:${phoneHref}`}>
-                                            <span>Telefon</span><strong>{contactPhone}</strong>
-                                        </a>
+                                        <RevealContact
+                                            kind="phone"
+                                            label="Telefon"
+                                            value={contactPhone}
+                                            href={`tel:${phoneHref}`}
+                                        />
                                     )}
                                     {contactEmail && (
-                                        <a href={`mailto:${contactEmail}`}>
-                                            <span>E-mail</span><strong>{contactEmail}</strong>
-                                        </a>
+                                        <RevealContact
+                                            kind="email"
+                                            label="E-mail"
+                                            value={contactEmail}
+                                            href={`mailto:${contactEmail}`}
+                                        />
                                     )}
                                 </div>
                             )}

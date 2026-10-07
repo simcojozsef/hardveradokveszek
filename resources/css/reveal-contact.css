@@ -1,0 +1,150 @@
+/*
+ * Masked seller contact details.
+ *
+ * Resting state is a tappable chip in the brand teal; the value only becomes
+ * real text once the visitor presses it.
+ */
+.reveal-contact {
+    /*
+     * Reset the browser's default button look for the masked state. The
+     * :where() keeps this at zero specificity so the chip rules below can
+     * still win, while still beating the panel's generic button styling.
+     */
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 10px;
+
+    width: 100%;
+    padding: 10px 12px;
+
+    border: 1px dashed rgba(22, 131, 164, 0.45);
+    border-radius: 10px;
+    background: rgba(22, 131, 164, 0.06);
+
+    color: inherit;
+    font: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/*
+ * The info panel declares `.product-page__info button { background: #171717 }`
+ * which would otherwise paint the masked chip black in light mode. These
+ * scoped rules restore the teal chip treatment inside that panel.
+ */
+.product-page__info .reveal-contact,
+.product-page__contact-links .reveal-contact {
+    background: rgba(22, 131, 164, 0.06);
+    border-color: rgba(22, 131, 164, 0.45);
+    color: inherit;
+}
+
+.reveal-contact__label {
+    flex: 0 0 auto;
+    font-size: 0.82rem;
+    font-weight: 600;
+    opacity: 0.72;
+}
+
+.reveal-contact__value {
+    min-width: 0;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+/* The masked chip reads as an invitation, not as plain text. */
+.reveal-contact--hidden {
+    cursor: pointer;
+    transition:
+        border-color 0.18s ease,
+        background 0.18s ease;
+}
+
+.reveal-contact--hidden .reveal-contact__value {
+    color: #1683a4;
+    letter-spacing: 0.04em;
+}
+
+.reveal-contact--hidden:hover,
+.reveal-contact--hidden:focus-visible {
+    border-color: #1683a4;
+    background: rgba(22, 131, 164, 0.12);
+}
+
+/*
+ * "Megjelenítés" affordance with the eye icon, pushed to the right edge so
+ * the call to action is unmistakable.
+ */
+.reveal-contact__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    margin-left: auto;
+
+    color: #1683a4;
+    font-size: 0.78rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.reveal-contact__cta svg {
+    width: 15px;
+    height: 15px;
+}
+
+/* Revealed: a solid, resolved row that can be tapped to dial or mail. */
+.reveal-contact--shown {
+    border-style: solid;
+    border-color: rgba(22, 131, 164, 0.5);
+    background: rgba(22, 131, 164, 0.08);
+}
+
+.reveal-contact--shown:hover,
+.reveal-contact--shown:focus-visible {
+    border-color: #1683a4;
+}
+
+.reveal-contact__cta--done {
+    color: inherit;
+    opacity: 0.6;
+    font-weight: 600;
+}
+
+/* ------------------------------------------------------------------
+   Dark mode
+   ------------------------------------------------------------------ */
+
+:root[data-theme="dark"] .reveal-contact,
+:root[data-theme="dark"] .product-page__info .reveal-contact,
+:root[data-theme="dark"] .product-page__contact-links .reveal-contact {
+    border-color: rgba(56, 182, 214, 0.45);
+    background: rgba(22, 131, 164, 0.14);
+}
+
+:root[data-theme="dark"] .reveal-contact--hidden .reveal-contact__value,
+:root[data-theme="dark"] .reveal-contact__cta {
+    color: #3ab6d6;
+}
+
+:root[data-theme="dark"] .reveal-contact--hidden:hover,
+:root[data-theme="dark"] .reveal-contact--hidden:focus-visible {
+    border-color: #3ab6d6;
+    background: rgba(22, 131, 164, 0.22);
+}
+
+:root[data-theme="dark"] .reveal-contact--shown {
+    border-color: rgba(56, 182, 214, 0.55);
+    background: rgba(22, 131, 164, 0.18);
+}
+
+@media (max-width: 480px) {
+    .reveal-contact__cta span {
+        /* Keep the icon on tiny screens and let the label go. */
+        display: none;
+    }
+}

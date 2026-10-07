@@ -7341,7 +7341,12 @@ button { cursor: pointer; }
     border-top: 1px solid #e2e8f0;
 }
 
-.product-page__contact-links a {
+/*
+ * These rows are now rendered by <RevealContact>, which brings its own
+ * styling. The :not(.reveal-contact) guard keeps this legacy look for any
+ * plain links but stops it fighting the masked chips.
+ */
+.product-page__contact-links a:not(.reveal-contact) {
     display: flex;
     flex-wrap: wrap;
     align-items: baseline;
@@ -7356,24 +7361,24 @@ button { cursor: pointer; }
     transition: border-color .15s ease, background-color .15s ease;
 }
 
-.product-page__contact-links a:hover,
-.product-page__contact-links a:focus-visible {
+.product-page__contact-links a:not(.reveal-contact):hover,
+.product-page__contact-links a:not(.reveal-contact):focus-visible {
     border-color: #93c5fd;
     background: #eff6ff;
 }
 
-.product-page__contact-links a span {
+.product-page__contact-links a:not(.reveal-contact) span {
     color: #64748b;
     font-size: .9rem;
 }
 
-.product-page__contact-links a strong {
+.product-page__contact-links a:not(.reveal-contact) strong {
     font-size: .95rem;
     font-weight: 650;
 }
 
 @media (max-width: 480px) {
-    .product-page__contact-links a {
+    .product-page__contact-links a:not(.reveal-contact) {
         flex-direction: column;
         align-items: flex-start;
     }
