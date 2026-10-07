@@ -1,0 +1,47 @@
+/*
+ * "Continue with Google" button used on the login and register pages.
+ * It is an anchor, not a button, because the flow is a full-page redirect.
+ */
+.google-auth-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    width: 100%;
+    min-height: 46px;
+    padding: 0 16px;
+
+    border: 1px solid #d7d9dd;
+    border-radius: 10px;
+    background: #ffffff;
+
+    color: #171717;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-decoration: none;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.18s ease,
+        background 0.18s ease,
+        box-shadow 0.18s ease;
+}
+
+.google-auth-button:hover {
+    border-color: #b9bec4;
+    background: #fafafa;
+}
+
+.google-auth-button:focus-visible {
+    outline: none;
+    border-color: #171717;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06);
+}
+
+.google-auth-button__icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}

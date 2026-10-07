@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
+import GoogleAuthButton from '../../components/GoogleAuthButton';
 
 export default function Register() {
     const navigate = useNavigate();
     const { register } = useAuth();
     const toast = useToast();
+    const [searchParams] = useSearchParams();
 
     const [form, setForm] = useState({
         name: '',
@@ -22,6 +24,19 @@ export default function Register() {
     const [showPassword, setShowPassword] = useState(false);
     const [showPasswordConfirmation, setShowPasswordConfirmation] =
         useState(false);
+
+    /*
+     * The Google callback redirects back here with ?social_error=... on
+     * failure, so surface that message instead of failing silently.
+     */
+    useEffect(() => {
+        const socialError = searchParams.get('social_error');
+
+        if (socialError) {
+            setError(socialError);
+            toast.error(socialError);
+        }
+    }, [searchParams]);
 
     function handleChange(event) {
         const { name, value } = event.target;
@@ -289,12 +304,18 @@ export default function Register() {
                     </form>
 
                     <div className="auth-divider">
-                        <span>már van fiókod?</span>
+                        <span>vagy</span>
                     </div>
+
+                    <GoogleAuthButton
+                        role={form.role}
+                        intended={form.role === 'seller' ? '/seller' : '/buyer'}
+                        label="Regisztráció Google-fiókkal"
+                    />
 
                     <div className="auth-register">
                         <span>
-                            Jelentkezz be itt:
+                            már van fiókod?
                         </span>
 
                         <Link to="/login">

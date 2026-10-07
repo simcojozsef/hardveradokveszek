@@ -1,13 +1,15 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
+import GoogleAuthButton from '../../components/GoogleAuthButton';
 
 export default function Login() {
     const navigate = useNavigate();
     const { login } = useAuth();
     const toast = useToast();
+    const [searchParams] = useSearchParams();
 
     const [form, setForm] = useState({
         email: '',
@@ -17,6 +19,19 @@ export default function Login() {
     const [error, setError] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+
+    /*
+     * The Google callback redirects back here with ?social_error=... on
+     * failure, so surface that message instead of failing silently.
+     */
+    useEffect(() => {
+        const socialError = searchParams.get('social_error');
+
+        if (socialError) {
+            setError(socialError);
+            toast.error(socialError);
+        }
+    }, [searchParams]);
 
     function handleChange(event) {
         setForm((current) => ({
@@ -186,6 +201,8 @@ export default function Login() {
                     <div className="auth-divider">
                         <span>vagy</span>
                     </div>
+
+                    <GoogleAuthButton label="Bejelentkezés Google-fiókkal" />
 
                     <div className="auth-register">
                         <span>

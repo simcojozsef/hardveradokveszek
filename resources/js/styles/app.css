@@ -10243,3 +10243,7 @@ button { cursor: pointer; }
         width: 100%;
     }
 }
+
+.auth-register {
+    padding-top: 30px;
+}
