@@ -477,6 +477,140 @@
 }
 
 /* ------------------------------------------------------------------
+   Product detail page
+   The layout columns, the info panel and the gallery frame were all white
+   or transparent, and the stock line used a dark grey that disappeared on
+   the dark canvas.
+   ------------------------------------------------------------------ */
+
+/* The two layout columns get a raised, blackish panel each. */
+:root[data-theme="dark"] .product-page__layout > section {
+    background: #141e25;
+    border-color: var(--ui-line);
+    color: var(--ui-ink);
+}
+
+:root[data-theme="dark"] .product-page__info {
+    background: #17222a;
+    border-color: var(--ui-line);
+    color: var(--ui-ink);
+}
+
+/* Gallery frame: was a white card behind contain-fit product shots. */
+:root[data-theme="dark"] .product-gallery__main {
+    background: #101a20;
+    border-color: var(--ui-line);
+}
+
+:root[data-theme="dark"] .product-gallery__empty {
+    background: #101a20;
+    color: var(--ui-muted);
+}
+
+/* Thumbnails sit in white frames by default. */
+:root[data-theme="dark"] .product-gallery__thumbs button {
+    background: #101a20;
+    border-color: transparent;
+}
+
+:root[data-theme="dark"] .product-gallery__thumbs button.is-selected {
+    border-color: var(--ui-brand);
+}
+
+/* Text hierarchy on the info panel. */
+:root[data-theme="dark"] .product-page__stock {
+    color: var(--ui-muted);
+}
+
+:root[data-theme="dark"] .product-page__description {
+    color: #b6c6cd;
+}
+
+/* Spec table / detail list. */
+:root[data-theme="dark"] .product-page__details {
+    border-color: var(--ui-line);
+}
+
+:root[data-theme="dark"] .product-page__detail dt {
+    color: var(--ui-muted);
+}
+
+:root[data-theme="dark"] .product-page__detail dd {
+    color: var(--ui-ink);
+}
+
+:root[data-theme="dark"] .product-page__details-note {
+    color: var(--ui-muted);
+}
+
+/* Contact card heading and its helper text. */
+:root[data-theme="dark"] .product-page__contact h2,
+:root[data-theme="dark"] .product-page__contact h3,
+:root[data-theme="dark"] .product-page__contact p,
+:root[data-theme="dark"] .product-page__contact-store-text strong {
+    color: var(--ui-ink);
+}
+
+:root[data-theme="dark"] .product-page__contact p {
+    color: var(--ui-muted);
+}
+
+/* "Eladó" label. */
+:root[data-theme="dark"] .product-page__contact-label {
+    color: var(--ui-muted);
+}
+
+/* "Üzlet megtekintése →" — brand teal instead of the light-theme blue. */
+:root[data-theme="dark"] .product-page__contact-store-text small {
+    color: #1683a4;
+}
+
+:root[data-theme="dark"] .product-page__contact-store:hover strong,
+:root[data-theme="dark"] .product-page__contact-store:focus-visible strong {
+    color: #1683a4;
+}
+
+/* Seller logo plate. Store logos are coloured art, so keep a light plate. */
+:root[data-theme="dark"] .product-page__contact-logo {
+    background: #e8eef1;
+    border-color: #2b3a44;
+}
+
+/* Phone / e-mail rows. */
+:root[data-theme="dark"] .product-page__contact-links a {
+    border-color: var(--ui-line);
+}
+
+:root[data-theme="dark"] .product-page__contact-links a:hover,
+:root[data-theme="dark"] .product-page__contact-links a:focus-visible {
+    border-color: #1683a4;
+}
+
+:root[data-theme="dark"] .product-page__contact-links a span {
+    color: var(--ui-muted);
+}
+
+/*
+ * "Chat az eladóval". The light theme lifts it to a bright blue on hover,
+ * which is off-brand here; the brand teal is used instead.
+ */
+:root[data-theme="dark"] .product-page__contact button {
+    background: #1683a4;
+    color: #ffffff;
+}
+
+:root[data-theme="dark"] .product-page__contact button:hover,
+:root[data-theme="dark"] .product-page__contact button:focus-visible {
+    background: #1683a4;
+    color: #ffffff;
+}
+
+:root[data-theme="dark"] .product-page__contact button:disabled {
+    background: #2b3a44;
+    color: var(--ui-muted);
+}
+
+/* ------------------------------------------------------------------
    Remaining refresh-layer surfaces that used a plain #fff
    ------------------------------------------------------------------ */
 
