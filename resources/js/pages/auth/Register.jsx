@@ -1,13 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router';
-import { FiEye, FiEyeOff } from 'react-icons/fi';
+import { FiEye, FiEyeOff, FiArrowLeft } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import GoogleAuthButton from '../../components/GoogleAuthButton';
 
+import '../../../css/auth-2fa.css';
+
+function dashboardPath(role) {
+    if (role === 'seller') return '/seller';
+    if (role === 'admin') return '/admin';
+    return '/buyer';
+}
+
 export default function Register() {
     const navigate = useNavigate();
-    const { register } = useAuth();
+    const { register, verifyEmail } = useAuth();
     const toast = useToast();
     const [searchParams] = useSearchParams();
 
@@ -24,6 +32,14 @@ export default function Register() {
     const [showPassword, setShowPassword] = useState(false);
     const [showPasswordConfirmation, setShowPasswordConfirmation] =
         useState(false);
+
+    /*
+     * After registering, the account is inactive until the emailed code is
+     * confirmed. That is the anti-spam gate.
+     */
+    const [stage, setStage] = useState('form');
+    const [pendingEmail, setPendingEmail] = useState('');
+    const [code, setCode] = useState('');
 
     /*
      * The Google callback redirects back here with ?social_error=... on
@@ -55,21 +71,45 @@ export default function Register() {
 
         try {
             const response = await register(form);
-            const role = response.user?.role;
 
-            toast.success('Sikeres regisztráció.');
+            toast.success('Sikeres regisztráció. Erősítsd meg az e-mail címedet.');
 
-            if (role === 'seller') {
-                navigate('/seller');
-            } else if (role === 'admin') {
-                navigate('/admin');
-            } else {
-                navigate('/buyer');
-            }
+            /*
+             * Registration no longer signs the user in: it asks for the
+             * emailed code first.
+             */
+            setPendingEmail(response.email || form.email);
+            setCode('');
+            setStage('code');
         } catch (err) {
             const message =
                 err.message ||
                 'Sikertelen regisztráció.';
+            setError(message);
+            toast.error(message);
+        } finally {
+            setSubmitting(false);
+        }
+    }
+
+    async function handleVerifySubmit(event) {
+        event.preventDefault();
+
+        setError('');
+        setSubmitting(true);
+
+        try {
+            const response = await verifyEmail({
+                email: pendingEmail,
+                code,
+            });
+
+            toast.success('Sikeres e-mail megerősítés.');
+            navigate(dashboardPath(response.user?.role));
+        } catch (err) {
+            const message =
+                err.message ||
+                'Érvénytelen vagy lejárt kód.';
             setError(message);
             toast.error(message);
         } finally {
@@ -96,11 +136,15 @@ export default function Register() {
                         </p>
 
                         <h1>
-                            Fiók létrehozása
+                            {stage === 'code'
+                                ? 'E-mail megerősítése'
+                                : 'Fiók létrehozása'}
                         </h1>
 
                         <p>
-                            Csatlakozz a GigaPiac piacteréhez.
+                            {stage === 'code'
+                                ? 'Írd be az e-mailben kapott 6 jegyű kódot.'
+                                : 'Csatlakozz a GigaPiac piacteréhez.'}
                         </p>
                     </div>
 
@@ -109,6 +153,66 @@ export default function Register() {
                             {error}
                         </div>
                     )}
+
+                    {stage === 'code' ? (
+                        <form
+                            className="auth-form"
+                            onSubmit={handleVerifySubmit}
+                        >
+                            <p className="auth-code-hint">
+                                A kódot ide küldtük:{' '}
+                                <strong>{pendingEmail}</strong>
+                            </p>
+
+                            <label className="auth-field">
+                                <span>Megerősítő kód</span>
+
+                                <input
+                                    className="auth-code-input"
+                                    type="text"
+                                    name="code"
+                                    value={code}
+                                    onChange={(event) =>
+                                        setCode(
+                                            event.target.value
+                                                .replace(/\D/g, '')
+                                                .slice(0, 6)
+                                        )
+                                    }
+                                    inputMode="numeric"
+                                    autoComplete="one-time-code"
+                                    placeholder="000000"
+                                    maxLength={6}
+                                    autoFocus
+                                    required
+                                />
+                            </label>
+
+                            <button
+                                type="submit"
+                                className="auth-submit"
+                                disabled={submitting || code.length !== 6}
+                            >
+                                {submitting
+                                    ? 'Ellenőrzés...'
+                                    : 'Fiók aktiválása'}
+                            </button>
+
+                            <button
+                                type="button"
+                                className="auth-code-back"
+                                onClick={() => {
+                                    setStage('form');
+                                    setCode('');
+                                    setError('');
+                                }}
+                            >
+                                <FiArrowLeft aria-hidden="true" />
+                                Vissza a regisztrációhoz
+                            </button>
+                        </form>
+                    ) : (
+                    <>
 
                     <form
                         className="auth-form"
@@ -322,6 +426,8 @@ export default function Register() {
                             Bejelentkezés
                         </Link>
                     </div>
+                    </>
+                    )}
 
                     <Link
                         to="/"

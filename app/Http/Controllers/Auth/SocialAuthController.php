@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\EmailOtpService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
@@ -25,6 +27,11 @@ use Throwable;
 class SocialAuthController extends Controller
 {
     private const PROVIDER = 'google';
+
+    public function __construct(
+        private readonly EmailOtpService $otp,
+    ) {
+    }
 
     /*
      * Send the visitor to Google.
@@ -85,6 +92,36 @@ class SocialAuthController extends Controller
             ]);
 
             return $this->fail('Nem sikerült a fiók létrehozása.');
+        }
+
+        /*
+         * Second-factor gate.
+         *
+         * A password account must never bypass 2FA just because it also has
+         * Google linked. Google only proves who owns the Google account, not
+         * that the person knows the site password, so we still email a code.
+         * A Google-only account (no password) is fully covered by Google.
+         */
+        if ($user->requiresTwoFactor() && $user->password !== null) {
+            $this->otp->sendLoginCode($user);
+
+            $request->session()->forget(['social.role', 'social.intended']);
+
+            /*
+             * Carry the pending user with the same encrypted token the login
+             * flow uses, so the challenge does not depend on the session.
+             */
+            $token = Crypt::encryptString(json_encode([
+                'user_id' => $user->id,
+                'expires_at' => now()
+                    ->addMinutes(EmailOtpService::LOGIN_CODE_TTL)
+                    ->timestamp,
+            ]));
+
+            return redirect()->to(
+                '/login?requires_2fa=1&two_factor_token='
+                . urlencode($token)
+            );
         }
 
         Auth::login($user, remember: true);

@@ -15,6 +15,9 @@ return [
     */
 
     'postmark' => [
+        // The transport reads services.postmark.token; POSTMARK_API_KEY is the
+        // name the Laravel skeleton ships with, so both point at one value.
+        'token' => env('POSTMARK_API_KEY'),
         'key' => env('POSTMARK_API_KEY'),
     ],
 

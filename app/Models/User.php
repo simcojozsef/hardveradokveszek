@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -10,12 +10,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['name', 'email', 'password', 'role', 'provider', 'provider_id', 'avatar_url'])]
-#[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable
+#[Fillable(['name', 'email', 'password', 'role', 'provider', 'provider_id', 'avatar_url', 'two_factor_code', 'two_factor_expires_at', 'two_factor_attempts'])]
+#[Hidden(['password', 'remember_token', 'two_factor_code', 'two_factor_expires_at', 'two_factor_attempts'])]
+class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, Notifiable;
@@ -29,6 +30,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'two_factor_expires_at' => 'datetime',
+            'two_factor_attempts' => 'integer',
         ];
     }
 
@@ -66,5 +69,63 @@ class User extends Authenticatable
     public function activityLogs(): HasMany
     {
         return $this->hasMany(ActivityLog::class);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Two-factor (email OTP)
+    |--------------------------------------------------------------------------
+    */
+
+    /**
+     * Whether this account must pass an email OTP before it is fully signed in.
+     *
+     * Password accounts are always challenged; a Google-only account has no
+     * password to protect and is verified by Google instead.
+     */
+    public function requiresTwoFactor(): bool
+    {
+        return $this->provider === null && $this->hasVerifiedEmail();
+    }
+
+    /**
+     * Store a freshly generated OTP (hashed) with its expiry, and reset the
+     * wrong-code counter.
+     */
+    public function issueTwoFactorCode(string $plainCode, int $minutes = 10): void
+    {
+        $this->forceFill([
+            'two_factor_code' => Hash::make($plainCode),
+            'two_factor_expires_at' => now()->addMinutes($minutes),
+            'two_factor_attempts' => 0,
+        ])->save();
+    }
+
+    /**
+     * Check a submitted code against the stored hash and expiry.
+     */
+    public function verifyTwoFactorCode(string $plainCode): bool
+    {
+        if (!$this->two_factor_code || !$this->two_factor_expires_at) {
+            return false;
+        }
+
+        if ($this->two_factor_expires_at->isPast()) {
+            return false;
+        }
+
+        return Hash::check($plainCode, $this->two_factor_code);
+    }
+
+    /**
+     * Clear the OTP once it has been used, so it cannot be replayed.
+     */
+    public function clearTwoFactorCode(): void
+    {
+        $this->forceFill([
+            'two_factor_code' => null,
+            'two_factor_expires_at' => null,
+            'two_factor_attempts' => 0,
+        ])->save();
     }
 }

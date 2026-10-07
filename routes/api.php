@@ -26,14 +26,31 @@ use App\Http\Controllers\Api\StoreChatController;
 */
 \Illuminate\Support\Facades\Route::get('/search/suggestions', [\App\Http\Controllers\Api\SearchSuggestionController::class, 'index']);
 /*
-\|--------------------------------------------------------------------------
-\| Authentication
-\|--------------------------------------------------------------------------
-*/
+ * Authentication.
+ *
+ * The web middleware is what starts the session that Auth::login() writes
+ * into, and it is the same session cookie the SPA already sends with its
+ * API calls. /api/me stays under auth:sanctum in its own group below; the
+ * session it reads is the same one these routes create.
+ */
 Route::middleware('web')->group(function () {
-    Route::post('/auth/register', [AuthController::class, 'register']);
-    Route::post('/auth/login', [AuthController::class, 'login']);
+    Route::post('/auth/register', [AuthController::class, 'register'])
+        ->middleware('throttle:register');
+    Route::post('/auth/login', [AuthController::class, 'login'])
+        ->middleware('throttle:login');
     Route::post('/auth/logout', [AuthController::class, 'logout']);
+
+    // Email verification (registration).
+    Route::post('/auth/email/verify', [AuthController::class, 'verifyEmail'])
+        ->middleware('throttle:otp');
+    Route::post('/auth/email/resend', [AuthController::class, 'resendVerification'])
+        ->middleware('throttle:otp-resend');
+
+    // Second factor (login).
+    Route::post('/auth/two-factor/challenge', [AuthController::class, 'twoFactorChallenge'])
+        ->middleware('throttle:otp');
+    Route::post('/auth/two-factor/resend', [AuthController::class, 'resendTwoFactor'])
+        ->middleware('throttle:otp-resend');
 });
 /*
 \|--------------------------------------------------------------------------

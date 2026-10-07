@@ -11,6 +11,10 @@ import {
     loginUser,
     logoutUser,
     registerUser,
+    verifyEmailCode,
+    resendVerificationCode,
+    submitTwoFactorCode,
+    resendTwoFactorCode,
 } from '../api/auth';
 
 const AuthContext = createContext(null);
@@ -53,6 +57,25 @@ export function AuthProvider({ children }) {
         setUser(null);
     }
 
+    /*
+     * Email verification (after register) and the second factor (after login)
+     * both end the same way: the server grants the session, so we simply load
+     * the user back in.
+     */
+    async function verifyEmail(data) {
+        const response = await verifyEmailCode(data);
+        setUser(response.user);
+
+        return response;
+    }
+
+    async function completeTwoFactor(code, twoFactorToken) {
+        const response = await submitTwoFactorCode(code, twoFactorToken);
+        setUser(response.user);
+
+        return response;
+    }
+
     const value = useMemo(
         () => ({
             user,
@@ -60,6 +83,10 @@ export function AuthProvider({ children }) {
             login,
             register,
             logout,
+            verifyEmail,
+            completeTwoFactor,
+            resendVerificationCode,
+            resendTwoFactorCode,
             isAuthenticated: Boolean(user),
             isSeller: user?.role === 'seller',
             isBuyer: user?.role === 'buyer',
