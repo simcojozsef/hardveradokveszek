@@ -82,15 +82,6 @@ export default function Footer() {
                                 >
                                     Vezérlőpult
                                 </Link>
-
-                                {user?.role === 'buyer' && (
-                                    <Link
-                                        to="/buyer/cart"
-                                        onClick={handleFooterClick}
-                                    >
-                                        Kosár
-                                    </Link>
-                                )}
                             </>
                         ) : (
                             <>
