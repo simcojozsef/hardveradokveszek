@@ -6861,7 +6861,7 @@ button { cursor: pointer; }
 .footer__column a:hover { color: var(--ui-brand-dark); }
 
 @media (max-width: 1100px) {
-    .product-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .product-grid { grid-template-columns: repeat(1, minmax(0, 1fr)); }
     .category-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
@@ -6891,7 +6891,7 @@ button { cursor: pointer; }
         -webkit-overflow-scrolling: touch;
     }
     .category-main-nav__item { flex: 0 0 auto; white-space: nowrap; }
-    .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .product-grid { grid-template-columns: repeat(1, minmax(0, 1fr)); gap: 12px; }
     .category-grid { gap: 10px; }
     .category-tile { min-height: 68px; padding: 12px; gap: 9px; grid-template-columns: 32px minmax(0, 1fr) 14px; }
     .category-tile img { width: 30px; height: 30px; }
@@ -6906,7 +6906,7 @@ button { cursor: pointer; }
     .category-browser__header { margin-bottom: 16px; }
     .category-grid { grid-template-columns: 1fr; }
     .category-tile { min-height: 60px; }
-    .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+    .product-grid { grid-template-columns: repeat(1, minmax(0, 1fr)); gap: 9px; }
     .category-product-card { border-radius: 12px; }
     .category-product-card__image { aspect-ratio: 1 / 1; padding: 8px; }
     .category-product-card__body { padding: 10px; }
@@ -6914,14 +6914,48 @@ button { cursor: pointer; }
     .category-product-card__store { font-size: 0.72rem; }
     .category-product-card__body strong { font-size: 0.94rem; }
     .section-heading { flex-direction: column; gap: 6px; }
-    .home-hero__search { grid-template-columns: 34px minmax(0, 1fr); gap: 0; padding: 5px; }
-    .home-hero__search-icon { width: 34px; }
-    .home-hero__search input { padding-inline: 4px; }
-    .home-hero__search button {
-        grid-column: 1 / -1;
-        width: 100%;
+    /*
+     * The form holds four children (icon, input, submit, advanced toggle) but
+     * this breakpoint only declared two columns, so the toggle auto-flowed into
+     * an implicit third column and pushed the whole form past the viewport.
+     * Lay it out explicitly: icon + input on the first row, both buttons sharing
+     * the second row.
+     */
+    .home-hero__search {
+        grid-template-columns: 38px minmax(0, 1fr) 44px;
+        grid-template-areas:
+            "icon input toggle"
+            "submit submit submit";
+        gap: 6px;
+        padding: 6px;
+        min-height: 0;
+    }
+
+    .home-hero__search-icon {
+        grid-area: icon;
+        width: 38px;
         height: 44px;
-        margin-top: 5px;
+    }
+
+    .home-hero__search input {
+        grid-area: input;
+        width: 100%;
+        min-width: 0;
+        height: 44px;
+        padding-inline: 4px;
+    }
+
+    .home-hero__extended-toggle {
+        grid-area: toggle;
+        width: 44px;
+        height: 44px;
+    }
+
+    .home-hero__search button[type="submit"] {
+        grid-area: submit;
+        min-width: 0;
+        height: 46px;
+        margin: 0;
     }
 }
 

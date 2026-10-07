@@ -24,7 +24,6 @@ import CreateProduct from './pages/seller/CreateProduct';
 import EditProduct from './pages/seller/EditProduct';
 import SellerStore from './pages/seller/Store';
 import CreateStore from './pages/seller/CreateStore';
-import SellerOrders from './pages/seller/Orders';
 
 import BuyerDashboard from './pages/buyer/Dashboard';
 import BuyerCart from './pages/buyer/Cart';
@@ -104,10 +103,6 @@ export const router = createBrowserRouter([
                     {
                         path: 'store/create',
                         element: <CreateStore />,
-                    },
-                    {
-                        path: 'orders',
-                        element: <SellerOrders />,
                     },
                     {
                         path: 'chats',
