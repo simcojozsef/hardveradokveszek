@@ -204,8 +204,17 @@ class StripeWebhookHandler
          * is found there and linked now.
          */
         if (!$subscription) {
-            $metadataUserId = $this->metaUserId($invoice['parent']['subscription_details']['metadata'] ?? [])
-                ?? $this->metaUserId($invoice);
+            /*
+             * The metadata lives on the invoice's parent.subscription_details,
+             * already unwrapped, so the seller id is read from there directly.
+             * Passing that array back through metaUserId() would look for a
+             * nested "metadata" key that does not exist and silently return
+             * null, which is exactly what dropped real payments before.
+             */
+            $parentMetadata = $invoice['parent']['subscription_details']['metadata'] ?? [];
+            $metadataUserId = isset($parentMetadata['gigapiac_user_id'])
+                ? (int) $parentMetadata['gigapiac_user_id']
+                : $this->metaUserId($invoice);
 
             if ($metadataUserId) {
                 $subscription = Subscription::query()
