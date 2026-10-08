@@ -62,17 +62,49 @@ class StripeWebhookHandler
             return 'ignored';
         }
 
-        $subscriptionId = $session['subscription'] ?? null;
+        /*
+         * Newer API versions move the subscription id off the top level and
+         * into the session's own subscription object, so both shapes are read.
+         * Missing the nested one left the local row with a null subscription
+         * id, and every later invoice.paid then failed to find it.
+         */
+        $subscriptionId = $session['subscription']
+            ?? $session['subscription']['id']
+            ?? null;
 
         if (!$subscriptionId) {
+            Log::warning('checkout.session.completed without a subscription id.');
+
+            return 'ignored';
+        }
+
+        /*
+         * Link the pending row created at checkout time. If it is missing
+         * (e.g. the checkout was started before this handler ran), fall back
+         * to the seller's open attempt so the link is never silently lost.
+         */
+        $subscription = Subscription::query()
+            ->where('stripe_subscription_id', $subscriptionId)
+            ->where('user_id', $userId)
+            ->first();
+
+        if (!$subscription) {
+            $subscription = Subscription::query()
+                ->where('user_id', $userId)
+                ->whereIn('status', Subscription::OPEN_STATUSES)
+                ->latest('id')
+                ->first();
+        }
+
+        if (!$subscription) {
             return 'ignored';
         }
 
         // Link only; entitlement is untouched here.
-        Subscription::query()
-            ->where('stripe_subscription_id', $subscriptionId)
-            ->where('user_id', $userId)
-            ->update(['stripe_customer_id' => $session['customer'] ?? null]);
+        $subscription->forceFill([
+            'stripe_subscription_id' => $subscriptionId,
+            'stripe_customer_id' => $session['customer'] ?? $subscription->stripe_customer_id,
+        ])->save();
 
         return 'handled';
     }
@@ -164,6 +196,32 @@ class StripeWebhookHandler
         $subscription = $subscriptionId
             ? Subscription::where('stripe_subscription_id', $subscriptionId)->first()
             : null;
+
+        /*
+         * Fallback: a payment must never be dropped just because the local row
+         * has not been linked to the Stripe subscription id yet. The invoice
+         * carries our own seller id in metadata, so the seller's open attempt
+         * is found there and linked now.
+         */
+        if (!$subscription) {
+            $metadataUserId = $this->metaUserId($invoice['parent']['subscription_details']['metadata'] ?? [])
+                ?? $this->metaUserId($invoice);
+
+            if ($metadataUserId) {
+                $subscription = Subscription::query()
+                    ->where('user_id', $metadataUserId)
+                    ->whereIn('status', Subscription::OPEN_STATUSES)
+                    ->latest('id')
+                    ->first();
+
+                // Link it, so later events resolve without the fallback.
+                if ($subscription && $subscriptionId) {
+                    $subscription->forceFill([
+                        'stripe_subscription_id' => $subscriptionId,
+                    ])->save();
+                }
+            }
+        }
 
         if (!$subscription) {
             Log::warning('invoice.paid ignored: no local subscription.', [
