@@ -95,6 +95,13 @@ return [
 
         /* Default VAT rate applied to the PRO subscription line. */
         'vat_rate' => env('SZAMLAZZ_VAT_RATE', 27),
+
+        /*
+         * The expected gross PRO price, in forint. Used as a sanity guard: a
+         * document whose total is far from this is almost certainly in the
+         * wrong unit, and is refused rather than issued.
+         */
+        'expected_gross_huf' => (int) env('SZAMLAZZ_EXPECTED_GROSS_HUF', 4990),
     ],
 
 ];

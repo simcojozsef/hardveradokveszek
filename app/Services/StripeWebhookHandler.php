@@ -257,7 +257,17 @@ class StripeWebhookHandler
             (string) $invoice['id'],
             $periodStart,
             $periodEnd,
-            (int) ($invoice['amount_paid'] ?? 0),
+            /*
+             * Stripe states amounts in the currency's smallest unit. For HUF
+             * the multiplier is 100, so 4 990 Ft arrives as 499000. Passing
+             * that through as if it were forint produced an invoice for
+             * 499 000 Ft — a hundred times the real price. Converted here, at
+             * the boundary, so everything downstream holds real forint.
+             */
+            $this->majorUnits(
+                (int) ($invoice['amount_paid'] ?? 0),
+                strtoupper((string) ($invoice['currency'] ?? 'huf')),
+            ),
             strtoupper((string) ($invoice['currency'] ?? 'huf')),
         );
 
@@ -412,6 +422,32 @@ class StripeWebhookHandler
                 'processed_at' => now(),
             ]
         );
+    }
+
+    /**
+     * Convert a Stripe amount from minor units to major units.
+     *
+     * Stripe expresses every amount in the currency's smallest unit. Most
+     * currencies use 100 (cents), while a few are zero-decimal (e.g. JPY).
+     * HUF uses 100, so 4 990 Ft is sent as 499000 and must be divided back
+     * before it is shown to anyone as forint.
+     *
+     * @param  int  $minorAmount  the amount as Stripe sent it
+     * @param  string  $currency  ISO code, uppercase
+     */
+    private function majorUnits(int $minorAmount, string $currency): int
+    {
+        // Currencies with no minor unit: the amount is already major units.
+        $zeroDecimal = [
+            'BIF', 'CLP', 'DJF', 'GNF', 'JPY', 'KMF', 'KRW', 'MGA',
+            'PYG', 'RWF', 'UGX', 'VND', 'VUV', 'XAF', 'XOF', 'XPF',
+        ];
+
+        if (in_array($currency, $zeroDecimal, true)) {
+            return $minorAmount;
+        }
+
+        return (int) round($minorAmount / 100);
     }
 
     /** Only a settled invoice for the configured PRO price counts. */

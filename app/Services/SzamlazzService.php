@@ -29,6 +29,39 @@ class SzamlazzService
     }
 
     /**
+     * Reject an amount that cannot be the configured PRO price.
+     *
+     * The allowed band is deliberately generous — a future price change or a
+     * tax adjustment stays inside it — while a unit mix-up (a hundred times
+     * the price) is caught. A zero or negative total is always refused.
+     *
+     * @return string|null the error message, or null when the amount is sane
+     */
+    private function amountSanityError(int $grossHuf): ?string
+    {
+        if ($grossHuf <= 0) {
+            return 'Érvénytelen számlaösszeg (0 vagy negatív).';
+        }
+
+        $expected = (int) config('services.szamlazz.expected_gross_huf', 4990);
+
+        // Accept a wide but finite band around the configured price.
+        $minimum = (int) floor($expected * 0.5);
+        $maximum = (int) ceil($expected * 2);
+
+        if ($grossHuf < $minimum || $grossHuf > $maximum) {
+            return sprintf(
+                'A számlaösszeg (%d Ft) nem egyezik a beállított PRO árral (%d Ft). '
+                . 'Valószínűleg mértékegység-hiba — a számla nem került kiállításra.',
+                $grossHuf,
+                $expected,
+            );
+        }
+
+        return null;
+    }
+
+    /**
      * The agent rejects a document without the issuer (our own company) data,
      * so an incomplete issuer means billing is not configured yet.
      */
@@ -59,6 +92,28 @@ class SzamlazzService
                 'status' => 'failed',
                 'invoice_number' => null,
                 'error' => 'A számlázási rendszer nincs bekonfigurálva.',
+            ];
+        }
+
+        /*
+         * Last line of defence against a unit mix-up. The price is known
+         * from configuration, so an amount far outside its range means the
+         * value reaching us is not in forint (e.g. Stripe minor units).
+         * Refusing here is far better than issuing a hundred-times invoice.
+         */
+        $guard = $this->amountSanityError($grossHuf);
+
+        if ($guard !== null) {
+            Log::error('Refusing to issue a PRO invoice: amount out of range.', [
+                'order_number' => $orderNumber,
+                'gross_huf' => $grossHuf,
+                'reason' => $guard,
+            ]);
+
+            return [
+                'status' => 'failed',
+                'invoice_number' => null,
+                'error' => $guard,
             ];
         }
 
