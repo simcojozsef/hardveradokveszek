@@ -18,6 +18,15 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
         ]);
+
+        /*
+         * Runs on both groups: the web group serves the SPA, and the api
+         * group answers /api/storefront, which is where the SPA asks whether
+         * it is on a store subdomain. It only ever sets a request attribute;
+         * nothing is blocked, so the normal routes keep working.
+         */
+        $middleware->appendToGroup('web', \App\Http\Middleware\ResolveStoreSubdomain::class);
+        $middleware->appendToGroup('api', \App\Http\Middleware\ResolveStoreSubdomain::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

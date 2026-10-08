@@ -127,6 +127,18 @@ export default function AdminLayout() {
                     >
                         Analitika
                     </NavLink>
+                    <NavLink
+                        to="/admin/billing"
+                        className={({ isActive }) =>
+                            `admin-nav__link ${
+                                isActive
+                                    ? 'admin-nav__link--active'
+                                    : ''
+                            }`
+                        }
+                    >
+                        Számlázás
+                    </NavLink>
                 </nav>
             </aside>
 

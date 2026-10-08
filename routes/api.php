@@ -67,6 +67,40 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('role:seller')->group(function () {
         // Seller dashboard
         Route::get('/my/store', [StoreController::class, 'mine']);
+        // Plan, limits, usage and PRO entitlement for the signed-in seller.
+        Route::get('/my/plan', [\App\Http\Controllers\Api\PlanController::class, 'show']);
+
+        // PRO subscription: state, billing data, checkout and portal.
+        Route::get('/my/subscription', [\App\Http\Controllers\Api\SellerSubscriptionController::class, 'state']);
+        Route::post('/my/subscription/billing', [\App\Http\Controllers\Api\SellerSubscriptionController::class, 'saveBillingProfile']);
+        Route::post('/my/subscription/checkout', [\App\Http\Controllers\Api\SellerSubscriptionController::class, 'checkout'])
+            ->middleware('throttle:6,1');
+        Route::post('/my/subscription/portal', [\App\Http\Controllers\Api\SellerSubscriptionController::class, 'portal'])
+            ->middleware('throttle:6,1');
+
+        // Listings to keep when PRO ends (max 10, own listings only).
+        Route::get('/my/retention', [\App\Http\Controllers\Api\SellerRetentionController::class, 'index']);
+        Route::post('/my/retention', [\App\Http\Controllers\Api\SellerRetentionController::class, 'store']);
+
+        // The seller's own PRO invoices. Scoped to the caller.
+        Route::get('/my/invoices', [\App\Http\Controllers\Api\SellerInvoiceController::class, 'index']);
+
+        // PRO bulk operations (max 100 own listings, one transaction).
+        Route::post('/my/products/bulk/renew', [\App\Http\Controllers\Api\SellerBulkListingController::class, 'renew']);
+        Route::post('/my/products/bulk/price-stock', [\App\Http\Controllers\Api\SellerBulkListingController::class, 'updatePriceStock']);
+
+        // Seller statistics: per-listing totals for every plan, series for PRO.
+        Route::get('/my/statistics', [\App\Http\Controllers\Api\SellerStatisticsController::class, 'index']);
+
+        // Pre-reservation: allowance status and the bump itself.
+        Route::get('/my/products/{product}/bump', [\App\Http\Controllers\Api\SellerBumpController::class, 'status']);
+        Route::post('/my/products/{product}/bump', [\App\Http\Controllers\Api\SellerBumpController::class, 'store'])
+            ->middleware('throttle:30,1');
+
+        // PRO XLSX/CSV import: template, preview, commit.
+        Route::get('/my/products/import/template', [\App\Http\Controllers\Api\SellerProductImportController::class, 'template']);
+        Route::post('/my/products/import/preview', [\App\Http\Controllers\Api\SellerProductImportController::class, 'preview']);
+        Route::post('/my/products/import/{import}/commit', [\App\Http\Controllers\Api\SellerProductImportController::class, 'commit']);
         Route::get('/my/products', [ProductController::class, 'mine']);
         Route::get('/my/products/{product}', [ProductController::class, 'sellerShow']);
         Route::get('/my/products/{product}/images', [ProductController::class, 'sellerImages']);
@@ -81,6 +115,8 @@ Route::middleware('auth:sanctum')->group(function () {
             [StoreController::class, 'destroy']
         );
         Route::patch('/my/products/{product}/listing-status', [ProductController::class, 'updateListingStatus']);
+        // Renewal / reactivation requires an explicit availability confirmation.
+        Route::post('/my/products/{product}/renew', [\App\Http\Controllers\Api\SellerProductRenewalController::class, 'store']);
         // Product management
         Route::post(
             '/stores/{store}/products',
@@ -236,6 +272,12 @@ Route::middleware('auth:sanctum')->group(function () {
             '/categories',
             [AdminCategoryController::class, 'index']
         );
+        // Billing pipeline: invoices, failures and uncertain tasks.
+        Route::get('/billing', [\App\Http\Controllers\Api\AdminBillingController::class, 'index']);
+        Route::post('/billing/{invoiceTask}/retry', [\App\Http\Controllers\Api\AdminBillingController::class, 'retry']);
+        // Refund/dispute review and corrective documents.
+        Route::post('/billing/{invoiceTask}/review', [\App\Http\Controllers\Api\AdminBillingController::class, 'flagReview']);
+        Route::post('/billing/{invoiceTask}/correction', [\App\Http\Controllers\Api\AdminBillingController::class, 'recordCorrection']);
         Route::post(
             '/categories',
             [AdminCategoryController::class, 'store']
@@ -275,6 +317,23 @@ Route::get(
     '/stores/{store}/products',
     [ProductController::class, 'index']
 );
+/*
+ * Stripe webhook.
+ *
+ * No CSRF token and no session: authenticity comes from the Stripe signature
+ * over the raw body, verified inside the controller. Nothing else in the API
+ * is relaxed.
+ */
+Route::post('/stripe/webhook', \App\Http\Controllers\Api\StripeWebhookController::class)
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
+    ->name('stripe.webhook');
+
+/*
+ * Storefront context: whether this host is a store subdomain, and which
+ * store it belongs to. Public, and derived from the request host.
+ */
+Route::get('/storefront', [\App\Http\Controllers\Api\StorefrontContextController::class, 'show']);
+
 Route::get('/locations', [LocationController::class, 'index']);
 Route::get(
     '/products',

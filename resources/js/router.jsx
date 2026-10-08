@@ -17,6 +17,7 @@ import AdminRefunds from './pages/admin/Refunds';
 import AdminLogs from './pages/admin/Logs';
 import AdminAnalytics from './pages/admin/Analytics';
 import AdminCategories from './pages/admin/Categories';
+import AdminBilling from './pages/admin/Billing';
 
 import SellerDashboard from './pages/seller/Dashboard';
 import SellerProducts from './pages/seller/Products';
@@ -24,6 +25,9 @@ import CreateProduct from './pages/seller/CreateProduct';
 import EditProduct from './pages/seller/EditProduct';
 import SellerStore from './pages/seller/Store';
 import CreateStore from './pages/seller/CreateStore';
+import SellerSubscription from './pages/seller/Subscription';
+import SellerImport from './pages/seller/Import';
+import SellerStatistics from './pages/seller/Statistics';
 
 import BuyerDashboard from './pages/buyer/Dashboard';
 import BuyerCart from './pages/buyer/Cart';
@@ -110,6 +114,18 @@ export const router = createBrowserRouter([
                         element: <CreateStore />,
                     },
                     {
+                        path: 'subscription',
+                        element: <SellerSubscription />,
+                    },
+                    {
+                        path: 'import',
+                        element: <SellerImport />,
+                    },
+                    {
+                        path: 'statistics',
+                        element: <SellerStatistics />,
+                    },
+                    {
                         path: 'chats',
                         element: <SellerChats />,
                     },
@@ -190,6 +206,10 @@ export const router = createBrowserRouter([
                     {
                         path: 'categories',
                         element: <AdminCategories />,
+                    },
+                    {
+                        path: 'billing',
+                        element: <AdminBilling />,
                     },
                 ],
             },

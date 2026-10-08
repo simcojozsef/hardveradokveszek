@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['name', 'email', 'password', 'role', 'provider', 'provider_id', 'avatar_url', 'two_factor_code', 'two_factor_expires_at', 'two_factor_attempts'])]
+#[Fillable(['name', 'email', 'password', 'role', 'provider', 'provider_id', 'avatar_url', 'two_factor_code', 'two_factor_expires_at', 'two_factor_attempts', 'pro_entitled_until', 'plan_migration_grace_until', 'stripe_customer_id'])]
 #[Hidden(['password', 'remember_token', 'two_factor_code', 'two_factor_expires_at', 'two_factor_attempts'])]
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -32,6 +32,8 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
             'two_factor_expires_at' => 'datetime',
             'two_factor_attempts' => 'integer',
+            'pro_entitled_until' => 'datetime',
+            'plan_migration_grace_until' => 'datetime',
         ];
     }
 
@@ -69,6 +71,32 @@ class User extends Authenticatable implements MustVerifyEmail
     public function activityLogs(): HasMany
     {
         return $this->hasMany(ActivityLog::class);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Subscription
+    |--------------------------------------------------------------------------
+    */
+
+    /**
+     * The seller's subscription row, if any. At most one live/pending row is
+     * expected; historical rows remain for auditing.
+     */
+    public function subscriptions(): HasMany
+    {
+        return $this->hasMany(Subscription::class);
+    }
+
+    public function proEntitledUntil(): ?\Carbon\CarbonInterface
+    {
+        return $this->pro_entitled_until;
+    }
+
+    /** Billing identity used to prefill the next checkout. */
+    public function billingProfile(): HasOne
+    {
+        return $this->hasOne(BillingProfile::class);
     }
 
     /*

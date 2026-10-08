@@ -41,6 +41,11 @@ class ProductResource extends JsonResource
             'expired_at' => $this->effectiveListingStatus() === \App\Models\Product::EXPIRED
                 ? $this->expires_at?->toISOString() : $this->expired_at?->toISOString(),
             'removed_at' => $this->deleted_at?->toISOString(),
+            // Why the plan rules took this listing offline, so the seller can
+            // see a reason and reactivate by hand.
+            'archived_reason' => $this->archived_reason,
+            'archived_at' => $this->archived_at?->toISOString(),
+            'bumped_at' => $this->bumped_at?->toISOString(),
             'store' => $this->whenLoaded('store', function () {
                 return [
                     'id' => $this->store->id, 'name' => $this->store->name,

@@ -1,0 +1,109 @@
+/*
+ * PRO bulk operations on the seller product list.
+ */
+.bulk-toolbar {
+    display: grid;
+    gap: 10px;
+    padding: 16px 18px;
+    margin-bottom: 16px;
+    border: 1px solid rgba(22, 131, 164, 0.35);
+    border-radius: 14px;
+    background: rgba(22, 131, 164, 0.05);
+}
+
+.bulk-toolbar__head {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    font-size: 0.95rem;
+}
+
+.bulk-toolbar__head strong {
+    font-size: 1.15rem;
+}
+
+.bulk-toolbar__hint {
+    color: #64748b;
+    font-size: 0.82rem;
+}
+
+/* Remaining pre-reservation allowance for the paid period. */
+.bulk-toolbar__bumps {
+    margin-left: auto;
+    color: #0f6b85;
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+.bulk-toolbar__bumps strong {
+    font-size: 1.05rem;
+}
+
+.bulk-toolbar__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.bulk-toolbar__note {
+    margin: 0;
+    color: #64748b;
+    font-size: 0.82rem;
+    line-height: 1.5;
+}
+
+/* The row gains a leading checkbox column when bulk mode is available. */
+.seller-product-item__select {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.seller-product-item__select input {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+/* Inline price/stock editor shown for a selected row. */
+.seller-product-item__edit {
+    display: grid;
+    gap: 3px;
+    font-size: 0.75rem;
+    color: #64748b;
+}
+
+.seller-product-item__edit input {
+    width: 100%;
+    min-width: 0;
+    padding: 6px 8px;
+    border: 1px solid #d7d9dd;
+    border-radius: 8px;
+    background: #fff;
+    color: #171717;
+    font: inherit;
+    font-size: 0.85rem;
+}
+
+/* Dark mode */
+:root[data-theme="dark"] .bulk-toolbar {
+    background: rgba(22, 131, 164, 0.12);
+    border-color: rgba(56, 182, 214, 0.4);
+    color: #e8eef1;
+}
+
+:root[data-theme="dark"] .bulk-toolbar__hint,
+:root[data-theme="dark"] .bulk-toolbar__note,
+:root[data-theme="dark"] .seller-product-item__edit {
+    color: #9db0b9;
+}
+
+:root[data-theme="dark"] .bulk-toolbar__bumps {
+    color: #7ad3ea;
+}
+
+:root[data-theme="dark"] .seller-product-item__edit input {
+    background: #101a20;
+    border-color: #2b3a44;
+    color: #e8eef1;
+}

@@ -11,8 +11,26 @@ class UpdateStoreRequest extends FormRequest
         return true;
     }
 
+    public function messages(): array
+    {
+        return [
+            'slug.prohibited' => 'A slug (üzlet aldomain) létrehozás után nem módosítható.',
+        ];
+    }
+
     public function rules(): array
     {
+        /*
+         * The slug is the store's subdomain and is fixed for the life of the
+         * store. A request that tries to change it is rejected outright rather
+         * than silently ignored, so a caller never believes it succeeded.
+         */
+        if ($this->has('slug')) {
+            return [
+                'slug' => ['prohibited'],
+            ];
+        }
+
         return [
             'name' => [
                 'required',

@@ -6,6 +6,7 @@ use App\Http\Resources\ProductResource;
 use App\Http\Resources\ProductImageResource;
 use App\Models\Product;
 use App\Services\ProductListingLifecycle;
+use App\Services\ListingLimitService;
 use App\Models\Store;
 use App\Models\County;
 use App\Models\Settlement;
@@ -23,7 +24,8 @@ class ProductController extends Controller
     {
         abort_unless($store->is_active, 404);
         return ProductResource::collection($store->products()
-            ->visibleForSale()->with(['store', 'images', 'categories'])->latest()->paginate(20));
+            ->visibleForSale()->with(['store', 'images', 'categories'])
+            ->defaultListingOrder()->paginate(20));
     }
     public function show(Product $product): ProductResource
     {
@@ -49,11 +51,32 @@ class ProductController extends Controller
         $data['is_active'] = $request->boolean('is_active', true);
         $data['listing_type'] ??= 'offer';
         $data['contains_ai'] ??= false;
-        $product = DB::transaction(function () use ($store, $data, $categoryIds) {
-            $product = $store->products()->create($data);
-            $product->categories()->sync($categoryIds);
-            return $product;
-        });
+
+        $seller = $store->user;
+
+        /*
+         * A newly created listing only consumes an active slot when it is
+         * published and in stock. The check runs inside the seller lock so
+         * two concurrent creates cannot both take the last free slot.
+         */
+        $consumesSlot = $data['is_active'] && (int) ($data['stock'] ?? 0) > 0;
+
+        $create = function () use ($store, $data, $categoryIds) {
+            return DB::transaction(function () use ($store, $data, $categoryIds) {
+                $product = $store->products()->create($data);
+                $product->categories()->sync($categoryIds);
+
+                return $product;
+            });
+        };
+
+        $product = $seller && $consumesSlot
+            ? app(ListingLimitService::class)->withActiveListingGuard(
+                $seller,
+                fn () => $create(),
+            )
+            : $create();
+
         return response()->json([
             'message' => 'Product created successfully.',
             'product' => new ProductResource($product->load(['store', 'images', 'categories'])),
@@ -92,7 +115,26 @@ class ProductController extends Controller
         $lifecycle = app(ProductListingLifecycle::class);
         // Same expiry/transition guard the service applies before persisting.
         $lifecycle->resolveTransition($product, $data['listing_status']);
-        $updated = $lifecycle->changeStatus($product, $data['listing_status']);
+
+        $seller = $product->store?->user;
+        $nextIsActive = in_array($data['listing_status'], ['available', 'in_progress'], true);
+        // Moving a listing back into an active state consumes a slot again.
+        $consumesSlot = $nextIsActive
+            && !app(ListingLimitService::class)->consumesSlot($product);
+
+        if ($seller && $consumesSlot && $product->is_active && $product->stock > 0) {
+            $updated = app(ListingLimitService::class)->withSellerLock(
+                $seller,
+                function ($locked) use ($lifecycle, $product, $data) {
+                    app(ListingLimitService::class)->assertCanActivate($locked);
+
+                    return $lifecycle->changeStatus($product, $data['listing_status']);
+                }
+            );
+        } else {
+            $updated = $lifecycle->changeStatus($product, $data['listing_status']);
+        }
+
         return new ProductResource($updated->load(['store', 'images', 'categories']));
     }
 
@@ -138,8 +180,15 @@ class ProductController extends Controller
         }
         $query = Product::query()->visibleForSale()
             ->with(['store', 'images', 'categories']);
+        /*
+         * The default order is the pre-reservation order: bumped_at wins over
+         * posted_at, ties broken by descending id. An explicit price/category
+         * sort chosen by the visitor still takes precedence, so a bump never
+         * overrides what the visitor asked to see.
+         */
         $products = $this->applyMarketplaceFilters($query, $validated, $request)
-            ->latest()->orderByDesc('id')->paginate($validated['per_page'] ?? 24);
+            ->defaultListingOrder()
+            ->paginate($validated['per_page'] ?? 24);
 
         $data = $products->getCollection()
             ->map(fn (Product $product) => $this->marketplaceProductData($product))

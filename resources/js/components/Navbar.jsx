@@ -7,7 +7,7 @@ import ProfileDropdown from './ProfileDropdown';
 import ThemeToggle from './ThemeToggle';
 
 export default function Navbar() {
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, user } = useAuth();
 
     const [menuOpen, setMenuOpen] = useState(false);
 
@@ -119,14 +119,20 @@ export default function Navbar() {
 
                     {isAuthenticated ? (
                         <>
-                            <ThemeToggle />
-
                             <ProfileDropdown variant="mobile" onNavigate={closeMenu} />
 
-                            <PostListingButton
-                                variant="mobile"
-                                onNavigate={closeMenu}
-                            />
+                            {/*
+                             * Only offer "create a listing" when there is
+                             * actually a store to list from. A seller who
+                             * already has one reaches the form from the
+                             * sidebar, so the shortcut is redundant here.
+                             */}
+                            {user?.role === 'seller' && !user?.store && (
+                                <PostListingButton
+                                    variant="mobile"
+                                    onNavigate={closeMenu}
+                                />
+                            )}
                         </>
                     ) : (
                         <>

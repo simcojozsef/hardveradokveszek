@@ -1,0 +1,189 @@
+/*
+ * Admin billing pipeline view.
+ */
+.admin-billing {
+    display: grid;
+    gap: 20px;
+}
+
+.admin-state {
+    padding: 28px 20px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #fff;
+    color: #64748b;
+    text-align: center;
+}
+
+/* Counters */
+.billing-counters {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+}
+
+.billing-counter {
+    display: grid;
+    gap: 4px;
+    padding: 14px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.billing-counter span {
+    color: #64748b;
+    font-size: 0.82rem;
+}
+
+.billing-counter strong {
+    font-size: 1.4rem;
+}
+
+.billing-counter--warn strong {
+    color: #805800;
+}
+
+.billing-counter--bad strong {
+    color: #a00000;
+}
+
+/* Filters */
+.billing-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.billing-filters .is-active {
+    border-color: #1683a4;
+    background: rgba(22, 131, 164, 0.08);
+    color: #0f6b85;
+}
+
+/* Table */
+.billing-table-wrap {
+    overflow-x: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.billing-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.86rem;
+}
+
+.billing-table th,
+.billing-table td {
+    padding: 10px 12px;
+    text-align: left;
+    vertical-align: top;
+}
+
+.billing-table th {
+    background: #f6f7f9;
+    color: #526672;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.billing-table tbody tr + tr td {
+    border-top: 1px solid #eef2f5;
+}
+
+.billing-table code {
+    padding: 1px 5px;
+    border-radius: 5px;
+    background: #f1f2f4;
+    font-size: 0.85em;
+    word-break: break-all;
+}
+
+.billing-table small {
+    color: #66788a;
+}
+
+.billing-error {
+    color: #a00000;
+}
+
+.billing-status {
+    display: inline-flex;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.billing-status--issued {
+    background: #ecfdf3;
+    color: #176b2c;
+}
+
+.billing-status--pending,
+.billing-status--processing {
+    background: #eef2f5;
+    color: #526672;
+}
+
+.billing-status--failed,
+.billing-status--uncertain {
+    background: #fff1f2;
+    color: #a00000;
+}
+
+/* Dark mode */
+:root[data-theme="dark"] .admin-state,
+:root[data-theme="dark"] .billing-counter,
+:root[data-theme="dark"] .billing-table-wrap {
+    background: #17222a;
+    border-color: #2b3a44;
+    color: #e8eef1;
+}
+
+:root[data-theme="dark"] .billing-counter span,
+:root[data-theme="dark"] .billing-table small {
+    color: #9db0b9;
+}
+
+:root[data-theme="dark"] .billing-table th {
+    background: #223039;
+    color: #b6c6cd;
+}
+
+:root[data-theme="dark"] .billing-table td {
+    color: #dbe5e9;
+}
+
+:root[data-theme="dark"] .billing-table tbody tr + tr td {
+    border-top-color: #2b3a44;
+}
+
+:root[data-theme="dark"] .billing-table code {
+    background: #101a20;
+    color: #b6c6cd;
+}
+
+:root[data-theme="dark"] .billing-status--issued {
+    background: #14301e;
+    color: #9fdcaf;
+}
+
+:root[data-theme="dark"] .billing-status--pending,
+:root[data-theme="dark"] .billing-status--processing {
+    background: #223039;
+    color: #b6c6cd;
+}
+
+:root[data-theme="dark"] .billing-status--failed,
+:root[data-theme="dark"] .billing-status--uncertain {
+    background: #3a1d1d;
+    color: #ffb4b4;
+}
+
+:root[data-theme="dark"] .billing-error {
+    color: #ffb4b4;
+}

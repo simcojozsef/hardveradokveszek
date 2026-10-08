@@ -24,9 +24,18 @@ class Product extends Model
     protected static function booted(): void
     {
         static::creating(function (Product $product) {
-            // Only creation starts the 60-day window. Editing never renews it.
+            /*
+             * The window is set on creation only; editing never renews it.
+             * The length follows the owner's plan, so the service is used
+             * rather than a hard-coded 60 days.
+             */
             $product->posted_at = now();
-            $product->expires_at = $product->posted_at->copy()->addDays(60);
+            $product->expires_at = $product->posted_at->copy()->addDays(
+                $product->store?->user
+                    ? app(\App\Services\PlanService::class)
+                        ->listingValidityDays($product->store->user)
+                    : 30
+            );
             $product->listing_status = self::AVAILABLE;
             $product->sold_at = null;
             $product->expired_at = null;
@@ -61,10 +70,10 @@ class Product extends Model
 
 
     protected $fillable = [
-        'county_id', 'settlement_id', 'store_id', 'category_id', 'name', 'slug', 'description', 'price', 'stock', 'is_active',
+        'county_id', 'settlement_id', 'store_id', 'category_id', 'name', 'slug', 'seller_sku', 'description', 'price', 'stock', 'is_active',
         'condition', 'listing_type', 'county', 'settlement', 'brand', 'model',
         'shipping_available', 'shipping_methods', 'contains_ai', 'has_warranty',
-        'warranty_expires_at', 'personal_pickup',
+        'warranty_expires_at', 'personal_pickup', 'bumped_at',
     ];
 
     protected function casts(): array
@@ -73,11 +82,24 @@ class Product extends Model
             'county_id' => 'integer', 'settlement_id' => 'integer',
             'posted_at' => 'datetime', 'expires_at' => 'datetime',
             'sold_at' => 'datetime', 'expired_at' => 'datetime',
+            'bumped_at' => 'datetime', 'archived_at' => 'datetime',
+            'expiry_warned_at' => 'datetime',
             'price' => 'decimal:2', 'stock' => 'integer', 'is_active' => 'boolean',
             'shipping_available' => 'boolean', 'shipping_methods' => 'array',
             'contains_ai' => 'boolean', 'has_warranty' => 'boolean',
             'warranty_expires_at' => 'date:Y-m-d', 'personal_pickup' => 'boolean',
         ];
+    }
+
+    /**
+     * Order key for the default listing: bumped_at wins, then published_at,
+     * then the id. Price sorting stays driven by the price column.
+     */
+    public function scopeDefaultListingOrder(Builder $query): Builder
+    {
+        return $query
+            ->orderByRaw('COALESCE(bumped_at, posted_at) DESC')
+            ->orderBy('id', 'desc');
     }
 
     public function store(): BelongsTo { return $this->belongsTo(Store::class); }

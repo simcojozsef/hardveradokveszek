@@ -55,6 +55,12 @@ return [
     'url' => env('APP_URL', 'http://localhost'),
 
     /*
+     * The apex domain. Store subdomains are built as <slug>.<domain>, and the
+     * middleware uses this to tell a store host from the main site.
+     */
+    'domain' => env('APP_DOMAIN', 'localhost'),
+
+    /*
     |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------

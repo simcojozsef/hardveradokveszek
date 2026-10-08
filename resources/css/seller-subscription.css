@@ -1,0 +1,665 @@
+/*
+ * Seller subscription page: current plan, usage and limits.
+ */
+.seller-subscription {
+    display: grid;
+    gap: 20px;
+}
+
+.subscription-state {
+    padding: 32px 20px;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    background: #fff;
+    color: #64748b;
+    text-align: center;
+}
+
+.subscription-state--error {
+    border-color: #e5b4b4;
+    background: #fff5f5;
+    color: #a00000;
+}
+
+/* ------------------------------------------------------------------
+   Plan card
+   ------------------------------------------------------------------ */
+
+.plan-card {
+    padding: 22px;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    background: #fff;
+}
+
+.plan-card--pro {
+    border-color: rgba(22, 131, 164, 0.45);
+    background: linear-gradient(180deg, #f2fbfd 0%, #ffffff 100%);
+}
+
+.plan-card__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+}
+
+.plan-card__badge {
+    display: inline-flex;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #eef2f5;
+    color: #526672;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.plan-card--pro .plan-card__badge {
+    background: rgba(22, 131, 164, 0.14);
+    color: #0f6b85;
+}
+
+.plan-card h2 {
+    margin: 8px 0 0;
+    font-size: 1.4rem;
+}
+
+.plan-card__price {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.plan-card__price strong {
+    display: block;
+    font-size: 1.5rem;
+}
+
+.plan-card__price span {
+    color: #64748b;
+    font-size: 0.85rem;
+}
+
+.plan-card__meta {
+    margin: 14px 0 0;
+    color: #526672;
+    font-size: 0.9rem;
+}
+
+/* ------------------------------------------------------------------
+   Usage meter
+   ------------------------------------------------------------------ */
+
+.plan-usage,
+.plan-limits,
+.plan-features {
+    padding: 20px 22px;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    background: #fff;
+}
+
+.plan-usage__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.plan-usage__head h2,
+.plan-limits h2,
+.plan-features h2 {
+    margin: 0;
+    font-size: 1.05rem;
+}
+
+.plan-usage__head span {
+    color: #64748b;
+}
+
+.plan-usage__head strong {
+    color: #171717;
+    font-size: 1.15rem;
+}
+
+.plan-usage__bar {
+    height: 10px;
+    border-radius: 999px;
+    background: #eef2f5;
+    overflow: hidden;
+}
+
+.plan-usage__bar span {
+    display: block;
+    height: 100%;
+    border-radius: 999px;
+    background: #1683a4;
+    transition: width 0.3s ease;
+}
+
+.plan-usage__warn {
+    margin: 12px 0 0;
+    color: #a00000;
+    font-size: 0.88rem;
+}
+
+/* ------------------------------------------------------------------
+   Limits + features
+   ------------------------------------------------------------------ */
+
+.plan-limits dl {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 14px 20px;
+    margin: 14px 0 0;
+}
+
+.plan-limits dt {
+    color: #64748b;
+    font-size: 0.82rem;
+}
+
+.plan-limits dd {
+    margin: 4px 0 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.plan-features ul {
+    display: grid;
+    gap: 8px;
+    margin: 14px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.plan-features li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.92rem;
+}
+
+/* A leading dot doubles as the state marker, so no icon font is needed. */
+.plan-features li::before {
+    content: '';
+    flex: 0 0 auto;
+    width: 9px;
+    height: 9px;
+    border-radius: 999px;
+    background: #cbd5e1;
+}
+
+.plan-features li.is-on::before {
+    background: #1683a4;
+}
+
+.plan-features li.is-off {
+    color: #94a3b8;
+}
+
+.plan-features li small {
+    color: inherit;
+    opacity: 0.8;
+}
+
+.seller-subscription__note {
+    margin: 0;
+    color: #64748b;
+    font-size: 0.86rem;
+}
+
+/* ------------------------------------------------------------------
+   Dark mode
+   ------------------------------------------------------------------ */
+
+:root[data-theme="dark"] .subscription-state,
+:root[data-theme="dark"] .plan-card,
+:root[data-theme="dark"] .plan-usage,
+:root[data-theme="dark"] .plan-limits,
+:root[data-theme="dark"] .plan-features {
+    background: #17222a;
+    border-color: #2b3a44;
+    color: #e8eef1;
+}
+
+:root[data-theme="dark"] .plan-card--pro {
+    border-color: rgba(56, 182, 214, 0.45);
+    background: linear-gradient(180deg, #17262e 0%, #17222a 100%);
+}
+
+:root[data-theme="dark"] .plan-card__badge {
+    background: #223039;
+    color: #b6c6cd;
+}
+
+:root[data-theme="dark"] .plan-card--pro .plan-card__badge {
+    background: rgba(22, 131, 164, 0.22);
+    color: #7ad3ea;
+}
+
+:root[data-theme="dark"] .plan-card__price span,
+:root[data-theme="dark"] .plan-card__meta,
+:root[data-theme="dark"] .plan-limits dt,
+:root[data-theme="dark"] .plan-usage__head span,
+:root[data-theme="dark"] .seller-subscription__note {
+    color: #9db0b9;
+}
+
+:root[data-theme="dark"] .plan-usage__head strong {
+    color: #ffffff;
+}
+
+:root[data-theme="dark"] .plan-usage__bar {
+    background: #223039;
+}
+
+:root[data-theme="dark"] .plan-usage__bar span {
+    background: #3ab6d6;
+}
+
+:root[data-theme="dark"] .plan-features li::before {
+    background: #3a4c58;
+}
+
+:root[data-theme="dark"] .plan-features li.is-on::before {
+    background: #3ab6d6;
+}
+
+:root[data-theme="dark"] .plan-features li.is-off {
+    color: #6f838d;
+}
+
+/* ------------------------------------------------------------------
+   Checkout + billing form
+   ------------------------------------------------------------------ */
+
+.plan-checkout {
+    display: grid;
+    gap: 14px;
+    padding: 20px 22px;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    background: #fff;
+}
+
+.plan-checkout h2 {
+    margin: 0;
+    font-size: 1.05rem;
+}
+
+.plan-checkout__hint,
+.plan-checkout__status {
+    margin: 0;
+    color: #526672;
+    font-size: 0.9rem;
+}
+
+.plan-checkout__cta {
+    margin-top: 6px;
+    padding: 14px 18px;
+    border: 0;
+    border-radius: 10px;
+    background: #1683a4;
+    color: #ffffff;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.18s ease;
+}
+
+.plan-checkout__cta:hover:not(:disabled) {
+    background: #106681;
+}
+
+.plan-checkout__cta:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.billing-form {
+    display: grid;
+    gap: 16px;
+}
+
+.billing-form__type {
+    display: flex;
+    gap: 18px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.billing-form__type legend {
+    margin-bottom: 6px;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.billing-form__type label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.92rem;
+    cursor: pointer;
+}
+
+.billing-form__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px 16px;
+}
+
+.billing-form__full {
+    grid-column: 1 / -1;
+}
+
+.billing-form__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+@media (max-width: 640px) {
+    .billing-form__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .billing-form__full {
+        grid-column: auto;
+    }
+}
+
+/* Dark mode */
+:root[data-theme="dark"] .plan-checkout {
+    background: #17222a;
+    border-color: #2b3a44;
+    color: #e8eef1;
+}
+
+:root[data-theme="dark"] .plan-checkout__hint,
+:root[data-theme="dark"] .plan-checkout__status {
+    color: #9db0b9;
+}
+
+:root[data-theme="dark"] .billing-form .form-field > span {
+    color: #9db0b9;
+}
+
+:root[data-theme="dark"] .billing-form .form-field input {
+    background: #101a20;
+    border-color: #2b3a44;
+    color: #e8eef1;
+}
+
+/* Billing-incomplete notice shown above the form. */
+.plan-checkout__missing {
+    margin: 0;
+    padding: 10px 12px;
+    border: 1px solid #f3cf78;
+    border-radius: 10px;
+    background: #fff8df;
+    color: #805800;
+    font-size: 0.88rem;
+}
+
+.plan-checkout__missing strong {
+    color: inherit;
+}
+
+/* Explains why the pay button is not usable yet. */
+.plan-checkout__locked {
+    margin: 0;
+    color: #7a8b92;
+    font-size: 0.84rem;
+}
+
+.plan-checkout__cta:disabled {
+    background: #b9c6cc;
+    cursor: not-allowed;
+}
+
+/* Dark mode */
+:root[data-theme="dark"] .plan-checkout__missing {
+    border-color: #6b551f;
+    background: #2e2612;
+    color: #e8c877;
+}
+
+:root[data-theme="dark"] .plan-checkout__locked {
+    color: #9db0b9;
+}
+
+:root[data-theme="dark"] .plan-checkout__cta:disabled {
+    background: #3a4c58;
+    color: #7a8b92;
+}
+
+/* ------------------------------------------------------------------
+   Retention picker (which listings survive when PRO ends)
+   ------------------------------------------------------------------ */
+
+.plan-retention {
+    display: grid;
+    gap: 12px;
+    padding: 20px 22px;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    background: #fff;
+}
+
+.plan-retention h2 {
+    margin: 0;
+    font-size: 1.05rem;
+}
+
+.plan-retention__hint {
+    margin: 0;
+    color: #526672;
+    font-size: 0.88rem;
+    line-height: 1.5;
+}
+
+.plan-retention__count {
+    margin: 0;
+    color: #64748b;
+    font-size: 0.88rem;
+}
+
+.plan-retention__count strong {
+    color: #171717;
+}
+
+.plan-retention__list {
+    display: grid;
+    gap: 6px;
+    max-height: 320px;
+    overflow-y: auto;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.plan-retention__item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.plan-retention__item:hover {
+    border-color: #b9d9e2;
+}
+
+.plan-retention__item.is-selected {
+    border-color: #1683a4;
+    background: rgba(22, 131, 164, 0.06);
+}
+
+.plan-retention__name {
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.92rem;
+}
+
+.plan-retention__price {
+    color: #64748b;
+    font-size: 0.85rem;
+    white-space: nowrap;
+}
+
+/* Dark mode */
+:root[data-theme="dark"] .plan-retention {
+    background: #17222a;
+    border-color: #2b3a44;
+    color: #e8eef1;
+}
+
+:root[data-theme="dark"] .plan-retention__hint,
+:root[data-theme="dark"] .plan-retention__count,
+:root[data-theme="dark"] .plan-retention__price {
+    color: #9db0b9;
+}
+
+:root[data-theme="dark"] .plan-retention__count strong {
+    color: #ffffff;
+}
+
+:root[data-theme="dark"] .plan-retention__item {
+    border-color: #2b3a44;
+}
+
+:root[data-theme="dark"] .plan-retention__item:hover {
+    border-color: #3a4c58;
+}
+
+:root[data-theme="dark"] .plan-retention__item.is-selected {
+    border-color: #3ab6d6;
+    background: rgba(22, 131, 164, 0.18);
+}
+
+/* ------------------------------------------------------------------
+   Seller invoices list
+   ------------------------------------------------------------------ */
+
+.plan-invoices {
+    display: grid;
+    gap: 12px;
+    padding: 20px 22px;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    background: #fff;
+}
+
+.plan-invoices h2 {
+    margin: 0;
+    font-size: 1.05rem;
+}
+
+.plan-invoices__hint {
+    margin: 0;
+    color: #526672;
+    font-size: 0.88rem;
+    line-height: 1.5;
+}
+
+.plan-invoices__list {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.plan-invoices__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 11px 13px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+}
+
+.plan-invoices__main {
+    display: grid;
+    gap: 3px;
+    min-width: 0;
+}
+
+.plan-invoices__main strong {
+    font-size: 0.95rem;
+}
+
+.plan-invoices__main span {
+    color: #64748b;
+    font-size: 0.84rem;
+}
+
+.plan-invoices__status {
+    flex: 0 0 auto;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.plan-invoices__status--issued {
+    background: #ecfdf3;
+    color: #176b2c;
+}
+
+.plan-invoices__status--pending,
+.plan-invoices__status--processing {
+    background: #eef2f5;
+    color: #526672;
+}
+
+.plan-invoices__status--failed,
+.plan-invoices__status--uncertain {
+    background: #fff1f2;
+    color: #a00000;
+}
+
+/* Dark mode */
+:root[data-theme="dark"] .plan-invoices {
+    background: #17222a;
+    border-color: #2b3a44;
+    color: #e8eef1;
+}
+
+:root[data-theme="dark"] .plan-invoices__hint,
+:root[data-theme="dark"] .plan-invoices__main span {
+    color: #9db0b9;
+}
+
+:root[data-theme="dark"] .plan-invoices__item {
+    border-color: #2b3a44;
+}
+
+:root[data-theme="dark"] .plan-invoices__status--issued {
+    background: #14301e;
+    color: #9fdcaf;
+}
+
+:root[data-theme="dark"] .plan-invoices__status--pending,
+:root[data-theme="dark"] .plan-invoices__status--processing {
+    background: #223039;
+    color: #b6c6cd;
+}
+
+:root[data-theme="dark"] .plan-invoices__status--failed,
+:root[data-theme="dark"] .plan-invoices__status--uncertain {
+    background: #3a1d1d;
+    color: #ffb4b4;
+}

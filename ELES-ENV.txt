@@ -1,0 +1,191 @@
+# =====================================================================
+#  GigaPiac – ÉLES (.env) kiegészítés
+# =====================================================================
+#  Ezt a blokkot kell a SZERVER .env fájljába bemásolni.
+#  Hely: ~/hardveradokveszek-test.on-forge.com/current/.env
+#  Vagy: Forge → Site → Environment → Edit Environment File
+#
+#  A .env a .gitignore-ban van, ezért NEM deployolódik: kézzel kell beírni.
+#  Az értékeket IDE írd be (a jobb oldalon nincs érték = neked kell kitölteni).
+# =====================================================================
+
+
+# ---------------------------------------------------------------------
+# 1. ALKALMAZÁS ÉS DOMAIN
+# ---------------------------------------------------------------------
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://gigapiac.hu
+
+# Az apex domain. A boltok subdomainjei: <slug>.gigapiac.hu
+APP_DOMAIN=gigapiac.hu
+
+# A frontendnek is kell (a bolt subdomain URL megjelenítéséhez).
+# FONTOS: build előtt kell beállítani, majd npm run build!
+VITE_APP_DOMAIN=gigapiac.hu
+
+
+# ---------------------------------------------------------------------
+# 2. ADATBÁZIS  (a jelenlegi értékeket hagyd meg, ne írd felül)
+# ---------------------------------------------------------------------
+# DB_CONNECTION=
+# DB_HOST=
+# DB_PORT=
+# DB_DATABASE=
+# DB_USERNAME=
+# DB_PASSWORD=
+
+
+# ---------------------------------------------------------------------
+# 3. STRIPE – ÉLES MÓD
+# ---------------------------------------------------------------------
+# A Stripe Dashboardon válts ÉLŐ módba, és onnan másold.
+STRIPE_KEY=pk_live_…
+STRIPE_SECRET=rk_live_…          # vagy sk_live_…, ha nem restricted kulcsot használsz
+
+# A webhook signing secret (Stripe → Developers → Webhooks → a te endpointod)
+STRIPE_WEBHOOK_SECRET=whsec_…
+
+# ÉLES módban létrehozott PRO ár (lásd lent a létrehozás lépéseit).
+# A teszt ár (price_1UOBNFPt…) élesben NEM működik!
+STRIPE_PRO_PRICE_ID=price_…
+
+# A webhookod ezt a verziót használja. Ha a Stripe-on másra váltasz, írd át.
+STRIPE_API_VERSION=2026-08-26.dahlia
+
+# Egyszeri előresorolás vásárlás – HAGYD KIKAPCSOLVA, amíg nincs ár.
+STRIPE_BUMP_PRICE_ID=
+STRIPE_BUMP_PURCHASE_ENABLED=false
+
+
+# ---------------------------------------------------------------------
+# 4. SZÁMLÁZZ.HU – ÉLES
+# ---------------------------------------------------------------------
+SZAMLAZZ_AGENT_KEY=…             # a Számla Agent kulcsod
+SZAMLAZZ_ENABLED=true
+
+# ÉLESBEN KÖTELEZŐ FALSE! Ha true, nem készül éles számla.
+SZAMLAZZ_USE_TEST=false
+
+# ÁFA: AAM = alanyi adómentesség, vagy szám (pl. 27).
+# A jogcímet a könyvelőddel véglegesítsd élesítés előtt!
+SZAMLAZZ_VAT_RATE=AAM
+
+# Számlakibocsátó (a te céged) adatai. A Számlázz.hu minden bizonylaton
+# megköveteli, és e nélkül a számla kiállítása elutasításra kerül.
+SZAMLAZZ_SELLER_NAME="Simco József E.V."
+SZAMLAZZ_SELLER_TAX_NUMBER="91248385-1-29"
+SZAMLAZZ_SELLER_COUNTRY=HU
+SZAMLAZZ_SELLER_POSTAL_CODE="4002"
+SZAMLAZZ_SELLER_CITY="Debrecen"
+SZAMLAZZ_SELLER_ADDRESS="Salakos u. 85"
+SZAMLAZZ_SELLER_EMAIL="szamla@gigapiac.hu"
+SZAMLAZZ_SELLER_BANK_ACCOUNT=
+
+# Régi típusú Számla Agent fiókhoz (ha a kulcsos mód nem elég):
+SZAMLAZZ_USER=
+SZAMLAZZ_PASSWORD=
+
+
+# ---------------------------------------------------------------------
+# 5. POSTMARK – TRANZAKCIÓS E-MAIL
+# ---------------------------------------------------------------------
+MAIL_MAILER=postmark
+POSTMARK_API_KEY=…               # Postmark → GigaPiac szerver → API Tokens
+MAIL_FROM_ADDRESS="info@gigapiac.hu"
+MAIL_FROM_NAME="GigaPiac"
+
+# Fontos: a info@gigapiac.hu legyen hitelesítve a Postmark fiókon,
+# és a fiók legyen jóváhagyva (különben csak saját domainre küldhetsz).
+
+
+# ---------------------------------------------------------------------
+# 6. QUEUE
+# ---------------------------------------------------------------------
+# A) Egyszerű: nincs queue worker, minden azonnal fut.
+# QUEUE_CONNECTION=sync
+#
+# B) Ajánlott éles: a webhook azonnal válaszol, a számlázás háttérben fut.
+#    Ehhez Forge → Site → Daemons → New Daemon:
+#      php8.3 artisan queue:work --sleep=3 --tries=3 --max-time=3600
+QUEUE_CONNECTION=database
+
+
+# ---------------------------------------------------------------------
+# 7. SESSION / CACHE / LOG
+# ---------------------------------------------------------------------
+SESSION_DRIVER=database
+CACHE_STORE=database
+LOG_CHANNEL=stack
+LOG_LEVEL=warning
+
+
+# =====================================================================
+#  ÉLESÍTÉSI SORREND
+# =====================================================================
+#
+# 1) Éles PRO ár létrehozása a Stripe-on (ÉLŐ mód):
+#      Products → Add product
+#        Név: GigaPiac PRO
+#        Ár:  4 990 HUF, ismétlődés: havi
+#      → másold a price_… azonosítót a STRIPE_PRO_PRICE_ID-be
+#
+# 2) Restricted kulcs jogosultságok ellenőrzése (ha rk_live_-t használsz):
+#      Developers → API keys → Restricted keys → Permissions
+#        Checkout Sessions: Write
+#        Customers:        Write
+#        Subscriptions:    Write
+#        Billing Portal:   Write
+#        Prices:           Read
+#        Invoices:         Read
+#
+# 3) Webhook beállítása:
+#      URL: https://gigapiac.hu/api/stripe/webhook
+#      Események (8):
+#        checkout.session.completed
+#        customer.subscription.created
+#        customer.subscription.updated
+#        customer.subscription.deleted
+#        invoice.paid
+#        invoice.payment_failed
+#        invoice.payment_action_required
+#        invoice.finalization_failed
+#      → signing secret a STRIPE_WEBHOOK_SECRET-be
+#
+# 4) A szerveren:
+#      cd ~/hardveradokveszek-test.on-forge.com/current
+#      git pull
+#      composer install --no-dev --optimize-autoloader
+#      npm ci && npm run build
+#      php artisan migrate --force
+#      php artisan config:clear && php artisan config:cache
+#      php artisan queue:restart
+#
+# 5) Ellenőrzés:
+#      php artisan tinker --execute="
+#      echo 'stripe price: '.config('services.stripe.pro_price_id').PHP_EOL;
+#      echo 'webhook: '.(config('services.stripe.webhook_secret') ? 'SET' : 'MISSING').PHP_EOL;
+#      echo 'szamlazz: '.(app(App\Services\SzamlazzService::class)->isConfigured() ? 'OK' : 'NINCS').PHP_EOL;
+#      echo 'queue: '.config('queue.default').PHP_EOL;
+#      "
+#
+# =====================================================================
+#  FONTOS FIGYELMEZTETÉSEK
+# =====================================================================
+#
+# * A Számlázz.hu MINDEN valódi fizetésről éles számlát állít ki. Éles
+#   kártyával végzett tesztfizetés VALÓDI számlát eredményez, amit sztornózni
+#   kell. Ezért éles tesztelés előtt egyeztess a könyvelőddel!
+#
+# * A helyi (fejlesztői) .env-ben SZAMLAZZ_USE_TEST=true van, hogy ne
+#   keletkezzen éles bizonylat. Ezt a szerveren NE másold át.
+#
+# * A public/build nincs a git repóban: a szerveren MINDIG futtatni kell a
+#   "npm run build"-et, különben a régi frontend megy ki.
+#
+# * Wildcard SSL és DNS a *.gigapiac.hu-hoz külön kell (Forge → SSL).
+#
+# * Ha egy kulcs kiszivárgott, a Stripe-on forgasd:
+#   Developers → API keys → Roll key, illetve Webhooks → signing secret → Roll.
+#
+# =====================================================================

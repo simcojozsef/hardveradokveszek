@@ -1,0 +1,215 @@
+/*
+ * PRO XLSX/CSV import page.
+ */
+.seller-import {
+    display: grid;
+    gap: 20px;
+}
+
+.import-card {
+    display: grid;
+    gap: 12px;
+}
+
+.import-card h2 {
+    margin: 0;
+}
+
+.import-card__hint {
+    margin: 0;
+    color: #526672;
+    font-size: 0.88rem;
+    line-height: 1.55;
+}
+
+.import-card__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* Mode picker */
+.import-mode {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.import-mode legend {
+    margin-bottom: 6px;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+.import-mode label {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 11px 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+.import-mode label:has(input:checked) {
+    border-color: #1683a4;
+    background: rgba(22, 131, 164, 0.05);
+}
+
+.import-mode label input {
+    margin-top: 3px;
+}
+
+.import-mode label span {
+    display: grid;
+    gap: 2px;
+}
+
+.import-mode label small {
+    color: #64748b;
+}
+
+.import-form {
+    display: grid;
+    gap: 14px;
+    justify-items: start;
+}
+
+/* Preview summary */
+.import-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 22px;
+    font-size: 0.9rem;
+}
+
+.import-summary__ok strong {
+    color: #176b2c;
+}
+
+.import-summary__bad strong {
+    color: #a00000;
+}
+
+.import-warnings {
+    margin: 0;
+    padding-left: 18px;
+    color: #805800;
+    font-size: 0.86rem;
+}
+
+/* Errors */
+.import-errors {
+    display: grid;
+    gap: 8px;
+    padding: 14px 16px;
+    border: 1px solid #e5b4b4;
+    border-radius: 12px;
+    background: #fff5f5;
+    color: #a00000;
+    font-size: 0.88rem;
+}
+
+.import-errors ul {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+    padding-left: 18px;
+}
+
+.import-errors li {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: baseline;
+}
+
+.import-errors code {
+    padding: 1px 6px;
+    border-radius: 5px;
+    background: rgba(160, 0, 0, 0.1);
+    font-size: 0.85em;
+}
+
+.import-errors p {
+    margin: 0;
+    opacity: 0.85;
+}
+
+/* Preview table */
+.import-table-wrap {
+    overflow-x: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+}
+
+.import-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.86rem;
+}
+
+.import-table th,
+.import-table td {
+    padding: 9px 12px;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.import-table th {
+    background: #f6f7f9;
+    color: #526672;
+    font-weight: 700;
+}
+
+.import-table tbody tr + tr td {
+    border-top: 1px solid #eef2f5;
+}
+
+/* Dark mode */
+:root[data-theme="dark"] .import-card__hint,
+:root[data-theme="dark"] .import-mode label small {
+    color: #9db0b9;
+}
+
+:root[data-theme="dark"] .import-mode label {
+    border-color: #2b3a44;
+}
+
+:root[data-theme="dark"] .import-mode label:has(input:checked) {
+    border-color: #3ab6d6;
+    background: rgba(22, 131, 164, 0.16);
+}
+
+:root[data-theme="dark"] .import-errors {
+    border-color: #5c2b2b;
+    background: #3a1d1d;
+    color: #ffb4b4;
+}
+
+:root[data-theme="dark"] .import-errors code {
+    background: rgba(255, 180, 180, 0.15);
+}
+
+:root[data-theme="dark"] .import-table-wrap {
+    border-color: #2b3a44;
+}
+
+:root[data-theme="dark"] .import-table th {
+    background: #223039;
+    color: #b6c6cd;
+}
+
+:root[data-theme="dark"] .import-table td {
+    color: #dbe5e9;
+}
+
+:root[data-theme="dark"] .import-table tbody tr + tr td {
+    border-top-color: #2b3a44;
+}
+
+:root[data-theme="dark"] .import-warnings {
+    color: #e8c877;
+}

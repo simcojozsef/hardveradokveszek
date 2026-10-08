@@ -22,6 +22,15 @@ export default function SellerLayout() {
                     <NavLink to="/seller/products">
                         Termékek
                     </NavLink>
+                    <NavLink to="/seller/import">
+                        Import
+                    </NavLink>
+                    <NavLink to="/seller/statistics">
+                        Statisztika
+                    </NavLink>
+                    <NavLink to="/seller/subscription">
+                        Előfizetés
+                    </NavLink>
                     <SellerMessagesNavLink />
                     <NavLink to="/seller/products/create">
                         + Új termék

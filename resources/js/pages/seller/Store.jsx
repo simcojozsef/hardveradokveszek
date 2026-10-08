@@ -7,6 +7,7 @@ import {
     deleteStoreLogo,
 } from '../../api/seller';
 import { useToast } from '../../context/ToastContext';
+import { getMyPlan } from '../../api/seller';
 import { useConfirm } from '../../context/ConfirmContext';
 export default function Store() {
     const toast = useToast();
@@ -24,10 +25,16 @@ export default function Store() {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [uploadingLogo, setUploadingLogo] = useState(false);
+    // Drives whether the subdomain is live; the server is still the gate.
+    const [isPro, setIsPro] = useState(false);
     useEffect(() => {
         async function loadStore() {
             try {
-                const response = await getMyStore();
+                const [response, planResponse] = await Promise.all([
+                    getMyStore(),
+                    getMyPlan(),
+                ]);
+                setIsPro(Boolean(planResponse.data?.is_pro));
                 const data = response.data;
                 setStore(data);
                 setForm({
@@ -101,8 +108,17 @@ export default function Store() {
             </div>
         );
     }
-    const publicStoreUrl =
-        `${window.location.origin}/store/${store.slug}`;
+    /*
+     * The slug is the store's subdomain once PRO is active, so that is the
+     * address the seller should copy. A free plan has no live subdomain yet,
+     * so it falls back to the path form, which is always reachable.
+     */
+    const storeHost = import.meta.env.VITE_APP_DOMAIN || 'gigapiac.hu';
+    const protocol = window.location.protocol;
+
+    const publicStoreUrl = isPro
+        ? `${protocol}//${store.slug}.${storeHost}`
+        : `${window.location.origin}/store/${store.slug}`;
     async function handleLogoUpload(event) {
         const file = event.target.files?.[0];
         if (!file) {
@@ -285,10 +301,20 @@ export default function Store() {
                             {publicStoreUrl}
                         </span>
                     </div>
-                    <p className="form-help">
-                        A slug jelenleg zárolt, mert később ez
-                        fogja meghatározni az üzlet aldomainjét.
-                    </p>
+                    {isPro ? (
+                        <p className="form-help">
+                            Ez a te nyilvános üzleti linked. A slug az üzlet
+                            aldomainje, ezért <strong>létrehozás után nem
+                            módosítható</strong>.
+                        </p>
+                    ) : (
+                        <p className="form-help">
+                            Ez a slug az üzlet aldomainje lesz, ezért{' '}
+                            <strong>létrehozás után nem módosítható</strong>. A
+                            saját aldomain (pl. {store.slug}.{storeHost}) PRO
+                            csomaggal válik elérhetővé.
+                        </p>
+                    )}
                 </section>
                 <section className="dashboard-card">
                     <h2>Állapot</h2>

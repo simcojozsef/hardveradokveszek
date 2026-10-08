@@ -15,6 +15,25 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'role' => $this->role,
             'avatar_url' => $this->avatar_url,
+            /*
+             * A compact store summary so the UI can tell whether the seller
+             * already has a store. Loaded on demand to avoid a query on every
+             * /me call for buyers and admins.
+             */
+            'store' => $this->when(
+                $this->role === 'seller',
+                function () {
+                    $store = $this->store;
+
+                    return $store
+                        ? [
+                            'id' => $store->id,
+                            'name' => $store->name,
+                            'slug' => $store->slug,
+                        ]
+                        : null;
+                }
+            ),
             'created_at' => $this->created_at,
         ];
     }

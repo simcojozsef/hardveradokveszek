@@ -8,7 +8,7 @@ use Illuminate\Console\Command;
 class ExpireProductListings extends Command
 {
     protected $signature = 'products:expire';
-    protected $description = 'Mark product listings expired when their 60-day window ends';
+    protected $description = 'Mark product listings expired when their plan window ends';
 
     public function handle(ProductListingLifecycle $lifecycle): int
     {

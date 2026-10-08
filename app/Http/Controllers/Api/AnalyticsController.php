@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Services\AnalyticsTracker;
+use App\Services\ViewTrackingService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -12,7 +13,8 @@ class AnalyticsController extends Controller
 {
     public function track(
         Request $request,
-        AnalyticsTracker $tracker
+        AnalyticsTracker $tracker,
+        ViewTrackingService $views,
     ): JsonResponse {
         $validated = $request->validate([
             'event' => [
@@ -93,6 +95,22 @@ class AnalyticsController extends Controller
             $validated['page_url'] ?? null,
             $request,
         );
+
+        /*
+         * Product views additionally feed the seller statistics, through the
+         * privacy-preserving counter: no IP is stored there, and the same
+         * visitor is counted at most once per product per 24 hours.
+         */
+        if (
+            $validated['event'] === 'product_view'
+            && $subject instanceof \App\Models\Product
+        ) {
+            $views->track(
+                $subject,
+                $request->user(),
+                $validated['visitor_id'],
+            );
+        }
 
         return response()->json([
             'message' => 'Analytics event recorded.',

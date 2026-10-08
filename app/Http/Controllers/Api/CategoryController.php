@@ -151,7 +151,8 @@ class CategoryController extends Controller
                 'store',
                 'images',
             ])
-            ->latest()
+            // Same default order as the marketplace: bumped_at, then posted_at.
+            ->defaultListingOrder()
             ->paginate(24);
 
         /*

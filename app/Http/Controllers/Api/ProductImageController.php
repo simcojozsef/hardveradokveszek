@@ -8,6 +8,7 @@ use App\Http\Resources\ProductImageResource;
 use App\Http\Requests\UpdateProductImageRequest;
 use App\Models\Product;
 use App\Models\ProductImage;
+use App\Services\ListingLimitService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -27,6 +28,23 @@ class ProductImageController extends Controller
         Product $product
     ): ProductImageResource {
         Gate::authorize('update', $product);
+
+        /*
+         * Checked before the file is written, so an over-limit upload never
+         * touches storage. The seller lock keeps two concurrent uploads from
+         * both landing in the last free slot.
+         */
+        $seller = $product->store?->user;
+
+        if ($seller) {
+            app(ListingLimitService::class)->withSellerLock(
+                $seller,
+                function ($locked) use ($product) {
+                    app(ListingLimitService::class)
+                        ->assertCanAddPhotos($locked, $product);
+                }
+            );
+        }
 
         $isPrimary = $request->boolean('is_primary', false);
 
