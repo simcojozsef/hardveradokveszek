@@ -113,7 +113,32 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     public function requiresTwoFactor(): bool
     {
+        if ($this->isTwoFactorExempt()) {
+            return false;
+        }
+
         return $this->provider === null && $this->hasVerifiedEmail();
+    }
+
+    /**
+     * Accounts listed in config/two-factor.php are exempt from the emailed
+     * code. The list lives in configuration, not in code, so an exception can
+     * be added or removed on the server without a deployment, and it stays
+     * visible to whoever administers the environment.
+     */
+    public function isTwoFactorExempt(): bool
+    {
+        $exempt = config('two-factor.exempt_emails', []);
+
+        if (empty($exempt)) {
+            return false;
+        }
+
+        return in_array(
+            strtolower((string) $this->email),
+            array_map('strtolower', $exempt),
+            true
+        );
     }
 
     /**

@@ -143,6 +143,21 @@ class AuthController extends Controller
             ], 422);
         }
 
+        /*
+         * Exempt accounts (config/two-factor.php) sign in with the password
+         * alone. Checked before a code is generated, so no mail is sent and no
+         * challenge screen appears for them.
+         */
+        if (!$user->requiresTwoFactor()) {
+            Auth::login($user);
+            $request->session()->regenerate();
+
+            return response()->json([
+                'message' => 'Login successful.',
+                'user' => new UserResource($user),
+            ]);
+        }
+
         $this->otp->sendLoginCode($user);
 
         /*
