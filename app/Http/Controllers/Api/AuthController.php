@@ -126,6 +126,31 @@ class AuthController extends Controller
             ], 422);
         }
 
+        /*
+         * Exempt accounts sign in with the password alone.
+         *
+         * Must run BEFORE the verification branch: an exempt account has no
+         * real mailbox, so trying to send it a verification code fails and
+         * turns a valid login into a server error. The account is trusted
+         * as-is, so it is marked verified on first sign-in.
+         */
+        if ($user->isTwoFactorExempt()) {
+            if (!$user->hasVerifiedEmail()) {
+                $user->markEmailAsVerified();
+            }
+
+            Auth::login($user);
+
+            if ($request->hasSession()) {
+                $request->session()->regenerate();
+            }
+
+            return response()->json([
+                'message' => 'Login successful.',
+                'user' => new UserResource($user),
+            ]);
+        }
+
         if (!$user->hasVerifiedEmail()) {
             /*
              * Always send a fresh code. Trying to be clever here ("only send
@@ -141,21 +166,6 @@ class AuthController extends Controller
                 'requires_verification' => true,
                 'email' => $user->email,
             ], 422);
-        }
-
-        /*
-         * Exempt accounts (config/two-factor.php) sign in with the password
-         * alone. Checked before a code is generated, so no mail is sent and no
-         * challenge screen appears for them.
-         */
-        if (!$user->requiresTwoFactor()) {
-            Auth::login($user);
-            $request->session()->regenerate();
-
-            return response()->json([
-                'message' => 'Login successful.',
-                'user' => new UserResource($user),
-            ]);
         }
 
         $this->otp->sendLoginCode($user);
