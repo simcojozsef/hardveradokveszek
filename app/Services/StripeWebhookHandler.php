@@ -362,7 +362,7 @@ class StripeWebhookHandler
         // When a price is configured, require it to appear on the invoice.
         if ($priceId) {
             foreach (($invoice['lines']['data'] ?? []) as $line) {
-                if (($line['price']['id'] ?? null) === $priceId) {
+                if ($this->linePriceId($line) === $priceId) {
                     return true;
                 }
             }
@@ -371,6 +371,24 @@ class StripeWebhookHandler
         }
 
         return true;
+    }
+
+    /**
+     * The price id on an invoice line, across API versions.
+     *
+     * Newer versions (e.g. the dahlia webhook version) move the price under
+     * pricing.price_details and leave lines[].price empty. Reading only the old
+     * location made every real payment look like a different product, so the
+     * entitlement was silently never granted.
+     *
+     * @param  array<string, mixed>  $line
+     */
+    private function linePriceId(array $line): ?string
+    {
+        return $line['price']['id']
+            ?? $line['pricing']['price_details']['price']
+            ?? $line['plan']['id']
+            ?? null;
     }
 
     private function findSubscription(array $subscriptionData): ?Subscription
