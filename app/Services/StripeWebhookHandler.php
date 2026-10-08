@@ -425,11 +425,22 @@ class StripeWebhookHandler
             : null;
     }
 
-    /** Newer API versions nest the subscription id under the line item. */
+    /**
+     * The subscription id on an invoice, across API versions.
+     *
+     * Older versions put it at the top level. Newer ones nest it under
+     * parent.subscription_details, and the line item carries its own copy
+     * under parent.subscription_item_details. Missing one of these shapes is
+     * what silently drops a genuine payment, so all of them are checked.
+     */
     private function subscriptionIdFromInvoice(array $invoice): ?string
     {
         return $invoice['subscription']
+            // Newer API: the invoice's parent is a subscription.
             ?? $invoice['parent']['subscription_details']['subscription']
+            ?? $invoice['parent']['subscription']['id']
+            // Newer API: the line item's parent is a subscription item.
+            ?? $invoice['lines']['data'][0]['parent']['subscription_item_details']['subscription']
             ?? $invoice['lines']['data'][0]['parent']['subscription_details']['subscription']
             ?? null;
     }
