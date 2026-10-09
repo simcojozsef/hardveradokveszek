@@ -29,8 +29,9 @@ class SellerProductImportController extends Controller
     public function template(Request $request): StreamedResponse
     {
         $format = $request->query('format') === 'csv' ? 'csv' : 'xlsx';
+        $mode = $request->query('mode') === 'price_stock' ? 'price_stock' : 'create';
 
-        return $this->templates->download($format);
+        return $this->templates->download($format, $mode);
     }
 
     /** Upload a file and receive a preview. Nothing is written yet. */

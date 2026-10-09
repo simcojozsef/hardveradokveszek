@@ -70,7 +70,7 @@ class Product extends Model
 
 
     protected $fillable = [
-        'county_id', 'settlement_id', 'store_id', 'category_id', 'name', 'slug', 'seller_sku', 'description', 'price', 'stock', 'is_active',
+        'county_id', 'settlement_id', 'store_id', 'import_batch_id', 'category_id', 'name', 'slug', 'seller_sku', 'description', 'price', 'stock', 'is_active',
         'condition', 'listing_type', 'county', 'settlement', 'brand', 'model',
         'shipping_available', 'shipping_methods', 'contains_ai', 'has_warranty',
         'warranty_expires_at', 'personal_pickup', 'bumped_at',

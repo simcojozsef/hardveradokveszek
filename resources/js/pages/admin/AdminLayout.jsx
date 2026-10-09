@@ -139,6 +139,18 @@ export default function AdminLayout() {
                     >
                         Számlázás
                     </NavLink>
+                    <NavLink
+                        to="/admin/import-batches"
+                        className={({ isActive }) =>
+                            `admin-nav__link ${
+                                isActive
+                                    ? 'admin-nav__link--active'
+                                    : ''
+                            }`
+                        }
+                    >
+                        Tömeges feltöltések
+                    </NavLink>
                 </nav>
             </aside>
 

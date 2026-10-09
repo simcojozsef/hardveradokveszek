@@ -101,6 +101,12 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/my/products/import/template', [\App\Http\Controllers\Api\SellerProductImportController::class, 'template']);
         Route::post('/my/products/import/preview', [\App\Http\Controllers\Api\SellerProductImportController::class, 'preview']);
         Route::post('/my/products/import/{import}/commit', [\App\Http\Controllers\Api\SellerProductImportController::class, 'commit']);
+
+        // Media library: images are uploaded here, then referenced by name in
+        // the import spreadsheet.
+        Route::get('/my/media', [\App\Http\Controllers\Api\SellerMediaController::class, 'index']);
+        Route::post('/my/media', [\App\Http\Controllers\Api\SellerMediaController::class, 'store']);
+        Route::delete('/my/media/{media}', [\App\Http\Controllers\Api\SellerMediaController::class, 'destroy']);
         Route::get('/my/products', [ProductController::class, 'mine']);
         Route::get('/my/products/{product}', [ProductController::class, 'sellerShow']);
         Route::get('/my/products/{product}/images', [ProductController::class, 'sellerImages']);
@@ -278,6 +284,10 @@ Route::middleware('auth:sanctum')->group(function () {
         // Refund/dispute review and corrective documents.
         Route::post('/billing/{invoiceTask}/review', [\App\Http\Controllers\Api\AdminBillingController::class, 'flagReview']);
         Route::post('/billing/{invoiceTask}/correction', [\App\Http\Controllers\Api\AdminBillingController::class, 'recordCorrection']);
+
+        // Bulk upload batches: take a whole import offline in one action.
+        Route::get('/import-batches', [\App\Http\Controllers\Api\AdminImportBatchController::class, 'index']);
+        Route::patch('/import-batches/{batch}', [\App\Http\Controllers\Api\AdminImportBatchController::class, 'update']);
         Route::post(
             '/categories',
             [AdminCategoryController::class, 'store']
@@ -355,6 +365,14 @@ Route::get(
     '/categories',
     [CategoryController::class, 'index']
 );
+
+/*
+ * Reference lists for the import template. Public: this data is already shown
+ * on the storefront, and a seller needs the ids before importing.
+ */
+Route::get('/reference/categories', [\App\Http\Controllers\Api\ReferenceListController::class, 'categories']);
+Route::get('/reference/counties', [\App\Http\Controllers\Api\ReferenceListController::class, 'counties']);
+Route::get('/reference/settlements', [\App\Http\Controllers\Api\ReferenceListController::class, 'settlements']);
 Route::get(
     '/categories/{path}',
     [CategoryController::class, 'show']

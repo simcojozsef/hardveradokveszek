@@ -28,6 +28,8 @@ import CreateStore from './pages/seller/CreateStore';
 import SellerSubscription from './pages/seller/Subscription';
 import SellerImport from './pages/seller/Import';
 import SellerStatistics from './pages/seller/Statistics';
+import ReferenceList from './pages/ReferenceList';
+import AdminImportBatches from './pages/admin/ImportBatches';
 
 import BuyerDashboard from './pages/buyer/Dashboard';
 import BuyerCart from './pages/buyer/Cart';
@@ -125,6 +127,19 @@ export const router = createBrowserRouter([
                         path: 'statistics',
                         element: <SellerStatistics />,
                     },
+                    // Public id lookup pages for the import template.
+                    {
+                        path: 'import/categories',
+                        element: <ReferenceList type="categories" />,
+                    },
+                    {
+                        path: 'import/counties',
+                        element: <ReferenceList type="counties" />,
+                    },
+                    {
+                        path: 'import/settlements',
+                        element: <ReferenceList type="settlements" />,
+                    },
                     {
                         path: 'chats',
                         element: <SellerChats />,
@@ -210,6 +225,10 @@ export const router = createBrowserRouter([
                     {
                         path: 'billing',
                         element: <AdminBilling />,
+                    },
+                    {
+                        path: 'import-batches',
+                        element: <AdminImportBatches />,
                     },
                 ],
             },

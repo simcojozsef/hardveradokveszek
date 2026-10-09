@@ -7,15 +7,20 @@ import {
     commitImport,
 } from '../../api/import';
 import { useToast } from '../../context/ToastContext';
+import MediaLibrary from '../../components/MediaLibrary';
 
 import '../../../css/product-import.css';
 
 /*
- * PRO XLSX/CSV import.
+ * PRO XLSX/CSV import, in four steps.
  *
- * The flow is two steps on purpose: upload produces a preview, and only an
- * error-free preview can be committed. Nothing is written until the seller
- * approves what they saw.
+ * 1. download the template (with the id lookup lists)
+ * 2. upload the images the sheet will reference
+ * 3. upload the sheet and get a preview
+ * 4. approve the preview
+ *
+ * Nothing is written until step 4, and an error-free preview is the only one
+ * that may be committed.
  */
 export default function Import() {
     const toast = useToast();
@@ -108,10 +113,45 @@ export default function Import() {
                         CSV sablon
                     </a>
                 </div>
+
+                <div className="import-card__links">
+                    <span className="import-card__links-label">
+                        Azonosítók keresése:
+                    </span>
+
+                    <a
+                        className="reference-link"
+                        href="/seller/import/categories"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Kategória azonosítók ↗
+                    </a>
+
+                    <a
+                        className="reference-link"
+                        href="/seller/import/counties"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Megye azonosítók ↗
+                    </a>
+
+                    <a
+                        className="reference-link"
+                        href="/seller/import/settlements"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Település azonosítók ↗
+                    </a>
+                </div>
             </section>
 
+            <MediaLibrary />
+
             <section className="dashboard-card import-card">
-                <h2>2. Fájl feltöltése és előnézet</h2>
+                <h2>3. Fájl feltöltése</h2>
 
                 <fieldset className="import-mode">
                     <legend>Import mód</legend>
@@ -175,16 +215,17 @@ export default function Import() {
 
                 {mode === 'create' && (
                     <p className="import-card__hint">
-                        Az importált termékek <strong>piszkozatként</strong>{' '}
-                        jönnek létre. A publikáláshoz képek és a teljes
-                        érvényesség szükséges.
+                        Az importált termékek <strong>azonnal élesbe kerülnek</strong>{' '}
+                        és megjelennek a weboldalon. Ha később le szeretnéd őket
+                        venni, az adminisztrátor a „Tömeges feltöltések” oldalon
+                        egy mozdulattal inaktiválhatja.
                     </p>
                 )}
             </section>
 
             {preview && (
                 <section className="dashboard-card import-card">
-                    <h2>3. Előnézet</h2>
+                    <h2>4. Előnézet és jóváhagyás</h2>
 
                     <div className="import-summary">
                         <span>

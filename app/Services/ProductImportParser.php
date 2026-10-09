@@ -29,14 +29,43 @@ class ProductImportParser
     /** Independent guard against a tiny file with huge cell dimensions. */
     private const MAX_CELLS = 200_000;
 
-    /** The columns a new-product import carries. */
+    /**
+     * The columns a new-product import carries.
+     *
+     * Hungarian headers, matching the template, so a seller reads the same
+     * words in the sheet as in the form.
+     */
     public const REQUIRED_COLUMNS = [
-        'seller_sku',
-        'name',
-        'description',
-        'category_id',
-        'price_huf',
-        'stock',
+        'egyedi_termekazonosito',
+        'termek_nev',
+        'termek_leiras',
+        'kategoria_id',
+        'ar_huf',
+        'keszlet',
+        'allapot',
+        'hirdetes_tipusa',
+        'megye_id',
+        'telepules_id',
+    ];
+
+    /**
+     * Column names that may appear but are not mandatory. Every one of these
+     * is validated when present; a missing column simply means "use the
+     * default", exactly like leaving a field blank in the form.
+     */
+    public const OPTIONAL_COLUMNS = [
+        'marka',
+        'modell',
+        'kiemelt_kep',
+        'galeria_kepek',
+        'csomagkuldes',
+        'foxpost',
+        'gls',
+        'magyar_posta',
+        'szemelyes_atvetel',
+        'mi_tartalom',
+        'garancia',
+        'garancia_lejarat',
     ];
 
     /**
@@ -44,9 +73,9 @@ class ProductImportParser
      * product, so name, description and category are irrelevant.
      */
     public const REQUIRED_COLUMNS_PRICE_STOCK = [
-        'seller_sku',
-        'price_huf',
-        'stock',
+        'egyedi_termekazonosito',
+        'ar_huf',
+        'keszlet',
     ];
 
     /**

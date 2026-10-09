@@ -1,0 +1,125 @@
+/*
+ * Admin: bulk upload batches.
+ */
+.admin-batches {
+    display: grid;
+    gap: 20px;
+}
+
+.batch-counters {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+}
+
+.batch-counter {
+    display: grid;
+    gap: 4px;
+    padding: 14px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.batch-counter span {
+    color: #64748b;
+    font-size: 0.82rem;
+}
+
+.batch-counter strong {
+    font-size: 1.4rem;
+}
+
+.batch-counter--muted strong {
+    color: #805800;
+}
+
+.batch-table-wrap {
+    overflow-x: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.batch-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.87rem;
+}
+
+.batch-table th,
+.batch-table td {
+    padding: 10px 12px;
+    text-align: left;
+    vertical-align: top;
+}
+
+.batch-table th {
+    background: #f6f7f9;
+    color: #526672;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.batch-table tbody tr + tr td {
+    border-top: 1px solid #eef2f5;
+}
+
+.batch-table small {
+    color: #66788a;
+}
+
+.batch-status {
+    display: inline-flex;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 0.76rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.batch-status--active {
+    background: #ecfdf3;
+    color: #176b2c;
+}
+
+.batch-status--disabled {
+    background: #fff7e6;
+    color: #805800;
+}
+
+/* Dark mode */
+:root[data-theme="dark"] .batch-counter,
+:root[data-theme="dark"] .batch-table-wrap {
+    background: #17222a;
+    border-color: #2b3a44;
+    color: #e8eef1;
+}
+
+:root[data-theme="dark"] .batch-counter span,
+:root[data-theme="dark"] .batch-table small {
+    color: #9db0b9;
+}
+
+:root[data-theme="dark"] .batch-table th {
+    background: #223039;
+    color: #b6c6cd;
+}
+
+:root[data-theme="dark"] .batch-table td {
+    color: #dbe5e9;
+}
+
+:root[data-theme="dark"] .batch-table tbody tr + tr td {
+    border-top-color: #2b3a44;
+}
+
+:root[data-theme="dark"] .batch-status--active {
+    background: #14301e;
+    color: #9fdcaf;
+}
+
+:root[data-theme="dark"] .batch-status--disabled {
+    background: #2e2612;
+    color: #e8c877;
+}

@@ -1,0 +1,117 @@
+/*
+ * Public id lookup pages for the import template.
+ */
+.reference-page {
+    width: min(1100px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 40px 0;
+}
+
+.reference-page__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.reference-page__header h1 {
+    margin: 0 0 6px;
+}
+
+.reference-page__intro {
+    margin: 0;
+    color: #64748b;
+    max-width: 65ch;
+}
+
+.reference-page__search {
+    width: 100%;
+    max-width: 420px;
+    padding: 11px 14px;
+    margin-bottom: 16px;
+    border: 1px solid #d7d9dd;
+    border-radius: 10px;
+    background: white;
+    font: inherit;
+}
+
+.reference-page__count {
+    margin: 0 0 10px;
+    color: #64748b;
+    font-size: 0.88rem;
+}
+
+.reference-page__state {
+    padding: 28px 20px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #fff;
+    color: #64748b;
+    text-align: center;
+}
+
+.reference-page__state--error {
+    border-color: #e5b4b4;
+    background: #fff5f5;
+    color: #a00000;
+}
+
+.reference-table-wrap {
+    max-height: 70vh;
+    overflow: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.reference-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+}
+
+.reference-table th,
+.reference-table td {
+    padding: 9px 12px;
+    text-align: left;
+    border-bottom: 1px solid #eef2f5;
+}
+
+.reference-table th {
+    position: sticky;
+    top: 0;
+    background: #f6f7f9;
+    color: #526672;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.reference-table td:first-child {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+}
+
+/* Dark mode */
+:root[data-theme="dark"] .reference-page__intro,
+:root[data-theme="dark"] .reference-page__count {
+    color: #9db0b9;
+}
+
+:root[data-theme="dark"] .reference-page__search,
+:root[data-theme="dark"] .reference-page__state,
+:root[data-theme="dark"] .reference-table-wrap {
+    background: #17222a;
+    border-color: #2b3a44;
+    color: #e8eef1;
+}
+
+:root[data-theme="dark"] .reference-table th {
+    background: #223039;
+    color: #b6c6cd;
+}
+
+:root[data-theme="dark"] .reference-table td {
+    color: #dbe5e9;
+    border-bottom-color: #2b3a44;
+}
