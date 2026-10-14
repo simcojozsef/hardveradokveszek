@@ -1,4 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useConfirm } from '../../context/ConfirmContext';
+import { useToast } from '../../context/ToastContext';
 
 async function getAdminProducts() {
     const response = await fetch(
@@ -20,13 +22,39 @@ async function getAdminProducts() {
     return response.json();
 }
 
+async function deleteAdminProduct(id) {
+    const response = await fetch(
+        `/api/admin/products/${id}`,
+        {
+            method: 'DELETE',
+            headers: {
+                Accept: 'application/json',
+            },
+            credentials: 'include',
+        }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data.message ?? 'Nem sikerült törölni a terméket.'
+        );
+    }
+
+    return data;
+}
+
 export default function Products() {
+    const confirm = useConfirm();
+    const toast = useToast();
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [search, setSearch] = useState('');
     const [statusFilter, setStatusFilter] =
         useState('all');
+    const [deletingId, setDeletingId] = useState(null);
 
     useEffect(() => {
         async function loadProducts() {
@@ -47,6 +75,39 @@ export default function Products() {
 
         loadProducts();
     }, []);
+
+    async function handleDelete(product) {
+        const confirmed = await confirm({
+            message: `Biztosan törlöd a(z) "${product.name}" terméket?`,
+            confirmLabel: 'Igen',
+            cancelLabel: 'Nem',
+            tone: 'danger',
+        });
+
+        if (!confirmed) {
+            return;
+        }
+
+        try {
+            setDeletingId(product.id);
+            setError('');
+
+            await deleteAdminProduct(product.id);
+
+            setProducts((current) =>
+                current.filter(
+                    (item) => item.id !== product.id
+                )
+            );
+
+            toast.success?.('Termék törölve.');
+        } catch (err) {
+            setError(err.message);
+            toast.error?.(err.message);
+        } finally {
+            setDeletingId(null);
+        }
+    }
 
     const filteredProducts = useMemo(() => {
         const query = search.trim().toLowerCase();
@@ -315,14 +376,36 @@ export default function Products() {
                                             </td>
 
                                             <td>
-                                                <a
-                                                    href={`/product/${product.id}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="admin-view-button"
-                                                >
-                                                    Megtekintés →
-                                                </a>
+                                                <div className="admin-row-actions">
+                                                    <a
+                                                        href={`/product/${product.id}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="admin-view-button"
+                                                    >
+                                                        Megtekintés →
+                                                    </a>
+
+                                                    <button
+                                                        type="button"
+                                                        className="admin-view-button admin-view-button--danger"
+                                                        onClick={() =>
+                                                            handleDelete(
+                                                                product
+                                                            )
+                                                        }
+                                                        disabled={
+                                                            deletingId ===
+                                                            product.id
+                                                        }
+                                                        title="Termék törlése"
+                                                    >
+                                                        {deletingId ===
+                                                        product.id
+                                                            ? 'Törlés...'
+                                                            : 'Törlés'}
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     )

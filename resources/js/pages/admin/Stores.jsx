@@ -1,4 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useConfirm } from '../../context/ConfirmContext';
+import { useToast } from '../../context/ToastContext';
 
 async function getAdminStores() {
     const response = await fetch(
@@ -20,13 +22,36 @@ async function getAdminStores() {
     return response.json();
 }
 
+async function deleteAdminStore(id) {
+    const response = await fetch(`/api/admin/stores/${id}`, {
+        method: 'DELETE',
+        headers: {
+            Accept: 'application/json',
+        },
+        credentials: 'include',
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data.message ?? 'Nem sikerült törölni az üzletet.'
+        );
+    }
+
+    return data;
+}
+
 export default function Stores() {
+    const confirm = useConfirm();
+    const toast = useToast();
     const [stores, setStores] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [search, setSearch] = useState('');
     const [statusFilter, setStatusFilter] =
         useState('all');
+    const [deletingId, setDeletingId] = useState(null);
 
     useEffect(() => {
         async function loadStores() {
@@ -47,6 +72,37 @@ export default function Stores() {
 
         loadStores();
     }, []);
+
+    async function handleDelete(store) {
+        const confirmed = await confirm({
+            message: `Biztosan törlöd a(z) "${store.name}" üzletet? A hozzá tartozó termékek is törlődnek.`,
+            confirmLabel: 'Igen',
+            cancelLabel: 'Nem',
+            tone: 'danger',
+        });
+
+        if (!confirmed) {
+            return;
+        }
+
+        try {
+            setDeletingId(store.id);
+            setError('');
+
+            await deleteAdminStore(store.id);
+
+            setStores((current) =>
+                current.filter((item) => item.id !== store.id)
+            );
+
+            toast.success?.('Üzlet törölve.');
+        } catch (err) {
+            setError(err.message);
+            toast.error?.(err.message);
+        } finally {
+            setDeletingId(null);
+        }
+    }
 
     const filteredStores = useMemo(() => {
         const query = search.trim().toLowerCase();
@@ -314,14 +370,36 @@ export default function Stores() {
                                             </td>
 
                                             <td>
-                                                <a
-                                                    href={`/store/${store.slug}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="admin-view-button"
-                                                >
-                                                    Megtekintés →
-                                                </a>
+                                                <div className="admin-row-actions">
+                                                    <a
+                                                        href={`/store/${store.slug}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="admin-view-button"
+                                                    >
+                                                        Megtekintés →
+                                                    </a>
+
+                                                    <button
+                                                        type="button"
+                                                        className="admin-view-button admin-view-button--danger"
+                                                        onClick={() =>
+                                                            handleDelete(
+                                                                store
+                                                            )
+                                                        }
+                                                        disabled={
+                                                            deletingId ===
+                                                            store.id
+                                                        }
+                                                        title="Üzlet törlése"
+                                                    >
+                                                        {deletingId ===
+                                                        store.id
+                                                            ? 'Törlés...'
+                                                            : 'Törlés'}
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     )

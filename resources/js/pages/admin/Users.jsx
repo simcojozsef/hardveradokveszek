@@ -1,4 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useConfirm } from '../../context/ConfirmContext';
+import { useToast } from '../../context/ToastContext';
 
 async function getAdminUsers() {
     const response = await fetch('/api/admin/users', {
@@ -17,6 +19,26 @@ async function getAdminUsers() {
     return response.json();
 }
 
+async function deleteAdminUser(id) {
+    const response = await fetch(`/api/admin/users/${id}`, {
+        method: 'DELETE',
+        headers: {
+            Accept: 'application/json',
+        },
+        credentials: 'include',
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data.message ?? 'Nem sikerült törölni a felhasználót.'
+        );
+    }
+
+    return data;
+}
+
 const roleLabels = {
     admin: 'Admin',
     seller: 'Eladó',
@@ -24,11 +46,14 @@ const roleLabels = {
 };
 
 export default function Users() {
+    const confirm = useConfirm();
+    const toast = useToast();
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [search, setSearch] = useState('');
     const [roleFilter, setRoleFilter] = useState('all');
+    const [deletingId, setDeletingId] = useState(null);
 
     async function loadUsers() {
         try {
@@ -48,6 +73,37 @@ export default function Users() {
     useEffect(() => {
         loadUsers();
     }, []);
+
+    async function handleDelete(user) {
+        const confirmed = await confirm({
+            message: `Biztosan törlöd a(z) "${user.name}" felhasználót?`,
+            confirmLabel: 'Igen',
+            cancelLabel: 'Nem',
+            tone: 'danger',
+        });
+
+        if (!confirmed) {
+            return;
+        }
+
+        try {
+            setDeletingId(user.id);
+            setError('');
+
+            await deleteAdminUser(user.id);
+
+            setUsers((current) =>
+                current.filter((item) => item.id !== user.id)
+            );
+
+            toast.success?.('Felhasználó törölve.');
+        } catch (err) {
+            setError(err.message);
+            toast.error?.(err.message);
+        } finally {
+            setDeletingId(null);
+        }
+    }
 
     const filteredUsers = useMemo(() => {
         const query = search.trim().toLowerCase();
@@ -243,6 +299,7 @@ export default function Users() {
                                     <th>Felhasználó</th>
                                     <th>Szerepkör</th>
                                     <th>Regisztráció</th>
+                                    <th>Műveletek</th>
                                 </tr>
                             </thead>
 
@@ -301,6 +358,37 @@ export default function Users() {
                                                         'hu-HU'
                                                     )}
                                                 </span>
+                                            </td>
+
+                                            <td>
+                                                <div className="admin-row-actions">
+                                                    <button
+                                                        type="button"
+                                                        className="admin-view-button admin-view-button--danger"
+                                                        onClick={() =>
+                                                            handleDelete(
+                                                                user
+                                                            )
+                                                        }
+                                                        disabled={
+                                                            deletingId ===
+                                                                user.id ||
+                                                            user.role ===
+                                                                'admin'
+                                                        }
+                                                        title={
+                                                            user.role ===
+                                                            'admin'
+                                                                ? 'Admin felhasználó nem törölhető.'
+                                                                : 'Felhasználó törlése'
+                                                        }
+                                                    >
+                                                        {deletingId ===
+                                                        user.id
+                                                            ? 'Törlés...'
+                                                            : 'Törlés'}
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     )

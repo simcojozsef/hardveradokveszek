@@ -10,6 +10,7 @@ use App\Models\Store;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
 {
@@ -76,6 +77,57 @@ class AdminController extends Controller
         );
 
         return response()->json($products);
+    }
+
+    public function destroyUser(Request $request, User $user): JsonResponse
+    {
+        if ($user->id === $request->user()?->id) {
+            return response()->json([
+                'message' => 'A saját fiókod nem törölhető.',
+            ], 422);
+        }
+
+        if ($user->isAdmin()) {
+            return response()->json([
+                'message' => 'Admin felhasználó nem törölhető.',
+            ], 422);
+        }
+
+        $user->delete();
+
+        return response()->json([
+            'message' => 'Felhasználó törölve.',
+        ]);
+    }
+
+    public function destroyStore(Store $store): JsonResponse
+    {
+        foreach ($store->products as $product) {
+            $product->delete();
+        }
+
+        if ($store->logo) {
+            Storage::disk('public')->delete($store->logo);
+        }
+
+        $store->delete();
+
+        return response()->json([
+            'message' => 'Üzlet törölve.',
+        ]);
+    }
+
+    public function destroyProduct(Product $product): JsonResponse
+    {
+        foreach ($product->images as $image) {
+            Storage::disk('public')->delete($image->path);
+        }
+
+        $product->delete();
+
+        return response()->json([
+            'message' => 'Termék törölve.',
+        ]);
     }
 
     public function orders(): JsonResponse

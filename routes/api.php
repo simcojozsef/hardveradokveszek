@@ -250,13 +250,25 @@ Route::middleware('auth:sanctum')->group(function () {
             '/users',
             [AdminController::class, 'users']
         );
+        Route::delete(
+            '/users/{user}',
+            [AdminController::class, 'destroyUser']
+        );
         Route::get(
             '/stores',
             [AdminController::class, 'stores']
         );
+        Route::delete(
+            '/stores/{store}',
+            [AdminController::class, 'destroyStore']
+        );
         Route::get(
             '/products',
             [AdminController::class, 'products']
+        );
+        Route::delete(
+            '/products/{product}',
+            [AdminController::class, 'destroyProduct']
         );
         Route::get(
             '/orders',
