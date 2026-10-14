@@ -33,7 +33,7 @@ use App\Http\Controllers\Api\StoreChatController;
  * API calls. /api/me stays under auth:sanctum in its own group below; the
  * session it reads is the same one these routes create.
  */
-Route::middleware('web')->group(function () {
+Route::middleware(['web', 'block.store.auth'])->group(function () {
     Route::post('/auth/register', [AuthController::class, 'register'])
         ->middleware('throttle:register');
     Route::post('/auth/login', [AuthController::class, 'login'])

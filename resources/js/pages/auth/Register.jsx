@@ -4,6 +4,8 @@ import { FiEye, FiEyeOff, FiArrowLeft } from 'react-icons/fi';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import GoogleAuthButton from '../../components/GoogleAuthButton';
+import SubdomainAuthNotice from '../../components/SubdomainAuthNotice';
+import useStorefrontContext from '../../hooks/useStorefrontContext';
 
 import '../../../css/auth-2fa.css';
 
@@ -18,6 +20,14 @@ export default function Register() {
     const { register, verifyEmail } = useAuth();
     const toast = useToast();
     const [searchParams] = useSearchParams();
+    const { context: storefrontContext } = useStorefrontContext();
+
+    /*
+     * Accounts live on the marketplace apex domain only. On a store subdomain
+     * the API would refuse the submit anyway (403), so we never render the form
+     * and instead point the visitor at gigapiac.hu.
+     */
+    const onStoreSubdomain = Boolean(storefrontContext?.is_store_subdomain);
 
     const [form, setForm] = useState({
         name: '',
@@ -150,6 +160,10 @@ export default function Register() {
                         </p>
                     </div>
 
+                    {onStoreSubdomain ? (
+                        <SubdomainAuthNotice />
+                    ) : (
+                    <>
                     {error && (
                         <div className="auth-alert auth-alert--error">
                             {error}
@@ -376,6 +390,8 @@ export default function Register() {
                             Bejelentkezés
                         </Link>
                     </div>
+                    </>
+                    )}
                     </>
                     )}
 

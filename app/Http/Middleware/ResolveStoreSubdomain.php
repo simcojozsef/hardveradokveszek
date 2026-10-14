@@ -42,7 +42,7 @@ class ResolveStoreSubdomain
 
     public function resolve(Request $request): ?Store
     {
-        $slug = $this->subdomain($request->getHost());
+        $slug = self::subdomain($request->getHost());
 
         if ($slug === null) {
             return null;
@@ -76,8 +76,11 @@ class ResolveStoreSubdomain
      *
      * Works for both production (pcbolt.gigapiac.hu) and local development
      * (pcbolt.localhost), where the apex is a bare hostname.
+     *
+     * Static and public so BlockStoreSubdomainAuth shares the exact same host
+     * rules instead of duplicating them.
      */
-    private function subdomain(string $host): ?string
+    public static function subdomain(string $host): ?string
     {
         $host = strtolower($host);
         $apex = strtolower((string) config('app.domain', 'localhost'));

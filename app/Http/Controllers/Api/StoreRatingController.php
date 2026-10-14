@@ -19,7 +19,8 @@ class StoreRatingController extends Controller
 
     public function mine(Request $request, Store $store): JsonResponse
     {
-        abort_unless($request->user() && !$request->user()->isAdmin(), 403);
+        // Only buyers have a personal vote to read back.
+        abort_unless($request->user() && $request->user()->role === 'buyer', 403);
         abort_unless($store->is_active, 404);
 
         return response()->json($this->summary($store, $request->user()->id));
@@ -27,7 +28,8 @@ class StoreRatingController extends Controller
 
     public function update(Request $request, Store $store): JsonResponse
     {
-        abort_unless($request->user() && !$request->user()->isAdmin(), 403);
+        // Sellers and admins must not vote on stores; only buyers may.
+        abort_unless($request->user() && $request->user()->role === 'buyer', 403);
         $validated = $request->validate([
             'value' => ['required', 'integer', Rule::in([-1, 1])],
         ]);

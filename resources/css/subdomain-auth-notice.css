@@ -1,0 +1,62 @@
+/*
+ * Store-subdomain auth notice.
+ *
+ * Shown instead of the login/register form when a visitor lands on
+ * <store>.gigapiac.hu/login or /register. Accounts only live on the apex
+ * domain, so we point them at gigapiac.hu rather than offering a form here.
+ */
+.subdomain-auth-notice {
+    display: grid;
+    justify-items: center;
+    gap: 22px;
+
+    text-align: center;
+}
+
+.subdomain-auth-notice__icon {
+    display: grid;
+    place-items: center;
+
+    width: 56px;
+    height: 56px;
+
+    border-radius: 16px;
+    background: #eef7fa;
+    color: #1683a4;
+    font-size: 1.4rem;
+}
+
+.subdomain-auth-notice__message {
+    margin: 0;
+    max-width: 46ch;
+
+    color: #4a5b62;
+    font-size: 0.98rem;
+    line-height: 1.65;
+}
+
+.subdomain-auth-notice__link {
+    color: #1683a4;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.subdomain-auth-notice__link:hover {
+    color: #106a86;
+}
+
+.subdomain-auth-notice__actions {
+    display: grid;
+    gap: 12px;
+    width: 100%;
+}
+
+.subdomain-auth-notice__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    width: 100%;
+}
