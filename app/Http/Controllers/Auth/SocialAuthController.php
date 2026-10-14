@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Contracts\User as SocialiteUser;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Throwable;
 
 /*
@@ -46,6 +47,17 @@ class SocialAuthController extends Controller
 
         if (in_array($role, ['buyer', 'seller'], true)) {
             $request->session()->put('social.role', $role);
+        }
+
+        /*
+         * Remember whether the visitor came from the sign-up or the sign-in
+         * page. Auto-provisioning a new account is only allowed from sign-up,
+         * so a deleted user cannot be silently re-created via the login page.
+         */
+        if ($request->query('mode') === 'register') {
+            $request->session()->put('social.mode', 'register');
+        } else {
+            $request->session()->forget('social.mode');
         }
 
         $intended = $request->query('intended');
@@ -86,6 +98,13 @@ class SocialAuthController extends Controller
 
         try {
             $user = $this->resolveUser($googleUser, $email, $request);
+        } catch (HttpExceptionInterface $exception) {
+            /*
+             * Deliberate guards (unknown account on sign-in, already-used
+             * email) carry a message meant for the visitor — show that one
+             * instead of the generic provisioning failure.
+             */
+            return $this->fail($exception->getMessage());
         } catch (Throwable $exception) {
             Log::error('Google account provisioning failed.', [
                 'message' => $exception->getMessage(),
@@ -175,6 +194,19 @@ class SocialAuthController extends Controller
             $this->syncProfile($existing, $googleUser);
 
             return $existing;
+        }
+
+        /*
+         * No account matches this Google identity.
+         *
+         * Creating one is only valid on the sign-up page. From the sign-in
+         * page an unknown address means the account does not exist (for
+         * example because an admin deleted it), so we must refuse instead of
+         * silently provisioning a fresh account — otherwise deleting a user
+         * would have no effect as long as they can sign in with Google.
+         */
+        if ($request->session()->pull('social.mode') !== 'register') {
+            abort(404, 'Nincs ilyen fiók. Regisztrálj először.');
         }
 
         return User::create([

@@ -13,11 +13,19 @@ export default function GoogleAuthButton({
     role,
     intended = '/',
     label = 'Folytatás Google-fiókkal',
+    mode,
 }) {
     const params = new URLSearchParams();
 
     if (role) params.set('role', role);
     if (intended) params.set('intended', intended);
+
+    /*
+     * Tell the backend whether this is a sign-up or a sign-in. On the login
+     * page we must NOT create an account for an unknown address — a deleted
+     * user would otherwise be silently re-created by clicking Google.
+     */
+    if (mode) params.set('mode', mode);
 
     const query = params.toString();
 

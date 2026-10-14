@@ -363,6 +363,7 @@ export default function Register() {
 
                     <GoogleAuthButton
                         intended="/"
+                        mode="register"
                         label="Regisztráció Google-fiókkal"
                     />
 
