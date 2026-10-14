@@ -69,9 +69,14 @@ class StoreController extends Controller
             'is_active' => $request->boolean('is_active', true),
         ]);
 
+        // A buyer opening a store is exactly how they become a seller. We flip
+        // the internal role here so they never need a separate seller account.
+        $user->enableSeller();
+
         return response()->json([
             'message' => 'Store created successfully.',
             'store' => new StoreResource($store),
+            'role' => $user->fresh()->role,
         ], 201);
     }
 

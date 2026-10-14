@@ -24,7 +24,6 @@ export default function Register() {
         email: '',
         password: '',
         password_confirmation: '',
-        role: 'buyer',
     });
 
     const [error, setError] = useState('');
@@ -70,7 +69,10 @@ export default function Register() {
         setSubmitting(true);
 
         try {
-            const response = await register(form);
+            const response = await register({
+                ...form,
+                role: 'seller',
+            });
 
             toast.success('Sikeres regisztráció. Erősítsd meg az e-mail címedet.');
 
@@ -344,58 +346,6 @@ export default function Register() {
                             </div>
                         </label>
 
-                        <fieldset className="account-type">
-                            <legend>
-                                Milyen fiókot szeretnél?
-                            </legend>
-
-                            <label className="account-type__option">
-                                <input
-                                    type="radio"
-                                    name="role"
-                                    value="buyer"
-                                    checked={
-                                        form.role === 'buyer'
-                                    }
-                                    onChange={handleChange}
-                                />
-
-                                <span>
-                                    <strong>
-                                        Vásárlói fiókot regisztrálok
-                                    </strong>
-
-                                    <small>
-                                        Böngéssz és vásárolj
-                                        termékeket a piactéren.
-                                    </small>
-                                </span>
-                            </label>
-
-                            <label className="account-type__option">
-                                <input
-                                    type="radio"
-                                    name="role"
-                                    value="seller"
-                                    checked={
-                                        form.role === 'seller'
-                                    }
-                                    onChange={handleChange}
-                                />
-
-                                <span>
-                                    <strong>
-                                        Eladói fiókot regisztrálok
-                                    </strong>
-
-                                    <small>
-                                        Saját üzletet hozhatsz létre
-                                        és termékeket értékesíthetsz.
-                                    </small>
-                                </span>
-                            </label>
-                        </fieldset>
-
                         <button
                             type="submit"
                             className="auth-submit"
@@ -412,8 +362,7 @@ export default function Register() {
                     </div>
 
                     <GoogleAuthButton
-                        role={form.role}
-                        intended={form.role === 'seller' ? '/seller' : '/buyer'}
+                        intended="/"
                         label="Regisztráció Google-fiókkal"
                     />
 

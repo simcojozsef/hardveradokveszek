@@ -1119,15 +1119,6 @@
     color: #8fa3ac;
 }
 
-:root[data-theme="dark"] .account-type__option {
-    border-color: #2b3a44;
-}
-
-:root[data-theme="dark"] .account-type__option:has(input:checked) {
-    border-color: var(--ui-brand);
-    background: #1b262e;
-}
-
 /* ------------------------------------------------------------------
    Menus, tables and misc chrome
    ------------------------------------------------------------------ */

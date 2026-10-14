@@ -16,12 +16,20 @@ class UserResource extends JsonResource
             'role' => $this->role,
             'avatar_url' => $this->avatar_url,
             /*
-             * A compact store summary so the UI can tell whether the seller
+             * Capabilities are what the UI should key off. We keep the raw role
+             * for admin screens, but the storefront never asks the user to pick
+             * a "side": every non-admin account can buy, and any of them can
+             * start selling simply by opening a store.
+             */
+            'can_sell' => $this->role !== 'admin',
+            'is_admin' => $this->role === 'admin',
+            /*
+             * A compact store summary so the UI can tell whether the account
              * already has a store. Loaded on demand to avoid a query on every
-             * /me call for buyers and admins.
+             * /me call.
              */
             'store' => $this->when(
-                $this->role === 'seller',
+                $this->role !== 'admin',
                 function () {
                     $store = $this->store;
 

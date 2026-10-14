@@ -799,49 +799,6 @@ button {
     }
 }
 
-.account-type {
-    display: grid;
-    gap: 10px;
-    margin: 4px 0 0;
-    padding: 0;
-    border: 0;
-}
-
-.account-type legend {
-    margin-bottom: 4px;
-    font-weight: 700;
-}
-
-.account-type__option {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 15px;
-    border: 1px solid #d7d9dd;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: border-color 0.15s ease,
-        background 0.15s ease;
-}
-
-.account-type__option:has(input:checked) {
-    border-color: #171717;
-    background: #f6f7f9;
-}
-
-.account-type__option input {
-    margin-top: 3px;
-}
-
-.account-type__option span {
-    display: grid;
-    gap: 4px;
-}
-
-.account-type__option small {
-    color: #666;
-}
-
 .auth-card__footer {
     margin: 20px 0 0;
     text-align: center;

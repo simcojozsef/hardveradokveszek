@@ -394,7 +394,7 @@ Route::get(
     [\App\Http\Controllers\Api\StoreRatingController::class, 'show']
 );
 
-Route::middleware(['auth:sanctum', 'role:buyer'])->group(function () {
+Route::middleware('auth:sanctum')->group(function () {
     Route::get(
         '/stores/{store}/my-rating',
         [\App\Http\Controllers\Api\StoreRatingController::class, 'mine']

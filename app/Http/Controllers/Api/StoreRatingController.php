@@ -19,7 +19,7 @@ class StoreRatingController extends Controller
 
     public function mine(Request $request, Store $store): JsonResponse
     {
-        abort_unless($request->user()?->isBuyer(), 403);
+        abort_unless($request->user() && !$request->user()->isAdmin(), 403);
         abort_unless($store->is_active, 404);
 
         return response()->json($this->summary($store, $request->user()->id));
@@ -27,7 +27,7 @@ class StoreRatingController extends Controller
 
     public function update(Request $request, Store $store): JsonResponse
     {
-        abort_unless($request->user()?->isBuyer(), 403);
+        abort_unless($request->user() && !$request->user()->isAdmin(), 403);
         $validated = $request->validate([
             'value' => ['required', 'integer', Rule::in([-1, 1])],
         ]);

@@ -37,19 +37,34 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
-    public function isBuyer(): bool
+    public function isAdmin(): bool
     {
-        return $this->role === 'buyer';
+        return $this->role === 'admin';
     }
 
+    /**
+     * Every non-admin account can both buy and sell. There is a single public
+     * account type; the buyer/seller split only exists internally, where the
+     * role column marks who may open a store and who may place orders.
+     *
+     * A buyer becomes able to sell the moment they create a store, so the
+     * upgrade path below flips the internal role without the user ever seeing
+     * a second registration form.
+     */
     public function isSeller(): bool
     {
         return $this->role === 'seller';
     }
 
-    public function isAdmin(): bool
+    /**
+     * Allow a signed-in account to sell. Idempotent and admin-safe: an admin is
+     * never downgraded, and an existing seller is left untouched.
+     */
+    public function enableSeller(): void
     {
-        return $this->role === 'admin';
+        if ($this->role === 'buyer') {
+            $this->forceFill(['role' => 'seller'])->save();
+        }
     }
 
     public function store(): HasOne
